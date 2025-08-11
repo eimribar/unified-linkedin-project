@@ -16,6 +16,8 @@ import Analytics from "./pages/Analytics";
 import UserAnalytics from "./pages/UserAnalytics";
 import Onboarding from "./pages/Onboarding";
 import SignUp from "./pages/SignUp";
+import Welcome from "./pages/Welcome";
+import WelcomeComplete from "./pages/WelcomeComplete";
 import MainLayout from "./layouts/MainLayout";
 import OnboardingLayout from "./layouts/OnboardingLayout";
 import ImportPage from "./pages/Import";
@@ -37,10 +39,20 @@ const App = () => (
               {/* Public routes - Sign up flow */}
               <Route path="/signup" element={<SignUp />} />
               
-              {/* Onboarding - requires auth but not completed onboarding */}
+              {/* Onboarding flow - requires auth but not completed onboarding */}
+              <Route path="/welcome" element={
+                <ProtectedRoute requireOnboarding={false}>
+                  <OnboardingLayout><Welcome /></OnboardingLayout>
+                </ProtectedRoute>
+              } />
               <Route path="/onboarding" element={
                 <ProtectedRoute requireOnboarding={false}>
                   <OnboardingLayout><Onboarding /></OnboardingLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/welcome-complete" element={
+                <ProtectedRoute requireOnboarding={false}>
+                  <OnboardingLayout><WelcomeComplete /></OnboardingLayout>
                 </ProtectedRoute>
               } />
               

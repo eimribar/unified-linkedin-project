@@ -163,9 +163,9 @@ const Onboarding = () => {
       description: "Welcome to your personalized content portal",
     });
 
-    // Redirect to profile after a moment
+    // Redirect to welcome complete page
     setTimeout(() => {
-      navigate('/profile');
+      navigate('/welcome-complete');
     }, 2000);
   };
   return <div className="relative min-h-screen bg-background text-foreground">

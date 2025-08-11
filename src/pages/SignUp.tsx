@@ -32,7 +32,7 @@ const SignUp = () => {
     setTimeout(() => {
       signUp(email);
       toast({ title: "Welcome! Let's set up your profile", description: "Please complete the onboarding questions" });
-      navigate('/onboarding');
+      navigate('/welcome');
     }, 1000);
   };
 
@@ -58,7 +58,7 @@ const SignUp = () => {
         title: "LinkedIn profile imported successfully!", 
         description: "Complete a few questions to personalize your experience" 
       });
-      navigate('/onboarding');
+      navigate('/welcome');
     }, 1500);
   };
 
