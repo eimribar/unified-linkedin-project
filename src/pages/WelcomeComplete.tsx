@@ -134,7 +134,7 @@ const WelcomeComplete = () => {
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle className="w-4 h-4 text-success-green mt-0.5 flex-shrink-0" />
-                <span>Start approving AI-generated posts</span>
+                <span>Review and approve your content queue</span>
               </li>
             </ul>
           </motion.div>
