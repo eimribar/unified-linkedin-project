@@ -79,7 +79,8 @@ const Strategy = () => {
 
         {/* Core Narrative */}
         <motion.section variants={itemVariants} className="mb-20">
-          <div className="bg-gray-50 dark:bg-zinc-900/50 rounded-xl p-8 border border-gray-200 dark:border-zinc-800">
+          <div className="bg-gray-50 dark:bg-zinc-900/50 rounded-xl p-8 border border-gray-200 dark:border-zinc-800 relative">
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-500 via-amber-500 to-green-500 rounded-t-xl" />
             <div className="max-w-3xl mx-auto text-center">
               <Sparkles className="w-8 h-8 text-gray-400 mx-auto mb-4" />
               <h2 className="text-xl font-semibold mb-4">Core Narrative</h2>
@@ -166,7 +167,8 @@ const Strategy = () => {
                 whileHover={{ y: -2 }}
                 transition={{ duration: 0.2 }}
               >
-                <div className="h-full p-6 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-colors">
+                <div className="group h-full p-6 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 hover:shadow-lg transition-all duration-200 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-amber-500 to-green-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 rounded-md bg-gray-100 dark:bg-zinc-800">
                       {pillar.icon}
@@ -201,7 +203,8 @@ const Strategy = () => {
               { day: "Thursday", type: "Bounce AI Win", example: "Our customer saved 15 hrs/week. Not from AI, from simplicity" },
               { day: "Friday", type: "Industry Prediction", example: "In 2027, 'AI-powered' will sound as dated as 'cyber' does now" }
             ].map((item, index) => (
-              <div key={index} className="p-4 bg-gray-50 dark:bg-zinc-900/50 rounded-lg">
+              <div key={index} className="p-4 bg-gray-50 dark:bg-zinc-900/50 rounded-lg relative">
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-500 via-amber-500 to-green-500 opacity-30" />
                 <div className="text-xs font-medium text-gray-500 dark:text-gray-500 mb-1">{item.day}</div>
                 <h4 className="font-medium mb-2">{item.type}</h4>
                 <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{item.example}</p>
@@ -240,8 +243,9 @@ const Strategy = () => {
                 template: "0 to 40% daily active users in 3 months. One simple change:"
               }
             ].map((hook, index) => (
-              <div key={index} className="p-5 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800">
-                <h4 className="font-medium mb-3 text-sm uppercase tracking-wide text-gray-500">
+              <div key={index} className="p-5 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 hover:shadow-md transition-all relative">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-amber-500 to-green-500 rounded-l-lg" />
+                <h4 className="font-medium mb-3 text-sm uppercase tracking-wide text-gray-600 dark:text-gray-400">
                   {hook.name}
                 </h4>
                 <p className="text-gray-700 dark:text-gray-300 italic leading-relaxed">
@@ -256,7 +260,8 @@ const Strategy = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
           {/* Monthly Themes */}
           <motion.section variants={itemVariants}>
-            <div className="p-6 h-full bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800">
+            <div className="p-6 h-full bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 relative">
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-blue-500 via-amber-500 to-green-500" />
               <h3 className="text-lg font-semibold mb-6">Monthly Themes</h3>
               <div className="space-y-3">
                 {[
@@ -279,20 +284,21 @@ const Strategy = () => {
 
           {/* Natural Integration */}
           <motion.section variants={itemVariants}>
-            <div className="p-6 h-full bg-gray-50 dark:bg-zinc-900/50 rounded-lg border border-gray-200 dark:border-zinc-800">
+            <div className="p-6 h-full bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 relative">
+              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-green-500 via-amber-500 to-blue-500" />
               <h3 className="text-lg font-semibold mb-6">Bounce AI Integration</h3>
               <div className="space-y-3">
                 <div className="space-y-4">
                   <div>
                     <div className="flex items-baseline gap-3 mb-1">
-                      <span className="text-2xl font-semibold">30%</span>
+                      <span className="text-2xl font-semibold bg-gradient-to-r from-blue-600 via-amber-600 to-green-600 bg-clip-text text-transparent">30%</span>
                       <span className="font-medium">Direct mentions</span>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Customer wins, culture, differentiation</p>
                   </div>
                   <div>
                     <div className="flex items-baseline gap-3 mb-1">
-                      <span className="text-2xl font-semibold">70%</span>
+                      <span className="text-2xl font-semibold bg-gradient-to-r from-green-600 via-amber-600 to-blue-600 bg-clip-text text-transparent">70%</span>
                       <span className="font-medium">Pure value</span>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Product advice, industry takes, lessons learned</p>
@@ -317,7 +323,7 @@ const Strategy = () => {
               <div className="flex gap-4 justify-center">
                 <Button 
                   size="lg" 
-                  className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 px-8"
+                  className="bg-gradient-to-r from-blue-600 via-amber-600 to-green-600 text-white hover:from-blue-700 hover:via-amber-700 hover:to-green-700 px-8 border-0 shadow-lg"
                 >
                   Start Creating
                   <ArrowRight className="w-4 h-4 ml-2" />
