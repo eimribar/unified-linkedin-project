@@ -18,9 +18,7 @@ import {
   Edit3, 
   ChevronLeft, 
   ChevronRight,
-  Calendar,
   Hash,
-  Image as ImageIcon,
   Sparkles,
   TrendingUp,
   Clock
@@ -124,7 +122,9 @@ const SwipeDeck = () => {
   const [posts, setPosts] = useState<PostItem[]>(initialPosts);
   const [current, setCurrent] = useState(0);
   const [editOpen, setEditOpen] = useState(false);
+  const [editMode, setEditMode] = useState<'direct' | 'ai'>('direct');
   const [draftText, setDraftText] = useState("");
+  const [aiPrompt, setAiPrompt] = useState("");
   const [draftTags, setDraftTags] = useState<string[]>([]);
   const [draftSchedule, setDraftSchedule] = useState("");
   const [approvedCount, setApprovedCount] = useState(0);
@@ -200,19 +200,46 @@ const SwipeDeck = () => {
     setDraftText(active?.text ?? "");
     setDraftTags(active?.tags ?? []);
     setDraftSchedule(active?.scheduledDate ?? "");
+    setAiPrompt("");
+    setEditMode('direct');
     setEditOpen(true);
   };
 
   const saveEdit = () => {
-    setPosts((list) => 
-      list.map((p, i) => 
-        i === current 
-          ? { ...p, text: draftText, tags: draftTags, scheduledDate: draftSchedule } 
-          : p
-      )
-    );
-    setEditOpen(false);
-    toast.success("Changes saved ✨");
+    if (editMode === 'direct') {
+      setPosts((list) => 
+        list.map((p, i) => 
+          i === current 
+            ? { ...p, text: draftText, tags: draftTags, scheduledDate: draftSchedule } 
+            : p
+        )
+      );
+      setEditOpen(false);
+      toast.success("Changes saved ✨");
+    } else {
+      // AI mode - in production, this would call an API
+      toast.promise(
+        new Promise((resolve) => {
+          setTimeout(() => {
+            // Simulate AI processing
+            setPosts((list) => 
+              list.map((p, i) => 
+                i === current 
+                  ? { ...p, text: draftText + "\n\n[AI would modify based on: " + aiPrompt + "]" } 
+                  : p
+              )
+            );
+            resolve(true);
+          }, 1500);
+        }),
+        {
+          loading: 'AI is revising your post...',
+          success: 'Post revised successfully!',
+          error: 'Failed to revise post',
+        }
+      );
+      setEditOpen(false);
+    }
   };
 
   // Keyboard shortcuts
@@ -357,16 +384,16 @@ const SwipeDeck = () => {
               variant="outline"
               size="lg"
               onClick={openEdit}
-              className="rounded-full px-8"
+              className="rounded-full px-8 border-purple-200 hover:bg-purple-50 hover:border-purple-300 dark:border-purple-900 dark:hover:bg-purple-950"
             >
-              <Edit3 className="w-5 h-5 mr-2" />
+              <Edit3 className="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400" />
               Edit
             </Button>
 
             <Button
               size="lg"
               onClick={approve}
-              className="rounded-full px-8 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+              className="rounded-full px-8 bg-gradient-brand hover:opacity-90 text-white shadow-lg"
             >
               <CheckCircle className="w-5 h-5 mr-2" />
               Approve
@@ -408,66 +435,131 @@ const SwipeDeck = () => {
         </div>
       </div>
 
-      {/* Edit dialog - clean and focused */}
+      {/* Edit dialog with dual modes */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Post</DialogTitle>
           </DialogHeader>
           
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="post-content">Content</Label>
-              <Textarea
-                id="post-content"
-                value={draftText}
-                onChange={(e) => setDraftText(e.target.value)}
-                className="min-h-[300px] mt-2 font-mono text-sm"
-                placeholder="Write your LinkedIn post..."
-              />
-              <div className="mt-2 text-right text-xs text-gray-500">
-                {draftText.length} / 3000 characters
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="tags">Hashtags</Label>
-              <Input
-                id="tags"
-                value={draftTags.join(", ")}
-                onChange={(e) => setDraftTags(e.target.value.split(",").map(t => t.trim()).filter(Boolean))}
-                placeholder="Enter hashtags separated by commas"
-                className="mt-2"
-              />
-              <div className="mt-2 flex flex-wrap gap-2">
-                {draftTags.map((tag, i) => (
-                  <Badge key={i} variant="secondary">
-                    <Hash className="w-3 h-3 mr-1" />
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="schedule">Schedule</Label>
-              <Input
-                id="schedule"
-                value={draftSchedule}
-                onChange={(e) => setDraftSchedule(e.target.value)}
-                placeholder="e.g., Tomorrow, 9:00 AM"
-                className="mt-2"
-              />
-            </div>
+          {/* Mode selector */}
+          <div className="flex gap-2 p-1 bg-gray-100 dark:bg-zinc-800 rounded-lg">
+            <Button
+              variant={editMode === 'direct' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setEditMode('direct')}
+              className={editMode === 'direct' ? 'bg-white dark:bg-zinc-900 shadow-sm' : ''}
+            >
+              <Edit3 className="w-4 h-4 mr-2" />
+              Direct Edit
+            </Button>
+            <Button
+              variant={editMode === 'ai' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setEditMode('ai')}
+              className={editMode === 'ai' ? 'bg-white dark:bg-zinc-900 shadow-sm' : ''}
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              AI Revision
+            </Button>
           </div>
+
+          {editMode === 'direct' ? (
+            <div className="space-y-4 mt-4">
+              <div>
+                <Label htmlFor="post-content">Content</Label>
+                <Textarea
+                  id="post-content"
+                  value={draftText}
+                  onChange={(e) => setDraftText(e.target.value)}
+                  className="min-h-[300px] mt-2 font-mono text-sm"
+                  placeholder="Write your LinkedIn post..."
+                />
+                <div className="mt-2 text-right text-xs text-gray-500">
+                  {draftText.length} / 3000 characters
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="tags">Hashtags</Label>
+                <Input
+                  id="tags"
+                  value={draftTags.join(", ")}
+                  onChange={(e) => setDraftTags(e.target.value.split(",").map(t => t.trim()).filter(Boolean))}
+                  placeholder="Enter hashtags separated by commas"
+                  className="mt-2"
+                />
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {draftTags.map((tag, i) => (
+                    <Badge key={i} variant="secondary">
+                      <Hash className="w-3 h-3 mr-1" />
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="schedule">Schedule</Label>
+                <Input
+                  id="schedule"
+                  value={draftSchedule}
+                  onChange={(e) => setDraftSchedule(e.target.value)}
+                  placeholder="e.g., Tomorrow, 9:00 AM"
+                  className="mt-2"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4 mt-4">
+              <div>
+                <Label>Current Post</Label>
+                <div className="mt-2 p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800">
+                  <p className="text-sm whitespace-pre-wrap text-gray-700 dark:text-gray-300">
+                    {active?.text}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="ai-prompt">What would you like to change?</Label>
+                <Textarea
+                  id="ai-prompt"
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  className="min-h-[120px] mt-2"
+                  placeholder="Examples:\n• Make it shorter and more punchy\n• Add more statistics and data\n• Make it more conversational\n• Focus more on the benefits\n• Add a call-to-action at the end"
+                />
+              </div>
+
+              <div className="p-4 bg-purple-50 dark:bg-purple-950/30 rounded-lg border border-purple-200 dark:border-purple-900">
+                <div className="flex items-start gap-2">
+                  <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-medium text-purple-900 dark:text-purple-100">AI-Powered Revision</p>
+                    <p className="text-purple-700 dark:text-purple-300 mt-1">
+                      Describe your changes in natural language, and AI will revise the post while maintaining your voice and style.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <DialogFooter className="mt-6">
             <Button variant="outline" onClick={() => setEditOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={saveEdit} className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Save Changes
+            <Button 
+              onClick={saveEdit} 
+              className="bg-gradient-brand text-white"
+              disabled={editMode === 'ai' && !aiPrompt.trim()}
+            >
+              {editMode === 'direct' ? (
+                <><Edit3 className="w-4 h-4 mr-2" /> Save Changes</>
+              ) : (
+                <><Sparkles className="w-4 h-4 mr-2" /> Apply AI Revision</>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

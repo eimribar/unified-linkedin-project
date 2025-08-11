@@ -3,10 +3,6 @@ import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
-  Heart, 
-  MessageCircle, 
-  Share2, 
-  Send,
   MoreHorizontal,
   Globe,
   CheckCircle,
@@ -97,15 +93,15 @@ const SwipeCard = ({ text, author, onSwipe, image, tags, scheduledDate }: SwipeC
         transition={{ type: "spring", damping: 20, stiffness: 200 }}
         whileHover={{ scale: isDragging ? 1 : 1.01 }}
       >
-        {/* LinkedIn-style card */}
-        <div className="relative bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-200 dark:border-zinc-800">
+        {/* LinkedIn-style card with brand gradient */}
+        <div className="relative bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden border border-gradient-brand">
           {/* Approval/Decline overlay */}
           <motion.div 
-            className="absolute inset-0 bg-gradient-to-r from-transparent to-green-500/20 pointer-events-none z-10" 
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-purple-500/30 pointer-events-none z-10" 
             style={{ opacity: approveOverlay }} 
           />
           <motion.div 
-            className="absolute inset-0 bg-gradient-to-l from-transparent to-red-500/20 pointer-events-none z-10" 
+            className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-red-500/30 pointer-events-none z-10" 
             style={{ opacity: declineOverlay }} 
           />
 
@@ -113,9 +109,9 @@ const SwipeCard = ({ text, author, onSwipe, image, tags, scheduledDate }: SwipeC
           <div className="p-4 border-b border-gray-100 dark:border-zinc-800">
             <div className="flex items-start justify-between">
               <div className="flex gap-3">
-                <Avatar className="w-12 h-12 ring-2 ring-gray-100 dark:ring-zinc-800">
+                <Avatar className="w-12 h-12 ring-2 ring-purple-100 dark:ring-purple-900/30">
                   {userAvatar && <AvatarImage src={userAvatar} alt={userName} />}
-                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+                  <AvatarFallback className="bg-gradient-brand text-white">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
@@ -169,56 +165,9 @@ const SwipeCard = ({ text, author, onSwipe, image, tags, scheduledDate }: SwipeC
             )}
           </div>
 
-          {/* LinkedIn-style engagement preview */}
-          <div className="px-4 py-3 border-t border-gray-100 dark:border-zinc-800">
-            <div className="flex items-center justify-between text-sm text-gray-500">
-              <div className="flex items-center gap-4">
-                <span className="flex items-center gap-1">
-                  <div className="flex -space-x-1">
-                    <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center">
-                      <span className="text-[8px] text-white">👍</span>
-                    </div>
-                    <div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center">
-                      <span className="text-[8px] text-white">❤️</span>
-                    </div>
-                    <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
-                      <span className="text-[8px] text-white">👏</span>
-                    </div>
-                  </div>
-                  <span className="ml-1">Predicted: 150-200</span>
-                </span>
-              </div>
-              <div className="flex items-center gap-3 text-xs">
-                <span>~25 comments</span>
-                <span>~10 reposts</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Action buttons (visual only) */}
-          <div className="px-4 py-2 border-t border-gray-100 dark:border-zinc-800">
-            <div className="flex items-center justify-around">
-              <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-colors flex-1">
-                <Heart className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                <span className="text-sm text-gray-600 dark:text-gray-400">Like</span>
-              </button>
-              <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-colors flex-1">
-                <MessageCircle className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                <span className="text-sm text-gray-600 dark:text-gray-400">Comment</span>
-              </button>
-              <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-colors flex-1">
-                <Share2 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                <span className="text-sm text-gray-600 dark:text-gray-400">Repost</span>
-              </button>
-              <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-colors flex-1">
-                <Send className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                <span className="text-sm text-gray-600 dark:text-gray-400">Send</span>
-              </button>
-            </div>
-          </div>
 
           {/* Character count indicator */}
-          <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm rounded-full px-3 py-1">
+          <div className="absolute bottom-4 right-4 bg-gradient-brand backdrop-blur-sm rounded-full px-3 py-1 shadow-lg">
             <div className="flex items-center gap-2">
               <div className="text-xs text-white">
                 {remaining > 0 ? (
@@ -241,7 +190,7 @@ const SwipeCard = ({ text, author, onSwipe, image, tags, scheduledDate }: SwipeC
                     cx="16"
                     cy="16"
                     r="14"
-                    stroke={remaining > 500 ? "#10b981" : remaining > 0 ? "#f59e0b" : "#ef4444"}
+                    stroke={remaining > 500 ? "#a855f7" : remaining > 0 ? "#f59e0b" : "#ef4444"}
                     strokeWidth="2"
                     fill="none"
                     strokeDasharray={`${2 * Math.PI * 14}`}
