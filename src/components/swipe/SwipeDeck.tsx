@@ -122,9 +122,9 @@ const SwipeDeck = () => {
   const [posts, setPosts] = useState<PostItem[]>(initialPosts);
   const [current, setCurrent] = useState(0);
   const [editOpen, setEditOpen] = useState(false);
-  const [editMode, setEditMode] = useState<'direct' | 'ai'>('direct');
+  const [editMode, setEditMode] = useState<'revise' | 'direct'>('revise');
   const [draftText, setDraftText] = useState("");
-  const [aiPrompt, setAiPrompt] = useState("");
+  const [revisionRequest, setRevisionRequest] = useState("");
   const [draftTags, setDraftTags] = useState<string[]>([]);
   const [draftSchedule, setDraftSchedule] = useState("");
   const [approvedCount, setApprovedCount] = useState(0);
@@ -200,8 +200,8 @@ const SwipeDeck = () => {
     setDraftText(active?.text ?? "");
     setDraftTags(active?.tags ?? []);
     setDraftSchedule(active?.scheduledDate ?? "");
-    setAiPrompt("");
-    setEditMode('direct');
+    setRevisionRequest("");
+    setEditMode('revise');
     setEditOpen(true);
   };
 
@@ -217,15 +217,15 @@ const SwipeDeck = () => {
       setEditOpen(false);
       toast.success("Changes saved ✨");
     } else {
-      // AI mode - in production, this would call an API
+      // Revision mode - in production, this would call an API
       toast.promise(
         new Promise((resolve) => {
           setTimeout(() => {
-            // Simulate AI processing
+            // Simulate revision processing
             setPosts((list) => 
               list.map((p, i) => 
                 i === current 
-                  ? { ...p, text: draftText + "\n\n[AI would modify based on: " + aiPrompt + "]" } 
+                  ? { ...p, text: draftText + "\n\n[Revised based on: " + revisionRequest + "]" } 
                   : p
               )
             );
@@ -233,7 +233,7 @@ const SwipeDeck = () => {
           }, 1500);
         }),
         {
-          loading: 'AI is revising your post...',
+          loading: 'Revising your post...',
           success: 'Post revised successfully!',
           error: 'Failed to revise post',
         }
@@ -374,9 +374,9 @@ const SwipeDeck = () => {
               variant="outline"
               size="lg"
               onClick={decline}
-              className="rounded-full px-8 border-red-200 hover:bg-red-50 hover:border-red-300 dark:border-red-900 dark:hover:bg-red-950"
+              className="rounded-full px-8 hover:bg-gray-50 dark:hover:bg-zinc-800"
             >
-              <XCircle className="w-5 h-5 mr-2 text-red-600" />
+              <XCircle className="w-5 h-5 mr-2" />
               Decline
             </Button>
 
@@ -384,16 +384,16 @@ const SwipeDeck = () => {
               variant="outline"
               size="lg"
               onClick={openEdit}
-              className="rounded-full px-8 border-purple-200 hover:bg-purple-50 hover:border-purple-300 dark:border-purple-900 dark:hover:bg-purple-950"
+              className="rounded-full px-8 hover:bg-gray-50 dark:hover:bg-zinc-800"
             >
-              <Edit3 className="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400" />
-              Edit
+              <Edit3 className="w-5 h-5 mr-2" />
+              Revise
             </Button>
 
             <Button
               size="lg"
               onClick={approve}
-              className="rounded-full px-8 bg-gradient-brand hover:opacity-90 text-white shadow-lg"
+              className="rounded-full px-8 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100"
             >
               <CheckCircle className="w-5 h-5 mr-2" />
               Approve
@@ -439,32 +439,76 @@ const SwipeDeck = () => {
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Post</DialogTitle>
+            <DialogTitle>Revise Post</DialogTitle>
           </DialogHeader>
           
-          {/* Mode selector */}
-          <div className="flex gap-2 p-1 bg-gray-100 dark:bg-zinc-800 rounded-lg">
-            <Button
-              variant={editMode === 'direct' ? 'default' : 'ghost'}
-              size="sm"
+          {/* Clean mode tabs */}
+          <div className="flex border-b border-gray-200 dark:border-zinc-800">
+            <button
+              onClick={() => setEditMode('revise')}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${
+                editMode === 'revise' 
+                  ? 'border-b-2 border-black dark:border-white text-black dark:text-white' 
+                  : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}>
+              Request Changes
+            </button>
+            <button
               onClick={() => setEditMode('direct')}
-              className={editMode === 'direct' ? 'bg-white dark:bg-zinc-900 shadow-sm' : ''}
-            >
-              <Edit3 className="w-4 h-4 mr-2" />
-              Direct Edit
-            </Button>
-            <Button
-              variant={editMode === 'ai' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setEditMode('ai')}
-              className={editMode === 'ai' ? 'bg-white dark:bg-zinc-900 shadow-sm' : ''}
-            >
-              <Sparkles className="w-4 h-4 mr-2" />
-              AI Revision
-            </Button>
+              className={`px-4 py-2 text-sm font-medium transition-colors ${
+                editMode === 'direct' 
+                  ? 'border-b-2 border-black dark:border-white text-black dark:text-white' 
+                  : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}>
+              Edit Directly
+            </button>
           </div>
 
-          {editMode === 'direct' ? (
+          {editMode === 'revise' ? (
+            <div className="space-y-4 mt-4">
+              <div>
+                <Label className="text-xs uppercase tracking-wider text-gray-500">Current Post</Label>
+                <div className="mt-2 p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800">
+                  <p className="text-sm whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {active?.text}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="revision-request" className="text-xs uppercase tracking-wider text-gray-500">What would you like to change?</Label>
+                <Textarea
+                  id="revision-request"
+                  value={revisionRequest}
+                  onChange={(e) => setRevisionRequest(e.target.value)}
+                  className="min-h-[100px] mt-2 resize-none"
+                  placeholder="Make it shorter and more impactful"
+                />
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <button 
+                    onClick={() => setRevisionRequest("Make it shorter and more punchy")}
+                    className="text-xs px-3 py-1 rounded-full border border-gray-300 hover:bg-gray-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+                    Shorter
+                  </button>
+                  <button 
+                    onClick={() => setRevisionRequest("Add more specific data and statistics")}
+                    className="text-xs px-3 py-1 rounded-full border border-gray-300 hover:bg-gray-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+                    Add Data
+                  </button>
+                  <button 
+                    onClick={() => setRevisionRequest("Make it more conversational and engaging")}
+                    className="text-xs px-3 py-1 rounded-full border border-gray-300 hover:bg-gray-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+                    More Engaging
+                  </button>
+                  <button 
+                    onClick={() => setRevisionRequest("Add a strong call-to-action")}
+                    className="text-xs px-3 py-1 rounded-full border border-gray-300 hover:bg-gray-50 dark:border-zinc-700 dark:hover:bg-zinc-800">
+                    Add CTA
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
             <div className="space-y-4 mt-4">
               <div>
                 <Label htmlFor="post-content">Content</Label>
@@ -475,9 +519,6 @@ const SwipeDeck = () => {
                   className="min-h-[300px] mt-2 font-mono text-sm"
                   placeholder="Write your LinkedIn post..."
                 />
-                <div className="mt-2 text-right text-xs text-gray-500">
-                  {draftText.length} / 3000 characters
-                </div>
               </div>
 
               <div>
@@ -510,40 +551,6 @@ const SwipeDeck = () => {
                 />
               </div>
             </div>
-          ) : (
-            <div className="space-y-4 mt-4">
-              <div>
-                <Label>Current Post</Label>
-                <div className="mt-2 p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800">
-                  <p className="text-sm whitespace-pre-wrap text-gray-700 dark:text-gray-300">
-                    {active?.text}
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="ai-prompt">What would you like to change?</Label>
-                <Textarea
-                  id="ai-prompt"
-                  value={aiPrompt}
-                  onChange={(e) => setAiPrompt(e.target.value)}
-                  className="min-h-[120px] mt-2"
-                  placeholder="Examples:\n• Make it shorter and more punchy\n• Add more statistics and data\n• Make it more conversational\n• Focus more on the benefits\n• Add a call-to-action at the end"
-                />
-              </div>
-
-              <div className="p-4 bg-purple-50 dark:bg-purple-950/30 rounded-lg border border-purple-200 dark:border-purple-900">
-                <div className="flex items-start gap-2">
-                  <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5" />
-                  <div className="text-sm">
-                    <p className="font-medium text-purple-900 dark:text-purple-100">AI-Powered Revision</p>
-                    <p className="text-purple-700 dark:text-purple-300 mt-1">
-                      Describe your changes in natural language, and AI will revise the post while maintaining your voice and style.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
           )}
 
           <DialogFooter className="mt-6">
@@ -552,14 +559,10 @@ const SwipeDeck = () => {
             </Button>
             <Button 
               onClick={saveEdit} 
-              className="bg-gradient-brand text-white"
-              disabled={editMode === 'ai' && !aiPrompt.trim()}
+              className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100"
+              disabled={editMode === 'revise' && !revisionRequest.trim()}
             >
-              {editMode === 'direct' ? (
-                <><Edit3 className="w-4 h-4 mr-2" /> Save Changes</>
-              ) : (
-                <><Sparkles className="w-4 h-4 mr-2" /> Apply AI Revision</>
-              )}
+              {editMode === 'direct' ? 'Save Changes' : 'Apply Changes'}
             </Button>
           </DialogFooter>
         </DialogContent>
