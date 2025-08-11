@@ -3,9 +3,12 @@ import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-van
 import { Confetti, type ConfettiRef } from "@/components/ui/confetti";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Trophy } from "lucide-react";
+import { Trophy, CheckCircle } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/hooks/use-toast";
 import confetti from "canvas-confetti";
 const QUESTIONS = [{
   id: 1,
@@ -38,15 +41,33 @@ const QUESTIONS = [{
   id: 10,
   prompt: "What will your industry/field look like in 3 years?"
 }];
+
+const QUESTION_CATEGORIES = [
+  "Your Experiences", "Your Experiences", "Your Experiences",
+  "Your Beliefs", "Your Beliefs", "Your Beliefs",
+  "Your Bounce AI Story", "Your Bounce AI Story", "Your Bounce AI Story",
+  "Your Vision"
+];
+
 const Onboarding = () => {
+  const navigate = useNavigate();
+  const { user, saveOnboardingAnswers, completeOnboarding } = useAuth();
   const total = QUESTIONS.length;
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>(Array(total).fill(""));
   const [xp, setXp] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
   const confettiRef = useRef<ConfettiRef>(null);
   const current = useMemo(() => QUESTIONS[step], [step]);
   const completed = useMemo(() => answers.filter(a => a.trim().length > 0).length, [answers]);
   const percent = useMemo(() => Math.round(completed / total * 100), [completed, total]);
+
+  // Check if user is authenticated
+  useEffect(() => {
+    if (!user) {
+      navigate('/signup');
+    }
+  }, [user, navigate]);
   const examples = useMemo(() => {
     switch (current.id) {
       case 1:
@@ -102,8 +123,50 @@ const Onboarding = () => {
 
     // Advance with a smooth transition small delay to let vanish effect start
     setTimeout(() => {
-      if (step < total - 1) setStep(s => s + 1);
+      if (step < total - 1) {
+        setStep(s => s + 1);
+      } else {
+        // All questions answered, save and complete
+        handleCompletion();
+      }
     }, 150);
+  };
+
+  const handleCompletion = () => {
+    if (isCompleted) return;
+    
+    // Convert answers to OnboardingQA format
+    const onboardingData = answers.map((answer, index) => ({
+      id: index + 1,
+      category: QUESTION_CATEGORIES[index] as any,
+      question: QUESTIONS[index].prompt,
+      answer: answer || ""
+    }));
+
+    // Save answers to auth context
+    saveOnboardingAnswers(onboardingData);
+    completeOnboarding();
+    setIsCompleted(true);
+
+    // Big celebration
+    if (confettiRef.current) {
+      confettiRef.current.fire({
+        particleCount: 200,
+        spread: 90,
+        startVelocity: 45,
+        origin: { y: 0.6 }
+      });
+    }
+
+    toast({
+      title: "Onboarding Complete!",
+      description: "Welcome to your personalized content portal",
+    });
+
+    // Redirect to profile after a moment
+    setTimeout(() => {
+      navigate('/profile');
+    }, 2000);
   };
   return <div className="relative min-h-screen bg-background text-foreground">
       <SEO title="Onboarding – Story Questions" description="Answer premium one-by-one prompts to shape your narrative." canonicalPath="/onboarding" />
@@ -147,9 +210,13 @@ const Onboarding = () => {
               Back
             </Button>
             <Button type="button" variant="outline" onClick={() => {
-            if (step < total - 1) setStep(s => s + 1);
+            if (step < total - 1) {
+              setStep(s => s + 1);
+            } else {
+              handleCompletion();
+            }
           }} className="py-[30px]">
-              Skip
+              {step === total - 1 ? 'Finish' : 'Skip'}
             </Button>
           </nav>
         </section>

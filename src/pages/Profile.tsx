@@ -1,4 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import SEO from "@/components/seo/SEO";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,8 +17,33 @@ const Pill = ({ children }: { children: string }) => (
 );
 
 const Profile = () => {
-  const [profile, setProfile] = useState<SampleProfile>(sampleProfile);
-  const [story, setStory] = useState<OnboardingQA[]>(sampleOnboarding);
+  const navigate = useNavigate();
+  const { user, updateProfile: updateAuthProfile } = useAuth();
+  
+  // Initialize profile with user's data or sample data
+  const [profile, setProfile] = useState<SampleProfile>(
+    user?.profile || sampleProfile
+  );
+  const [story, setStory] = useState<OnboardingQA[]>(
+    user?.onboardingAnswers || sampleOnboarding
+  );
+
+  // Check authentication
+  useEffect(() => {
+    if (!user) {
+      navigate('/signup');
+    }
+  }, [user, navigate]);
+
+  // Update profile when user data changes
+  useEffect(() => {
+    if (user?.profile) {
+      setProfile(user.profile);
+    }
+    if (user?.onboardingAnswers) {
+      setStory(user.onboardingAnswers);
+    }
+  }, [user]);
 
   const skills = useMemo(
     () =>
@@ -101,7 +128,9 @@ const Profile = () => {
                       </div>
                       <DialogFooter>
                         <Button onClick={() => {
-                          setProfile({ ...profile, about: aboutDraft });
+                          const updatedProfile = { ...profile, about: aboutDraft };
+                          setProfile(updatedProfile);
+                          updateAuthProfile(updatedProfile);
                           setAboutOpen(false);
                           toast({ title: "Saved", description: "About updated" });
                         }}>Save</Button>
@@ -147,7 +176,7 @@ const Profile = () => {
                       <DialogFooter>
                         <Button onClick={() => {
                           if (!newExp.title) { toast({ title: "Title is required" }); return; }
-                          setProfile({
+                          const updatedProfile = {
                             ...profile,
                             experiences: [ ...(profile.experiences ?? []), {
                               title: newExp.title as string,
@@ -155,7 +184,9 @@ const Profile = () => {
                               caption: newExp.caption ?? "",
                               logo: newExp.logo ?? "",
                             } as ExperienceItem ],
-                          });
+                          };
+                          setProfile(updatedProfile);
+                          updateAuthProfile(updatedProfile);
                           setNewExp({ title: "", subtitle: "", caption: "", logo: "" });
                           setExpOpen(false);
                           toast({ title: "Added", description: "Experience added" });
@@ -227,7 +258,9 @@ const Profile = () => {
                         <Button onClick={() => {
                           if (!skillDraft.trim()) { toast({ title: "Enter a skill" }); return; }
                           const nextSkills = [...skills, skillDraft.trim()];
-                          setProfile({ ...profile, topSkillsByEndorsements: nextSkills.join(", ") });
+                          const updatedProfile = { ...profile, topSkillsByEndorsements: nextSkills.join(", ") };
+                          setProfile(updatedProfile);
+                          updateAuthProfile(updatedProfile);
                           setSkillDraft("");
                           setSkillOpen(false);
                           toast({ title: "Added", description: "Skill added" });

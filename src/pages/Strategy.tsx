@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import SEO from "@/components/seo/SEO";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,19 +10,33 @@ const Pill = ({ children }: { children: string }) => (
 );
 
 const Strategy = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/signup');
+    }
+  }, [user, navigate]);
+
+  // Get user's name and headline
+  const userName = user?.profile?.fullName || "Amnon Cohen";
+  const userHeadline = user?.profile?.headline || "Product Leader | Innovation & Strategy | Impact & Goals (OKRs) | Coach & Mentor | Unlocking your team's potential";
+  const userJobTitle = user?.profile?.jobTitle || "VP Product";
+  const userCompany = user?.profile?.companyName || "Bounce AI";
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SEO
-        title="Amnon Cohen – Content Strategy"
-        description="Core narrative, pillars, cadence, hooks, and themes tailored to Amnon's voice."
+        title={`${userName} – Content Strategy`}
+        description={`Core narrative, pillars, cadence, hooks, and themes tailored to ${userName}'s voice.`}
         canonicalPath="/strategy"
       />
 
       <main className="mx-auto max-w-6xl px-4 pt-10 pb-16 animate-enter">
         <header>
-          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">Amnon Cohen — Content Strategy</h1>
+          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">{userName} — Content Strategy</h1>
           <p className="mt-2 text-base md:text-lg text-muted-foreground">
-            Ex‑Microsoft PM who learned the hard way that simple beats complex. Ships daily at Bounce AI. Believes in data over opinions.
+            {userHeadline}
           </p>
         </header>
 
@@ -30,7 +47,7 @@ const Strategy = () => {
             <section className="border-gradient-brand rounded-2xl p-6">
               <h2 className="text-lg font-medium tracking-tight">Core Narrative</h2>
               <p className="mt-2 text-sm md:text-base text-muted-foreground">
-                Ex‑Microsoft PM who learned the hard way that simple beats complex. Ships daily at Bounce AI. Believes in data over opinions.
+                {userJobTitle} at {userCompany}. {userHeadline}
               </p>
             </section>
 
