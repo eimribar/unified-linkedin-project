@@ -63,7 +63,34 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background gradient effects */}
+      <div 
+        className="absolute pointer-events-none"
+        style={{
+          width: '981px',
+          height: '981px',
+          left: '-428px',
+          top: '544px',
+          background: 'radial-gradient(76.83% 76.83% at 13.45% 100%, rgba(111, 121, 84, 0.4) 0%, rgba(107, 216, 149, 0.4) 49.03%, rgba(240, 203, 140, 0.4) 67.3%, rgba(218, 240, 227, 0.4) 86.81%, rgba(255, 255, 255, 0.4) 100%)',
+          filter: 'blur(58px)',
+          zIndex: 0
+        }}
+      />
+      {/* Second gradient for depth */}
+      <div 
+        className="absolute pointer-events-none"
+        style={{
+          width: '800px',
+          height: '800px',
+          right: '-300px',
+          top: '-200px',
+          background: 'radial-gradient(50% 50% at 50% 50%, rgba(107, 216, 149, 0.3) 0%, rgba(240, 203, 140, 0.2) 50%, rgba(255, 255, 255, 0) 100%)',
+          filter: 'blur(80px)',
+          zIndex: 0
+        }}
+      />
+      
       <SEO
         title="Sign Up – LinkedIn Content Portal"
         description="Join your personalized LinkedIn content management portal"
@@ -74,7 +101,7 @@ const SignUp = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="w-full max-w-md relative z-10"
       >
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-brand-soft mb-4">
