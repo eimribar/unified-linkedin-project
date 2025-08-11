@@ -93,6 +93,9 @@ const UserNav = () => {
           <NavLink to="/strategy" className={navClass}>
             Strategy
           </NavLink>
+          <NavLink to="/ideas" className={navClass}>
+            Ideas
+          </NavLink>
           <NavLink to="/approve" className={navClass}>
             Approvals
           </NavLink>

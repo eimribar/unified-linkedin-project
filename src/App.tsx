@@ -18,6 +18,7 @@ import Onboarding from "./pages/Onboarding";
 import SignUp from "./pages/SignUp";
 import Welcome from "./pages/Welcome";
 import WelcomeComplete from "./pages/WelcomeComplete";
+import ContentIdeas from "./pages/ContentIdeas";
 import MainLayout from "./layouts/MainLayout";
 import OnboardingLayout from "./layouts/OnboardingLayout";
 import ImportPage from "./pages/Import";
@@ -75,6 +76,11 @@ const App = () => (
               <Route path="/user-analytics" element={
                 <ProtectedRoute>
                   <UserLayout><UserAnalytics /></UserLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/ideas" element={
+                <ProtectedRoute>
+                  <UserLayout><ContentIdeas /></UserLayout>
                 </ProtectedRoute>
               } />
               
