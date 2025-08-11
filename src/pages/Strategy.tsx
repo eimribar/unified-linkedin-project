@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import SEO from "@/components/seo/SEO";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { 
   Target, 
@@ -13,10 +12,10 @@ import {
   MessageSquare,
   Lightbulb,
   ArrowRight,
-  Hash,
   Clock,
   Star,
-  CheckCircle
+  CheckCircle,
+  Sparkles
 } from "lucide-react";
 
 const Strategy = () => {
@@ -55,7 +54,7 @@ const Strategy = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-background">
       <SEO
         title={`${userName} – Content Strategy`}
         description={`Personalized LinkedIn content strategy for ${userName}`}
@@ -66,47 +65,44 @@ const Strategy = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="mx-auto max-w-7xl px-4 pt-8 pb-16"
+        className="mx-auto max-w-6xl px-6 pt-12 pb-20"
       >
         {/* Header */}
-        <motion.header variants={itemVariants} className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            Content Strategy for {userName}, {userJobTitle}
+        <motion.header variants={itemVariants} className="mb-16 text-center">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-2">
+            Content Strategy
           </h1>
-          <div className="h-1 w-32 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" />
+          <p className="text-gray-600 dark:text-gray-400">
+            {userName}, {userJobTitle} at Bounce AI
+          </p>
         </motion.header>
 
         {/* Core Narrative */}
-        <motion.section variants={itemVariants} className="mb-12">
-          <Card className="p-8 border-0 shadow-xl bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-zinc-900 dark:to-zinc-800">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-xl bg-white dark:bg-zinc-900 shadow-lg">
-                <Target className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-              </div>
-              <div className="flex-1">
-                <h2 className="text-2xl font-semibold mb-3">Core Narrative</h2>
-                <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                  Ex-Microsoft PM who learned the hard way that simple beats complex. Ships daily at Bounce AI. 
-                  Believes in data over opinions.
-                </p>
-              </div>
+        <motion.section variants={itemVariants} className="mb-20">
+          <div className="bg-gray-50 dark:bg-zinc-900/50 rounded-xl p-8 border border-gray-200 dark:border-zinc-800">
+            <div className="max-w-3xl mx-auto text-center">
+              <Sparkles className="w-8 h-8 text-gray-400 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold mb-4">Core Narrative</h2>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
+                Ex-Microsoft PM who learned the hard way that simple beats complex. Ships daily at Bounce AI. 
+                Believes in data over opinions.
+              </p>
             </div>
-          </Card>
+          </div>
         </motion.section>
 
         {/* Content Pillars */}
-        <motion.section variants={itemVariants} className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6 flex items-center gap-3">
-            <Lightbulb className="w-7 h-7 text-yellow-500" />
-            Content Pillars + Unique Angles
-          </h2>
+        <motion.section variants={itemVariants} className="mb-20">
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-2">Content Pillars</h2>
+            <p className="text-gray-600 dark:text-gray-400">Your unique angles and perspectives</p>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 title: "Product Leadership",
-                icon: <TrendingUp className="w-5 h-5" />,
-                color: "from-blue-500 to-cyan-500",
+                icon: <TrendingUp className="w-5 h-5 text-gray-600 dark:text-gray-400" />,
                 topics: [
                   "Why I killed our personalization engine (failure story)",
                   "The 'mom test' for every feature decision",
@@ -116,8 +112,7 @@ const Strategy = () => {
               },
               {
                 title: "Team & Culture",
-                icon: <Users className="w-5 h-5" />,
-                color: "from-green-500 to-emerald-500",
+                icon: <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" />,
                 topics: [
                   "Why our engineers talk directly to customers",
                   "Breaking down the wall between product and engineering",
@@ -127,8 +122,7 @@ const Strategy = () => {
               },
               {
                 title: "AI Industry",
-                icon: <Zap className="w-5 h-5" />,
-                color: "from-purple-500 to-pink-500",
+                icon: <Zap className="w-5 h-5 text-gray-600 dark:text-gray-400" />,
                 topics: [
                   "AI will be invisible in 3 years (here's why)",
                   "Stop advertising 'AI-powered' - it's already cringe",
@@ -138,8 +132,7 @@ const Strategy = () => {
               },
               {
                 title: "Product Craft",
-                icon: <Target className="w-5 h-5" />,
-                color: "from-orange-500 to-red-500",
+                icon: <Target className="w-5 h-5 text-gray-600 dark:text-gray-400" />,
                 topics: [
                   "User research is overrated (controversial take)",
                   "Production data > 100 user interviews",
@@ -149,8 +142,7 @@ const Strategy = () => {
               },
               {
                 title: "Career Growth",
-                icon: <TrendingUp className="w-5 h-5" />,
-                color: "from-indigo-500 to-purple-500",
+                icon: <Lightbulb className="w-5 h-5 text-gray-600 dark:text-gray-400" />,
                 topics: [
                   "My $10M mistake taught me this",
                   "From Microsoft bureaucracy to startup speed",
@@ -160,8 +152,7 @@ const Strategy = () => {
               },
               {
                 title: "Bounce AI Stories",
-                icon: <Star className="w-5 h-5" />,
-                color: "from-yellow-500 to-orange-500",
+                icon: <Star className="w-5 h-5 text-gray-600 dark:text-gray-400" />,
                 topics: [
                   "We ship to production daily (here's how)",
                   "Our customer saved 15 hours/week with one simple change",
@@ -172,37 +163,35 @@ const Strategy = () => {
             ].map((pillar, index) => (
               <motion.div
                 key={index}
-                whileHover={{ scale: 1.02 }}
-                className="group"
+                whileHover={{ y: -2 }}
+                transition={{ duration: 0.2 }}
               >
-                <Card className="h-full p-6 border-0 shadow-lg hover:shadow-2xl transition-all duration-300">
-                  <div className={`h-1 w-full bg-gradient-to-r ${pillar.color} rounded-full mb-4`} />
+                <div className="h-full p-6 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-colors">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className={`p-2 rounded-lg bg-gradient-to-r ${pillar.color} text-white`}>
+                    <div className="p-2 rounded-md bg-gray-100 dark:bg-zinc-800">
                       {pillar.icon}
                     </div>
-                    <h3 className="font-semibold text-lg">{pillar.title}</h3>
+                    <h3 className="font-semibold">{pillar.title}</h3>
                   </div>
                   <ul className="space-y-2">
                     {pillar.topics.map((topic, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-                        <CheckCircle className="w-4 h-4 mt-0.5 text-green-500 flex-shrink-0" />
-                        <span>{topic}</span>
+                      <li key={i} className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                        • {topic}
                       </li>
                     ))}
                   </ul>
-                </Card>
+                </div>
               </motion.div>
             ))}
           </div>
         </motion.section>
 
         {/* Weekly Content Mix */}
-        <motion.section variants={itemVariants} className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6 flex items-center gap-3">
-            <Calendar className="w-7 h-7 text-blue-500" />
-            Weekly Content Mix
-          </h2>
+        <motion.section variants={itemVariants} className="mb-20">
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-2">Weekly Content Mix</h2>
+            <p className="text-gray-600 dark:text-gray-400">Strategic posting schedule for maximum engagement</p>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {[
@@ -212,147 +201,123 @@ const Strategy = () => {
               { day: "Thursday", type: "Bounce AI Win", example: "Our customer saved 15 hrs/week. Not from AI, from simplicity" },
               { day: "Friday", type: "Industry Prediction", example: "In 2027, 'AI-powered' will sound as dated as 'cyber' does now" }
             ].map((item, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ y: -4 }}
-                className="group"
-              >
-                <Card className="h-full p-4 border-0 shadow-md hover:shadow-xl transition-all duration-300">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Clock className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{item.day}</span>
-                  </div>
-                  <h4 className="font-semibold mb-2">{item.type}</h4>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 italic">"{item.example}"</p>
-                </Card>
-              </motion.div>
+              <div key={index} className="p-4 bg-gray-50 dark:bg-zinc-900/50 rounded-lg">
+                <div className="text-xs font-medium text-gray-500 dark:text-gray-500 mb-1">{item.day}</div>
+                <h4 className="font-medium mb-2">{item.type}</h4>
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{item.example}</p>
+              </div>
             ))}
           </div>
         </motion.section>
 
         {/* Hook Templates */}
-        <motion.section variants={itemVariants} className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6 flex items-center gap-3">
-            <MessageSquare className="w-7 h-7 text-green-500" />
-            Hook Templates
-          </h2>
+        <motion.section variants={itemVariants} className="mb-20">
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-2">Hook Templates</h2>
+            <p className="text-gray-600 dark:text-gray-400">Proven opening lines that capture attention</p>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                name: "The Failure Hook",
-                template: "I built a feature nobody wanted. 6 months. 2% adoption. Here's what I learned:",
-                color: "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/20"
+                name: "Failure Story",
+                template: "I built a feature nobody wanted. 6 months. 2% adoption. Here's what I learned:"
               },
               {
-                name: "The Contrarian Hook",
-                template: "Everyone says 'talk to users.' I say watch the data. Here's why:",
-                color: "border-orange-200 dark:border-orange-900 bg-orange-50 dark:bg-orange-950/20"
+                name: "Contrarian Take",
+                template: "Everyone says 'talk to users.' I say watch the data. Here's why:"
               },
               {
-                name: "The Comparison Hook",
-                template: "Microsoft: 50-page PRDs. Bounce AI: 5 bullet points. Guess who ships faster?",
-                color: "border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/20"
+                name: "Comparison",
+                template: "Microsoft: 50-page PRDs. Bounce AI: 5 bullet points. Guess who ships faster?"
               },
               {
-                name: "The Simple Truth Hook",
-                template: "If you can't explain it to your mom, don't build it.",
-                color: "border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-950/20"
+                name: "Simple Truth",
+                template: "If you can't explain it to your mom, don't build it."
               },
               {
-                name: "The Metric Hook",
-                template: "0 to 40% daily active users in 3 months. One simple change:",
-                color: "border-purple-200 dark:border-purple-900 bg-purple-50 dark:bg-purple-950/20"
+                name: "Metric Hook",
+                template: "0 to 40% daily active users in 3 months. One simple change:"
               }
             ].map((hook, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ scale: 1.02 }}
-              >
-                <Card className={`p-5 border-2 ${hook.color}`}>
-                  <h4 className="font-semibold mb-2 flex items-center gap-2">
-                    <Hash className="w-4 h-4" />
-                    {hook.name}
-                  </h4>
-                  <p className="text-gray-700 dark:text-gray-300 italic">"{hook.template}"</p>
-                </Card>
-              </motion.div>
+              <div key={index} className="p-5 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800">
+                <h4 className="font-medium mb-3 text-sm uppercase tracking-wide text-gray-500">
+                  {hook.name}
+                </h4>
+                <p className="text-gray-700 dark:text-gray-300 italic leading-relaxed">
+                  "{hook.template}"
+                </p>
+              </div>
             ))}
           </div>
         </motion.section>
 
         {/* Monthly Themes & Integration */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
           {/* Monthly Themes */}
           <motion.section variants={itemVariants}>
-            <Card className="p-6 h-full border-0 shadow-xl">
-              <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-indigo-500" />
-                Monthly Themes
-              </h3>
+            <div className="p-6 h-full bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800">
+              <h3 className="text-lg font-semibold mb-6">Monthly Themes</h3>
               <div className="space-y-3">
                 {[
                   { month: "Month 1", theme: "Simplicity beats complexity", focus: "her core belief" },
                   { month: "Month 2", theme: "Speed over perfection", focus: "shipping philosophy" },
                   { month: "Month 3", theme: "Data over opinions", focus: "decision making" }
                 ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 mt-2" />
-                    <div>
-                      <div className="font-medium">{item.month}: {item.theme}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">({item.focus})</div>
-                    </div>
+                  <div key={i} className="pb-3 mb-3 border-b border-gray-100 dark:border-zinc-800 last:border-0">
+                    <div className="font-medium mb-1">{item.month}</div>
+                    <div className="text-gray-700 dark:text-gray-300">{item.theme}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-500 mt-1">{item.focus}</div>
                   </div>
                 ))}
-                <div className="text-sm text-gray-500 dark:text-gray-400 italic mt-4">
-                  Repeat with new stories/angles
+                <div className="text-xs text-gray-500 dark:text-gray-500 mt-4">
+                  → Cycle themes with fresh perspectives
                 </div>
               </div>
-            </Card>
+            </div>
           </motion.section>
 
           {/* Natural Integration */}
           <motion.section variants={itemVariants}>
-            <Card className="p-6 h-full border-0 shadow-xl bg-gradient-to-br from-gray-50 to-white dark:from-zinc-900 dark:to-zinc-800">
-              <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <Zap className="w-5 h-5 text-yellow-500" />
-                Natural Bounce AI Integration
-              </h3>
+            <div className="p-6 h-full bg-gray-50 dark:bg-zinc-900/50 rounded-lg border border-gray-200 dark:border-zinc-800">
+              <h3 className="text-lg font-semibold mb-6">Bounce AI Integration</h3>
               <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">30%</div>
+                <div className="space-y-4">
                   <div>
-                    <div className="font-medium">Direct mentions</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Customer wins, culture, differentiation</div>
+                    <div className="flex items-baseline gap-3 mb-1">
+                      <span className="text-2xl font-semibold">30%</span>
+                      <span className="font-medium">Direct mentions</span>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Customer wins, culture, differentiation</p>
+                  </div>
+                  <div>
+                    <div className="flex items-baseline gap-3 mb-1">
+                      <span className="text-2xl font-semibold">70%</span>
+                      <span className="font-medium">Pure value</span>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Product advice, industry takes, lessons learned</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">70%</div>
-                  <div>
-                    <div className="font-medium">Pure value</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Product advice, industry takes, lessons learned</div>
-                  </div>
-                </div>
-                <div className="pt-3 mt-3 border-t border-gray-200 dark:border-zinc-700">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Always position Bounce as the "simple" alternative in a complex AI world
+                <div className="pt-4 mt-4 border-t border-gray-200 dark:border-zinc-800">
+                  <p className="text-sm text-gray-500 dark:text-gray-500 italic">
+                    Position Bounce as the simple alternative in a complex AI world
                   </p>
                 </div>
               </div>
-            </Card>
+            </div>
           </motion.section>
         </div>
 
         {/* CTA */}
-        <motion.section variants={itemVariants} className="mt-12">
-          <Card className="p-8 border-0 shadow-xl bg-gradient-to-r from-black to-gray-800 dark:from-white dark:to-gray-100">
-            <div className="text-center text-white dark:text-black">
-              <h3 className="text-2xl font-bold mb-3">Ready to generate content?</h3>
-              <p className="mb-6 opacity-90">Turn this strategy into actual LinkedIn posts</p>
+        <motion.section variants={itemVariants}>
+          <div className="border-t border-gray-200 dark:border-zinc-800 pt-12">
+            <div className="text-center">
+              <h3 className="text-2xl font-semibold mb-3">Ready to create content?</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-8">Turn this strategy into LinkedIn posts that resonate</p>
               <div className="flex gap-4 justify-center">
                 <Button 
                   size="lg" 
-                  className="bg-white text-black hover:bg-gray-100 dark:bg-black dark:text-white dark:hover:bg-gray-900"
+                  className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 px-8"
                 >
                   Start Creating
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -360,13 +325,13 @@ const Strategy = () => {
                 <Button 
                   size="lg" 
                   variant="outline"
-                  className="border-white text-white hover:bg-white/10 dark:border-black dark:text-black dark:hover:bg-black/10"
+                  className="border-gray-300 dark:border-zinc-700 px-8"
                 >
-                  View Ideas
+                  View Examples
                 </Button>
               </div>
             </div>
-          </Card>
+          </div>
         </motion.section>
       </motion.main>
     </div>

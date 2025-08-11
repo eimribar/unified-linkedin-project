@@ -48,10 +48,10 @@ const SwipeCard = ({ text, author, onSwipe, image, tags, scheduledDate }: SwipeC
   const progress = (count / CHARACTER_LIMIT) * 100;
   const remaining = CHARACTER_LIMIT - count;
   
-  // Get user info from authenticated context
-  const userName = user?.profile?.fullName || user?.email?.split('@')[0] || "User";
-  const userHeadline = user?.profile?.headline || user?.profile?.jobTitle || "Professional";
-  const userAvatar = user?.profile?.profilePicHighQuality || user?.profile?.profilePic;
+  // Get user info from authenticated context - fallback to Amnon Cohen sample
+  const userName = user?.profile?.fullName || "Amnon Cohen";
+  const userHeadline = user?.profile?.headline || "Product Leader | Innovation & Strategy | Impact & Goals (OKRs) | Coach & Mentor";
+  const userAvatar = user?.profile?.profilePicHighQuality || user?.profile?.profilePic || "https://media.licdn.com/dms/image/v2/D4D03AQFVlSGlwEFO-w/profile-displayphoto-crop_800_800/B4DZfF1qBOHAAI-/0/1751370868423?e=1757548800&v=beta&t=rbBDnJfbwbw71odeLIVqwY39DJiK6HWrt7Uif0dfsjM";
   const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   // Format text with line breaks preserved
