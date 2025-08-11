@@ -90,6 +90,19 @@ const SignUp = () => {
           zIndex: 0
         }}
       />
+      {/* Bottom left gradient */}
+      <div 
+        className="absolute pointer-events-none"
+        style={{
+          width: '600px',
+          height: '600px',
+          left: '-300px',
+          bottom: '-300px',
+          background: 'radial-gradient(70% 70% at 20% 80%, rgba(240, 203, 140, 0.35) 0%, rgba(111, 121, 84, 0.25) 40%, rgba(218, 240, 227, 0.15) 70%, rgba(255, 255, 255, 0) 100%)',
+          filter: 'blur(60px)',
+          zIndex: 0
+        }}
+      />
       
       <SEO
         title="Sign Up – LinkedIn Content Portal"
