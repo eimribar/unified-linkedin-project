@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Using the same Supabase instance as the ghostwriter portal
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://ifwscuvbtdokljwwbvex.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlmd3NjdXZidGRva2xqd3didmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQwMTY1NjcsImV4cCI6MjA0OTU5MjU2N30.EwJU3QCKZo0iLh6xBbMTW5XWVY2e1gJCy5AWDHJsYrM';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Supabase credentials not configured. Database features will not work.');
