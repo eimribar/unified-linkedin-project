@@ -16,6 +16,7 @@ import Analytics from "./pages/Analytics";
 import UserAnalytics from "./pages/UserAnalytics";
 import Onboarding from "./pages/Onboarding";
 import SignUp from "./pages/SignUp";
+import SignIn from "./pages/SignIn";
 import Welcome from "./pages/Welcome";
 import WelcomeComplete from "./pages/WelcomeComplete";
 import ContentIdeas from "./pages/ContentIdeas";
@@ -37,8 +38,9 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Public routes - Sign up flow */}
+              {/* Public routes - Sign up/in flow */}
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/signin" element={<SignIn />} />
               
               {/* Onboarding flow - requires auth but not completed onboarding */}
               <Route path="/welcome" element={

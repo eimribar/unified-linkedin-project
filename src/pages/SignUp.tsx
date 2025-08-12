@@ -219,10 +219,7 @@ const SignUp = () => {
                 <Button
                   variant="link"
                   className="p-0 h-auto font-normal"
-                  onClick={() => {
-                    // For demo, just navigate to profile
-                    navigate('/profile');
-                  }}
+                  onClick={() => navigate('/signin')}
                 >
                   Sign in here
                 </Button>
