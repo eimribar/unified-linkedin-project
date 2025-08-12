@@ -41,7 +41,7 @@ const WelcomeComplete = () => {
   const userName = user?.profile?.fullName || "Amnon Cohen";
 
   return (
-    <div className="relative min-h-screen bg-background text-foreground">
+    <div className="relative min-h-screen bg-white text-zinc-900">
       <SEO 
         title="Welcome to Your Portal – LinkedIn Content Engine" 
         description="Your personalized LinkedIn content portal is ready" 
@@ -98,17 +98,17 @@ const WelcomeComplete = () => {
             transition={{ delay: 0.6 }}
             className="grid grid-cols-3 gap-6 mb-8 py-6 border-y border-border"
           >
-            <div>
-              <div className="text-2xl font-bold text-zinc-900">10</div>
-              <div className="text-sm text-muted-foreground">Stories Captured</div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-zinc-900">10</div>
+              <div className="text-sm text-zinc-600 mt-1">Stories Captured</div>
             </div>
-            <div>
-              <div className="text-2xl font-bold text-zinc-900">6</div>
-              <div className="text-sm text-muted-foreground">Content Pillars</div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-zinc-900">6</div>
+              <div className="text-sm text-zinc-600 mt-1">Content Pillars</div>
             </div>
-            <div>
-              <div className="text-2xl font-bold text-zinc-900">∞</div>
-              <div className="text-sm text-muted-foreground">Post Ideas</div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-zinc-900">∞</div>
+              <div className="text-sm text-zinc-600 mt-1">Post Ideas</div>
             </div>
           </motion.div>
 
@@ -144,14 +144,13 @@ const WelcomeComplete = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
           >
-            <Button
+            <button
               onClick={handleContinue}
-              size="lg"
-              className="px-8 py-6 text-base bg-zinc-900 text-white hover:bg-zinc-800"
+              className="px-8 py-4 text-base font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               Enter Your Portal
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+              <ArrowRight className="h-5 w-5" />
+            </button>
           </motion.div>
 
           {/* Progress dots - all filled */}
