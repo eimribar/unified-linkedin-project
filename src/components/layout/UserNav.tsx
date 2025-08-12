@@ -90,11 +90,17 @@ const UserNav = () => {
           <NavLink to="/profile" className={navClass} end>
             Profile
           </NavLink>
+          <NavLink to="/content-lake" className={navClass}>
+            Lake
+          </NavLink>
           <NavLink to="/strategy" className={navClass}>
             Strategy
           </NavLink>
           <NavLink to="/ideas" className={navClass}>
             Ideas
+          </NavLink>
+          <NavLink to="/generate" className={navClass}>
+            Generate
           </NavLink>
           <NavLink to="/approve" className={navClass}>
             Approvals

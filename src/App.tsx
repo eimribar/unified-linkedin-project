@@ -7,12 +7,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Lake from "./pages/Lake";
-import Ideas from "./pages/Ideas";
-import Generate from "./pages/Generate";
 import Approvals from "./pages/Approvals";
-import Schedule from "./pages/Schedule";
-import Analytics from "./pages/Analytics";
 import UserAnalytics from "./pages/UserAnalytics";
 import Onboarding from "./pages/Onboarding";
 import SignUp from "./pages/SignUp";
@@ -20,9 +15,9 @@ import SignIn from "./pages/SignIn";
 import Welcome from "./pages/Welcome";
 import WelcomeComplete from "./pages/WelcomeComplete";
 import ContentIdeas from "./pages/ContentIdeas";
-import MainLayout from "./layouts/MainLayout";
+import ContentLake from "./pages/ContentLake";
+import ContentGeneration from "./pages/ContentGeneration";
 import OnboardingLayout from "./layouts/OnboardingLayout";
-import ImportPage from "./pages/Import";
 import Strategy from "./pages/Strategy";
 import UserLayout from "./layouts/UserLayout";
 import Profile from "./pages/Profile";
@@ -86,15 +81,16 @@ const App = () => (
                   <UserLayout><ContentIdeas /></UserLayout>
                 </ProtectedRoute>
               } />
-              
-              {/* Service Provider Routes - Commented out for user portal deployment */}
-              {/* <Route path="/lake" element={<MainLayout><Lake /></MainLayout>} />
-              <Route path="/ideas" element={<MainLayout><Ideas /></MainLayout>} />
-              <Route path="/generate" element={<MainLayout><Generate /></MainLayout>} />
-              <Route path="/import" element={<MainLayout><ImportPage /></MainLayout>} />
-              <Route path="/schedule" element={<MainLayout><Schedule /></MainLayout>} />
-              <Route path="/analytics" element={<MainLayout><Analytics /></MainLayout>} /> */}
-              
+              <Route path="/content-lake" element={
+                <ProtectedRoute>
+                  <UserLayout><ContentLake /></UserLayout>
+                </ProtectedRoute>
+              } />
+              <Route path="/generate" element={
+                <ProtectedRoute>
+                  <UserLayout><ContentGeneration /></UserLayout>
+                </ProtectedRoute>
+              } />
               {/* Redirects */}
               <Route path="/approvals" element={<Navigate to="/approve" replace />} />
               <Route path="/" element={<Navigate to="/signup" replace />} />
