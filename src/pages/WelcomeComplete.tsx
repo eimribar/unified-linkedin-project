@@ -65,7 +65,7 @@ const WelcomeComplete = () => {
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             className="mb-8"
           >
-            <div className="w-24 h-24 mx-auto rounded-full bg-gradient-brand flex items-center justify-center shadow-2xl">
+            <div className="w-24 h-24 mx-auto rounded-full bg-zinc-900 flex items-center justify-center shadow-lg">
               <Trophy className="w-12 h-12 text-white" />
             </div>
           </motion.div>
@@ -75,7 +75,7 @@ const WelcomeComplete = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="text-4xl md:text-5xl font-semibold tracking-tight mb-4 text-gradient-brand"
+            className="text-4xl md:text-5xl font-semibold tracking-tight mb-4 text-zinc-900"
           >
             Brilliant Work, {userName}!
           </motion.h1>

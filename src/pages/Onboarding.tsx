@@ -195,7 +195,7 @@ const Onboarding = () => {
         }} transition={{
           duration: 0.25,
           ease: "easeOut"
-        }} className="mb-4 sm:mb-8 text-3xl font-semibold tracking-tight text-center sm:text-3xl text-gradient-brand mx-0 px-0 py-[30px]">
+        }} className="mb-4 sm:mb-8 text-3xl font-semibold tracking-tight text-center sm:text-3xl text-zinc-900 mx-0 px-0 py-[30px]">
             {current.prompt}
           </motion.h1>
         </AnimatePresence>
