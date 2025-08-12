@@ -121,7 +121,7 @@ const Onboarding = () => {
       });
     }
 
-    // Advance with a smooth transition small delay to let vanish effect start
+    // Advance with a delay to let vanish effect complete
     setTimeout(() => {
       if (step < total - 1) {
         setStep(s => s + 1);
@@ -129,7 +129,7 @@ const Onboarding = () => {
         // All questions answered, save and complete
         handleCompletion();
       }
-    }, 150);
+    }, 800); // Increased to allow full vanish animation
   };
 
   const handleCompletion = () => {

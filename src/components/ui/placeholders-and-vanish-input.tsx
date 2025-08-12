@@ -142,7 +142,7 @@ export function PlaceholdersAndVanishInput({
           });
         }
         if (newDataRef.current.length > 0) {
-          animateFrame(pos - 8);
+          animateFrame(pos - 6); // Slightly slower for smoother animation
         } else {
           setValue("");
           setAnimating(false);
