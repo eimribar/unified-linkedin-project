@@ -41,6 +41,7 @@ const App = () => (
               {/* Public routes - Sign up/in flow */}
               <Route path="/signup" element={<SignUp />} />
               <Route path="/signin" element={<SignIn />} />
+              {/* Force rebuild: Sign-in component added 2024 */}
               
               {/* Onboarding flow - requires auth but not completed onboarding */}
               <Route path="/welcome" element={
@@ -96,7 +97,7 @@ const App = () => (
               
               {/* Redirects */}
               <Route path="/approvals" element={<Navigate to="/approve" replace />} />
-              <Route path="/" element={<Navigate to="/signup" replace />} />
+              <Route path="/" element={<Navigate to="/signin" replace />} />
               
               {/* Fallback for unknown routes */}
               <Route path="*" element={<Navigate to="/signup" replace />} />
