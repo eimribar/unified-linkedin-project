@@ -98,7 +98,7 @@ const Welcome = () => {
             transition={{ delay: 0.6 }}
             className="mt-12 flex justify-center gap-2"
           >
-            <div className="w-2 h-2 rounded-full bg-gradient-brand" />
+            <div className="w-2 h-2 rounded-full bg-zinc-600" />
             <div className="w-2 h-2 rounded-full bg-muted" />
             <div className="w-2 h-2 rounded-full bg-muted" />
           </motion.div>

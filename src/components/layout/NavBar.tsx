@@ -10,7 +10,7 @@ const NavBar = () => {
       aria-label="Primary Navigation">
       <nav className="mx-auto max-w-[1440px] h-14 md:h-16 px-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div aria-hidden className="h-6 w-6 rounded-md bg-gradient-brand" />
+          <div aria-hidden className="h-6 w-6 rounded-md bg-zinc-900" />
           <Link to="/" aria-label="LinkedIn Content Engine" className="text-sm font-semibold tracking-tight">
             LinkedIn Content Engine
           </Link>

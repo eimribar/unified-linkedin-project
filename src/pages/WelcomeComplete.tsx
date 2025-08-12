@@ -99,15 +99,15 @@ const WelcomeComplete = () => {
             className="grid grid-cols-3 gap-6 mb-8 py-6 border-y border-border"
           >
             <div>
-              <div className="text-2xl font-bold text-gradient-brand">10</div>
+              <div className="text-2xl font-bold text-zinc-900">10</div>
               <div className="text-sm text-muted-foreground">Stories Captured</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-gradient-brand">6</div>
+              <div className="text-2xl font-bold text-zinc-900">6</div>
               <div className="text-sm text-muted-foreground">Content Pillars</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-gradient-brand">∞</div>
+              <div className="text-2xl font-bold text-zinc-900">∞</div>
               <div className="text-sm text-muted-foreground">Post Ideas</div>
             </div>
           </motion.div>
@@ -120,20 +120,20 @@ const WelcomeComplete = () => {
             className="mb-8 text-left bg-muted/30 rounded-lg p-6"
           >
             <h3 className="font-medium mb-3 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-warning-amber" />
+              <Sparkles className="w-5 h-5 text-amber-500" />
               What's Next?
             </h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-success-green mt-0.5 flex-shrink-0" />
+                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                 <span>View your complete LinkedIn profile and story</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-success-green mt-0.5 flex-shrink-0" />
+                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                 <span>Explore your personalized content strategy</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-success-green mt-0.5 flex-shrink-0" />
+                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                 <span>Review and approve your content queue</span>
               </li>
             </ul>
@@ -147,7 +147,7 @@ const WelcomeComplete = () => {
             <Button
               onClick={handleContinue}
               size="lg"
-              className="px-8 py-6 text-base bg-gradient-brand hover:opacity-90"
+              className="px-8 py-6 text-base bg-zinc-900 text-white hover:bg-zinc-800"
             >
               Enter Your Portal
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -161,9 +161,9 @@ const WelcomeComplete = () => {
             transition={{ delay: 0.9 }}
             className="mt-12 flex justify-center gap-2"
           >
-            <div className="w-2 h-2 rounded-full bg-gradient-brand" />
-            <div className="w-2 h-2 rounded-full bg-gradient-brand" />
-            <div className="w-2 h-2 rounded-full bg-gradient-brand" />
+            <div className="w-2 h-2 rounded-full bg-zinc-900" />
+            <div className="w-2 h-2 rounded-full bg-zinc-600" />
+            <div className="w-2 h-2 rounded-full bg-zinc-400" />
           </motion.div>
         </motion.div>
       </main>
