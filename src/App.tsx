@@ -97,7 +97,7 @@ const App = () => (
               
               {/* Redirects */}
               <Route path="/approvals" element={<Navigate to="/approve" replace />} />
-              <Route path="/" element={<Navigate to="/signin" replace />} />
+              <Route path="/" element={<Navigate to="/signup" replace />} />
               
               {/* Fallback for unknown routes */}
               <Route path="*" element={<Navigate to="/signup" replace />} />
