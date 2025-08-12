@@ -15,7 +15,8 @@ import {
   Clock,
   Star,
   CheckCircle,
-  Sparkles
+  Sparkles,
+  Users
 } from "lucide-react";
 
 const Strategy = () => {
@@ -79,12 +80,11 @@ const Strategy = () => {
 
         {/* Core Narrative */}
         <motion.section variants={itemVariants} className="mb-20">
-          <div className="bg-gray-50 dark:bg-zinc-900/50 rounded-xl p-8 border border-gray-200 dark:border-zinc-800 relative">
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-500 via-amber-500 to-green-500 rounded-t-xl" />
+          <div className="bg-white rounded-xl p-8 border border-zinc-200 relative">
             <div className="max-w-3xl mx-auto text-center">
-              <Sparkles className="w-8 h-8 text-gray-400 mx-auto mb-4" />
+              <Sparkles className="w-8 h-8 text-zinc-400 mx-auto mb-4" />
               <h2 className="text-xl font-semibold mb-4">Core Narrative</h2>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
+              <p className="text-zinc-700 leading-relaxed text-lg">
                 Ex-Microsoft PM who learned the hard way that simple beats complex. Ships daily at Bounce AI. 
                 Believes in data over opinions.
               </p>
@@ -96,14 +96,14 @@ const Strategy = () => {
         <motion.section variants={itemVariants} className="mb-20">
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-2">Content Pillars</h2>
-            <p className="text-gray-600 dark:text-gray-400">Your unique angles and perspectives</p>
+            <p className="text-zinc-600">Your unique angles and perspectives</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 title: "Product Leadership",
-                icon: <TrendingUp className="w-5 h-5 text-gray-600 dark:text-gray-400" />,
+                icon: <TrendingUp className="w-5 h-5 text-zinc-600" />,
                 topics: [
                   "Why I killed our personalization engine (failure story)",
                   "The 'mom test' for every feature decision",
@@ -113,7 +113,7 @@ const Strategy = () => {
               },
               {
                 title: "Team & Culture",
-                icon: <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" />,
+                icon: <Users className="w-5 h-5 text-zinc-600" />,
                 topics: [
                   "Why our engineers talk directly to customers",
                   "Breaking down the wall between product and engineering",
@@ -123,7 +123,7 @@ const Strategy = () => {
               },
               {
                 title: "AI Industry",
-                icon: <Zap className="w-5 h-5 text-gray-600 dark:text-gray-400" />,
+                icon: <Zap className="w-5 h-5 text-zinc-600" />,
                 topics: [
                   "AI will be invisible in 3 years (here's why)",
                   "Stop advertising 'AI-powered' - it's already cringe",
@@ -133,7 +133,7 @@ const Strategy = () => {
               },
               {
                 title: "Product Craft",
-                icon: <Target className="w-5 h-5 text-gray-600 dark:text-gray-400" />,
+                icon: <Target className="w-5 h-5 text-zinc-600" />,
                 topics: [
                   "User research is overrated (controversial take)",
                   "Production data > 100 user interviews",
@@ -143,7 +143,7 @@ const Strategy = () => {
               },
               {
                 title: "Career Growth",
-                icon: <Lightbulb className="w-5 h-5 text-gray-600 dark:text-gray-400" />,
+                icon: <Lightbulb className="w-5 h-5 text-zinc-600" />,
                 topics: [
                   "My $10M mistake taught me this",
                   "From Microsoft bureaucracy to startup speed",
@@ -153,7 +153,7 @@ const Strategy = () => {
               },
               {
                 title: "Bounce AI Stories",
-                icon: <Star className="w-5 h-5 text-gray-600 dark:text-gray-400" />,
+                icon: <Star className="w-5 h-5 text-zinc-600" />,
                 topics: [
                   "We ship to production daily (here's how)",
                   "Our customer saved 15 hours/week with one simple change",
@@ -167,17 +167,16 @@ const Strategy = () => {
                 whileHover={{ y: -2 }}
                 transition={{ duration: 0.2 }}
               >
-                <div className="group h-full p-6 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 hover:shadow-lg transition-all duration-200 relative overflow-hidden">
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-amber-500 to-green-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="group h-full p-6 bg-white rounded-xl border border-zinc-200 hover:border-zinc-300 hover:shadow-sm transition-all duration-200 relative overflow-hidden">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 rounded-md bg-gray-100 dark:bg-zinc-800">
+                    <div className="p-2 rounded-md bg-zinc-100">
                       {pillar.icon}
                     </div>
                     <h3 className="font-semibold">{pillar.title}</h3>
                   </div>
                   <ul className="space-y-2">
                     {pillar.topics.map((topic, i) => (
-                      <li key={i} className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                      <li key={i} className="text-sm text-zinc-600 leading-relaxed">
                         • {topic}
                       </li>
                     ))}
@@ -192,7 +191,7 @@ const Strategy = () => {
         <motion.section variants={itemVariants} className="mb-20">
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-2">Weekly Content Mix</h2>
-            <p className="text-gray-600 dark:text-gray-400">Strategic posting schedule for maximum engagement</p>
+            <p className="text-zinc-600">Strategic posting schedule for maximum engagement</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -203,11 +202,10 @@ const Strategy = () => {
               { day: "Thursday", type: "Bounce AI Win", example: "Our customer saved 15 hrs/week. Not from AI, from simplicity" },
               { day: "Friday", type: "Industry Prediction", example: "In 2027, 'AI-powered' will sound as dated as 'cyber' does now" }
             ].map((item, index) => (
-              <div key={index} className="p-4 bg-gray-50 dark:bg-zinc-900/50 rounded-lg relative">
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-500 via-amber-500 to-green-500 opacity-30" />
-                <div className="text-xs font-medium text-gray-500 dark:text-gray-500 mb-1">{item.day}</div>
+              <div key={index} className="p-4 bg-zinc-50 rounded-lg border border-zinc-100">
+                <div className="text-xs font-medium text-zinc-500 mb-1">{item.day}</div>
                 <h4 className="font-medium mb-2">{item.type}</h4>
-                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{item.example}</p>
+                <p className="text-xs text-zinc-600 leading-relaxed">{item.example}</p>
               </div>
             ))}
           </div>
@@ -217,7 +215,7 @@ const Strategy = () => {
         <motion.section variants={itemVariants} className="mb-20">
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-2">Hook Templates</h2>
-            <p className="text-gray-600 dark:text-gray-400">Proven opening lines that capture attention</p>
+            <p className="text-zinc-600">Proven opening lines that capture attention</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -243,9 +241,8 @@ const Strategy = () => {
                 template: "0 to 40% daily active users in 3 months. One simple change:"
               }
             ].map((hook, index) => (
-              <div key={index} className="p-5 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 hover:shadow-md transition-all relative">
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-amber-500 to-green-500 rounded-l-lg" />
-                <h4 className="font-medium mb-3 text-sm uppercase tracking-wide text-gray-600 dark:text-gray-400">
+              <div key={index} className="p-5 bg-white rounded-xl border border-zinc-200 hover:border-zinc-300 hover:shadow-sm transition-all relative">
+                <h4 className="font-medium mb-3 text-sm uppercase tracking-wide text-zinc-600">
                   {hook.name}
                 </h4>
                 <p className="text-gray-700 dark:text-gray-300 italic leading-relaxed">

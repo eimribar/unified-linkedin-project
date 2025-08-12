@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PortalSwitcher from "./components/PortalSwitcher";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Approvals from "./pages/Approvals";
@@ -21,6 +22,7 @@ import OnboardingLayout from "./layouts/OnboardingLayout";
 import Strategy from "./pages/Strategy";
 import UserLayout from "./layouts/UserLayout";
 import Profile from "./pages/Profile";
+import Test from "./pages/Test";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +36,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               {/* Public routes - Sign up/in flow */}
+              <Route path="/test" element={<Test />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/signin" element={<SignIn />} />
               {/* Force rebuild: Sign-in component added 2024 */}
@@ -99,6 +102,7 @@ const App = () => (
               <Route path="*" element={<Navigate to="/signup" replace />} />
             </Routes>
           </BrowserRouter>
+          <PortalSwitcher />
         </>
       </TooltipProvider>
     </AuthProvider>

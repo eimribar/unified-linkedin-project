@@ -72,9 +72,7 @@
     --duration-normal: 300ms;
     --duration-slow: 500ms;
 
-    /* Brand gradient tokens */
-    --gradient-brand: linear-gradient(135deg, hsl(var(--accent) / 0.96) 0%, hsl(var(--warning-amber) / 0.96) 45%, hsl(var(--success-green) / 0.96) 100%);
-    --gradient-brand-soft: linear-gradient(135deg, hsl(var(--accent) / 0.12), hsl(var(--warning-amber) / 0.12), hsl(var(--success-green) / 0.12));
+    /* Removed gradient tokens - using clean zinc design instead */
 
     /* Elevation — multi-layered premium shadows */
     --shadow-0: none;

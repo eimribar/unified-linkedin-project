@@ -302,18 +302,16 @@ const ContentIdeas = () => {
           className="mb-12"
         >
           <div 
-            className={`relative rounded-xl border ${isDragging ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-950/20' : 'border-gray-200 dark:border-zinc-800'} transition-all`}
+            className={`relative rounded-xl border ${isDragging ? 'border-zinc-400 bg-zinc-50' : 'border-zinc-200'} transition-all`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
-            {/* Gradient accent line */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-500 via-amber-500 to-green-500 rounded-t-xl" />
             
             <div className="p-6">
               {isDragging ? (
                 <div className="py-12 text-center">
-                  <Upload className="w-12 h-12 mx-auto mb-4 text-blue-500" />
+                  <Upload className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
                   <p className="text-lg font-medium">Drop files here</p>
                   <p className="text-sm text-muted-foreground mt-1">PDFs, documents, and more</p>
                 </div>
@@ -331,13 +329,13 @@ const ContentIdeas = () => {
                       onClick={() => setIsStarredInput(!isStarredInput)}
                       variant="ghost"
                       size="icon"
-                      className={isStarredInput ? 'text-amber-500' : 'text-gray-400'}
+                      className={isStarredInput ? 'text-amber-500' : 'text-zinc-400'}
                     >
                       <Star className={`w-5 h-5 ${isStarredInput ? 'fill-current' : ''}`} />
                     </Button>
                     <Button
                       onClick={handleAddIdea}
-                      className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100"
+                      className="bg-zinc-900 text-white hover:bg-zinc-800"
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       Add

@@ -1,57 +1,61 @@
-import { SignUp2 } from "@/components/ui/clean-minimal-sign-up";
-import SEO from "@/components/seo/SEO";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const SignUp = () => {
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const navigate = useNavigate();
+  const { signUp } = useAuth();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email && name) {
+      signUp(email);
+      navigate("/welcome");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
-      <SEO
-        title="Sign Up – LinkedIn Content Portal"
-        description="Join your personalized LinkedIn content management portal"
-        canonicalPath="/signup"
-      />
-      
-      {/* Background gradient effects - organic, natural colors */}
-      <div 
-        className="absolute pointer-events-none"
-        style={{
-          width: '981px',
-          height: '981px',
-          left: '-428px',
-          top: '544px',
-          background: 'radial-gradient(76.83% 76.83% at 13.45% 100%, rgba(111, 121, 84, 0.4) 0%, rgba(107, 216, 149, 0.4) 49.03%, rgba(240, 203, 140, 0.4) 67.3%, rgba(218, 240, 227, 0.4) 86.81%, rgba(255, 255, 255, 0.4) 100%)',
-          filter: 'blur(58px)',
-          zIndex: 0
-        }}
-      />
-      {/* Second gradient for depth */}
-      <div 
-        className="absolute pointer-events-none"
-        style={{
-          width: '800px',
-          height: '800px',
-          right: '-300px',
-          top: '-200px',
-          background: 'radial-gradient(50% 50% at 50% 50%, rgba(107, 216, 149, 0.3) 0%, rgba(240, 203, 140, 0.2) 50%, rgba(255, 255, 255, 0) 100%)',
-          filter: 'blur(80px)',
-          zIndex: 0
-        }}
-      />
-      {/* Bottom left gradient */}
-      <div 
-        className="absolute pointer-events-none"
-        style={{
-          width: '600px',
-          height: '600px',
-          left: '-300px',
-          bottom: '-300px',
-          background: 'radial-gradient(70% 70% at 20% 80%, rgba(240, 203, 140, 0.35) 0%, rgba(111, 121, 84, 0.25) 40%, rgba(218, 240, 227, 0.15) 70%, rgba(255, 255, 255, 0) 100%)',
-          filter: 'blur(60px)',
-          zIndex: 0
-        }}
-      />
-      
-      <div className="relative z-10">
-        <SignUp2 />
+    <div className="min-h-screen bg-white text-zinc-900 flex items-center justify-center">
+      <div className="max-w-md w-full p-8">
+        <h1 className="text-3xl font-bold mb-8 text-center">Sign Up</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900"
+              placeholder="Your name"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900"
+              placeholder="your@email.com"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full py-3 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition-colors"
+          >
+            Sign Up
+          </button>
+        </form>
+        <p className="mt-4 text-center text-sm text-zinc-600">
+          Already have an account?{" "}
+          <a href="/signin" className="text-zinc-900 hover:underline">
+            Sign In
+          </a>
+        </p>
       </div>
     </div>
   );

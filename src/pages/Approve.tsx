@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 const Approve = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground premium-gradient-bg">
+    <div className="min-h-screen bg-white text-zinc-900">
       <SEO
         title="Approve – LinkedIn Content Engine"
         description="Approve final LinkedIn posts with confidence and clarity."

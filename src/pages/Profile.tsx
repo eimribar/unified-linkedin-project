@@ -88,8 +88,8 @@ const Profile = () => {
           {/* Left: LinkedIn profile */}
           <div className="lg:col-span-2 space-y-6">
             {/* Header card */}
-            <section className="border-gradient-brand rounded-2xl overflow-hidden">
-              <div className="h-36 bg-gradient-brand-soft" aria-hidden />
+            <section className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
+              <div className="h-36 bg-zinc-100" aria-hidden />
               <div className="p-6 relative">
                 <img
                   src={p.profilePicHighQuality || p.profilePic || ""}
@@ -111,12 +111,12 @@ const Profile = () => {
 
             {/* About */}
             {p.about && (
-              <section className="border-gradient-brand rounded-2xl p-6">
+              <section className="bg-white rounded-xl border border-zinc-200 p-6">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-medium tracking-tight">About</h2>
                   <Dialog open={aboutOpen} onOpenChange={setAboutOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="ghost" size="sm">Edit</Button>
+                      <Button variant="outline" size="sm" className="border-zinc-200 text-zinc-600 hover:bg-zinc-50">Edit</Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
@@ -144,12 +144,12 @@ const Profile = () => {
 
             {/* Experience */}
             {p.experiences?.length ? (
-              <section className="border-gradient-brand rounded-2xl p-6">
+              <section className="bg-white rounded-xl border border-zinc-200 p-6">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-medium tracking-tight">Experience</h2>
                   <Dialog open={expOpen} onOpenChange={setExpOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="ghost" size="sm">Add</Button>
+                      <Button variant="outline" size="sm" className="border-zinc-200 text-zinc-600 hover:bg-zinc-50">Add</Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
@@ -201,7 +201,7 @@ const Profile = () => {
                       {exp.logo ? (
                         <img src={exp.logo} alt={`${exp.subtitle || exp.title} logo`} className="h-10 w-10 rounded-md object-cover" loading="lazy" />
                       ) : (
-                        <div className="h-10 w-10 rounded-md bg-muted" />
+                        <div className="h-10 w-10 rounded-md bg-zinc-100" />
                       )}
                       <div>
                         <div className="font-medium text-sm md:text-base text-foreground">{exp.title}</div>
@@ -216,7 +216,7 @@ const Profile = () => {
 
             {/* Education */}
             {p.educations?.length ? (
-              <section className="border-gradient-brand rounded-2xl p-6">
+              <section className="bg-white rounded-xl border border-zinc-200 p-6">
                 <h2 className="text-lg font-medium tracking-tight">Education</h2>
                 <ul className="mt-3 space-y-4">
                   {p.educations.map((edu, idx) => (
@@ -224,7 +224,7 @@ const Profile = () => {
                       {edu.logo ? (
                         <img src={edu.logo} alt={`${edu.title} logo`} className="h-10 w-10 rounded-md object-cover" loading="lazy" />
                       ) : (
-                        <div className="h-10 w-10 rounded-md bg-muted" />
+                        <div className="h-10 w-10 rounded-md bg-zinc-100" />
                       )}
                       <div>
                         <div className="font-medium text-sm md:text-base text-foreground">{edu.title}</div>
@@ -239,12 +239,12 @@ const Profile = () => {
 
             {/* Skills */}
             {skills.length ? (
-              <section className="border-gradient-brand rounded-2xl p-6">
+              <section className="bg-white rounded-xl border border-zinc-200 p-6">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-medium tracking-tight">Top skills</h2>
                   <Dialog open={skillOpen} onOpenChange={setSkillOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="ghost" size="sm">Add</Button>
+                      <Button variant="outline" size="sm" className="border-zinc-200 text-zinc-600 hover:bg-zinc-50">Add</Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
@@ -271,7 +271,7 @@ const Profile = () => {
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {skills.map((s, i) => (
-                    <Badge key={`${s}-${i}`} variant="secondary" className="rounded-full px-3 py-1 text-xs">
+                    <Badge key={`${s}-${i}`} className="bg-zinc-100 text-zinc-700 hover:bg-zinc-200 rounded-full px-3 py-1 text-xs">
                       {s}
                     </Badge>
                   ))}
@@ -287,7 +287,7 @@ const Profile = () => {
                 <h2 className="text-lg font-medium tracking-tight">Your story</h2>
                 <Dialog open={newStoryOpen} onOpenChange={setNewStoryOpen}>
                   <DialogTrigger asChild>
-                    <Button variant="ghost" size="sm">Add</Button>
+                    <Button variant="outline" size="sm" className="border-zinc-200 text-zinc-600 hover:bg-zinc-50">Add</Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
@@ -334,7 +334,7 @@ const Profile = () => {
                     <div className="text-sm font-medium text-foreground mb-2">{cat}</div>
                     <ol className="space-y-3">
                       {items.map((item) => (
-                        <li key={item.id} className="rounded-xl bg-secondary/40 p-4">
+                        <li key={item.id} className="rounded-xl bg-zinc-50 border border-zinc-100 p-4">
                           <div className="flex items-start justify-between gap-2">
                             <div className="text-sm font-medium text-foreground">{item.id}. {item.question}</div>
                             <Dialog open={storyOpenIdx === item.id} onOpenChange={(open) => !open && setStoryOpenIdx(null)}>

@@ -45,8 +45,8 @@ const Welcome = () => {
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             className="mb-8"
           >
-            <div className="w-20 h-20 mx-auto rounded-full bg-gradient-brand-soft flex items-center justify-center">
-              <Sparkles className="w-10 h-10 text-foreground/70" />
+            <div className="w-20 h-20 mx-auto rounded-full bg-zinc-100 flex items-center justify-center">
+              <Sparkles className="w-10 h-10 text-zinc-600" />
             </div>
           </motion.div>
 

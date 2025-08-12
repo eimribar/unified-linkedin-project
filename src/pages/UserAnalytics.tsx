@@ -35,7 +35,7 @@ const StatCard = ({
   const trendColor = trend === "up" ? "text-green-500" : trend === "down" ? "text-red-500" : "text-muted-foreground";
   
   return (
-    <Card className="border-gradient-brand">
+    <Card className="bg-white border-zinc-200">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         <Icon className="h-4 w-4 text-muted-foreground" />
@@ -184,7 +184,7 @@ const UserAnalytics = () => {
             </Card>
 
             {/* Content Performance Score */}
-            <Card className="border-gradient-brand">
+            <Card className="bg-white border-zinc-200">
               <CardHeader>
                 <CardTitle>Performance Score</CardTitle>
                 <CardDescription>Overall content effectiveness</CardDescription>
@@ -293,7 +293,7 @@ const UserAnalytics = () => {
 
           {/* Engagement Breakdown */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-            <Card className="border-gradient-brand">
+            <Card className="bg-white border-zinc-200">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm">Likes</CardTitle>
               </CardHeader>
@@ -301,7 +301,7 @@ const UserAnalytics = () => {
                 <div className="text-2xl font-bold">{engagementMetrics.likes.toLocaleString()}</div>
               </CardContent>
             </Card>
-            <Card className="border-gradient-brand">
+            <Card className="bg-white border-zinc-200">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm">Comments</CardTitle>
               </CardHeader>
@@ -309,7 +309,7 @@ const UserAnalytics = () => {
                 <div className="text-2xl font-bold">{engagementMetrics.comments.toLocaleString()}</div>
               </CardContent>
             </Card>
-            <Card className="border-gradient-brand">
+            <Card className="bg-white border-zinc-200">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm">Shares</CardTitle>
               </CardHeader>
@@ -317,7 +317,7 @@ const UserAnalytics = () => {
                 <div className="text-2xl font-bold">{engagementMetrics.shares.toLocaleString()}</div>
               </CardContent>
             </Card>
-            <Card className="border-gradient-brand">
+            <Card className="bg-white border-zinc-200">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm">Profile Views</CardTitle>
               </CardHeader>
