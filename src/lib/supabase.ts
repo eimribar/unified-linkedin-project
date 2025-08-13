@@ -50,27 +50,6 @@ export interface GeneratedContent {
   idea_id?: string;
   client_id?: string;
   ghostwriter_id?: string;
-  variant_number?: number;
-  content_text: string;
-  hook?: string;
-  hashtags?: string[];
-  estimated_read_time?: number;
-  llm_provider?: string;
-  llm_model?: string;
-  generation_prompt?: string;
-  status?: 'pending' | 'approved' | 'rejected' | 'scheduled';
-  approved_at?: Date;
-  approved_by?: string;
-  rejection_reason?: string;
-  created_at: Date;
-  updated_at: Date;
-}
-
-export interface GeneratedContent {
-  id: string;
-  idea_id?: string;
-  client_id?: string;
-  ghostwriter_id?: string;
   user_id?: string;
   variant_number: number;
   content_text: string;
