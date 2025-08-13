@@ -8,15 +8,13 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PortalSwitcher from "./components/PortalSwitcher";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Approvals from "./pages/Approvals";
+import Approve from "./pages/Approve";
 import UserAnalytics from "./pages/UserAnalytics";
 import Onboarding from "./pages/Onboarding";
 import SignUp from "./pages/SignUp";
 import Welcome from "./pages/Welcome";
 import WelcomeComplete from "./pages/WelcomeComplete";
 import ContentIdeas from "./pages/ContentIdeas";
-import ContentLake from "./pages/ContentLake";
-import ContentGeneration from "./pages/ContentGeneration";
 import OnboardingLayout from "./layouts/OnboardingLayout";
 import Strategy from "./pages/Strategy";
 import UserLayout from "./layouts/UserLayout";
@@ -75,7 +73,7 @@ const App = () => (
               } />
               <Route path="/approve" element={
                 <ProtectedRoute>
-                  <UserLayout><Approvals /></UserLayout>
+                  <UserLayout><Approve /></UserLayout>
                 </ProtectedRoute>
               } />
               <Route path="/user-analytics" element={
@@ -86,16 +84,6 @@ const App = () => (
               <Route path="/ideas" element={
                 <ProtectedRoute>
                   <UserLayout><ContentIdeas /></UserLayout>
-                </ProtectedRoute>
-              } />
-              <Route path="/content-lake" element={
-                <ProtectedRoute>
-                  <UserLayout><ContentLake /></UserLayout>
-                </ProtectedRoute>
-              } />
-              <Route path="/generate" element={
-                <ProtectedRoute>
-                  <UserLayout><ContentGeneration /></UserLayout>
                 </ProtectedRoute>
               } />
               {/* Redirects */}
