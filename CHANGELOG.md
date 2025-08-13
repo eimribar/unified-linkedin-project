@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive CLAUDE.md documentation file with full technical specifications
 - CHANGELOG.md for tracking all major changes going forward
 
+## [2024.12.13] - 2024-12-13
+
+### Changed
+- User portal remains stable while database fixes applied to ghostwriter portal
+- No code changes required as database schema fixes were backend-only
+
 ## [2024.12.12] - 2024-12-12
 
 ### Added
