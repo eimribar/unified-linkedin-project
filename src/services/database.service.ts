@@ -6,6 +6,20 @@ export type { GeneratedContent };
 
 // Generated Content Service
 export const generatedContentService = {
+  async getAllAdminApproved() {
+    const { data, error } = await supabase
+      .from('generated_content')
+      .select('*')
+      .eq('status', 'admin_approved')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching admin approved content:', error);
+      return [];
+    }
+    return data || [];
+  },
+  
   async getByClient(clientId: string, status?: string) {
     let query = supabase
       .from('generated_content')

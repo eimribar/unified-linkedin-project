@@ -15,21 +15,14 @@ const Approve = () => {
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
-    if (user?.client?.id) {
-      loadPendingContent();
-    }
-  }, [user]);
+    loadPendingContent();
+  }, []);
 
   const loadPendingContent = async () => {
-    if (!user?.client?.id) return;
-    
     setLoading(true);
     try {
-      // Get content that's been approved by admin for this client
-      const allContent = await generatedContentService.getByClient(
-        user.client.id,
-        'admin_approved'
-      );
+      // Get ALL content that's been approved by admin (no client filter for testing)
+      const allContent = await generatedContentService.getAllAdminApproved();
       
       setContent(allContent);
       setCurrentIndex(0);
@@ -60,7 +53,7 @@ const Approve = () => {
       
       await scheduledPostsService.schedule(
         currentContent.id,
-        user?.client?.id || '',
+        currentContent.client_id || 'no-client', // Use content's client_id or default
         scheduledFor,
         'linkedin'
       );
