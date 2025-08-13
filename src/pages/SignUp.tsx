@@ -7,12 +7,13 @@ const SignUp = () => {
   const [name, setName] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && name && password) {
-      // Simple navigation without auth for demo
-      navigate("/welcome");
-    }
+    // For demo - just navigate directly
+    localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('userName', name);
+    navigate("/welcome");
   };
 
   return (
@@ -91,9 +92,14 @@ const SignUp = () => {
           </div>
         </div>
 
-        <p className="text-xs text-zinc-500 text-center mt-6">
-          By signing up, you agree to our Terms of Service and Privacy Policy
-        </p>
+        <div className="mt-6 text-center">
+          <Link 
+            to="/profile" 
+            className="text-sm text-zinc-500 hover:text-zinc-700 underline"
+          >
+            Skip for demo →
+          </Link>
+        </div>
       </div>
     </div>
   );

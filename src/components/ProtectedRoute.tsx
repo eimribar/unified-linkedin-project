@@ -9,12 +9,15 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children, requireOnboarding = true }: ProtectedRouteProps) => {
   const { user, isAuthenticated } = useAuth();
+  
+  // For demo - also check localStorage
+  const isAuthenticatedLocal = localStorage.getItem('isAuthenticated') === 'true';
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isAuthenticatedLocal) {
     return <Navigate to="/signup" replace />;
   }
 
-  if (requireOnboarding && !user?.hasCompletedOnboarding) {
+  if (requireOnboarding && !user?.hasCompletedOnboarding && !isAuthenticatedLocal) {
     return <Navigate to="/onboarding" replace />;
   }
 
