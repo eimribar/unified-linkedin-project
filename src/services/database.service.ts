@@ -1,6 +1,68 @@
 import { supabase } from '@/lib/supabase';
 import type { Client, ContentIdea, GeneratedContent, ScheduledPost, User } from '@/lib/supabase';
 
+// Re-export types
+export type { GeneratedContent };
+
+// Generated Content Service
+export const generatedContentService = {
+  async getByClient(clientId: string, status?: string) {
+    let query = supabase
+      .from('generated_content')
+      .select('*')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false });
+    
+    if (status) {
+      query = query.eq('status', status);
+    }
+    
+    const { data, error } = await query;
+    
+    if (error) {
+      console.error('Error fetching generated content:', error);
+      return [];
+    }
+    return data || [];
+  },
+  
+  async update(id: string, updates: Partial<GeneratedContent>) {
+    const { error } = await supabase
+      .from('generated_content')
+      .update(updates)
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Error updating content:', error);
+      return false;
+    }
+    return true;
+  }
+};
+
+// Scheduled Posts Service
+export const scheduledPostsService = {
+  async schedule(contentId: string, clientId: string, scheduledFor: Date, platform: string = 'linkedin') {
+    const { data, error } = await supabase
+      .from('scheduled_posts')
+      .insert([{
+        content_id: contentId,
+        client_id: clientId,
+        scheduled_for: scheduledFor.toISOString(),
+        platform,
+        status: 'scheduled'
+      }])
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error scheduling post:', error);
+      return null;
+    }
+    return data;
+  }
+};
+
 // Service for client users to view their content
 export const clientContentService = {
   // Get all approved content for a specific client
