@@ -19,7 +19,6 @@ const NavBar = () => {
 
           <div className="hidden md:flex items-center gap-2">
             <Link to="/import" className="px-3 py-2 rounded-full hover:bg-muted text-sm transition-colors">Import</Link>
-            <Link to="/strategy" className="px-3 py-2 rounded-full hover:bg-muted text-sm transition-colors">Strategy</Link>
             <Link to="/profile" className="px-3 py-2 rounded-full hover:bg-muted text-sm transition-colors">Profile</Link>
             <Link to="/ideas" className="px-3 py-2 rounded-full hover:bg-muted text-sm transition-colors">Ideas</Link>
             <Link to="/approve" className="px-3 py-2 rounded-full hover:bg-muted text-sm transition-colors">Approvals</Link>

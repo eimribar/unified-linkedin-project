@@ -23,6 +23,7 @@ import Strategy from "./pages/Strategy";
 import UserLayout from "./layouts/UserLayout";
 import Profile from "./pages/Profile";
 import Test from "./pages/Test";
+import Import from "./pages/Import";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +60,11 @@ const App = () => (
               } />
               
               {/* User Portal Routes - require auth and completed onboarding */}
+              <Route path="/import" element={
+                <ProtectedRoute>
+                  <UserLayout><Import /></UserLayout>
+                </ProtectedRoute>
+              } />
               <Route path="/profile" element={
                 <ProtectedRoute>
                   <UserLayout><Profile /></UserLayout>
