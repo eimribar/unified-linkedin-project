@@ -7,9 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2024.12.13.2] - 2024-12-13
+
 ### Added
+- Import page (`/import`) for content upload functionality (CSV, XLSX, JSON)
+- Admin bypass for onboarding via URL param `?admin=true` or keyboard shortcut `Ctrl+Shift+A`
+- Combined Sign Up and Sign In functionality in single page with tab switcher
 - Comprehensive CLAUDE.md documentation file with full technical specifications
 - CHANGELOG.md for tracking all major changes going forward
+
+### Changed
+- Navigation simplified to 5 essential items: Import, Profile, Ideas, Approvals, Analytics
+- SignUp page now handles both sign up and sign in with toggle UI
+- Updated routing to redirect `/signin` to `/signup`
+- CLAUDE.md updated with recent changes and two-step approval flow documentation
+- Content approval flow clarified: draft → admin_approved → client_approved → published
+
+### Removed
+- Separate SignIn.tsx component (functionality merged into SignUp.tsx)
+- Strategy page from main navigation
+
+### Fixed
+- Authentication flow properly handles onboarding requirements
+- Content generation now requires client selection
+- Database tables properly created for content management
 
 ## [2024.12.13] - 2024-12-13
 

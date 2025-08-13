@@ -32,15 +32,15 @@ unified-linkedin-project/
 │   │   ├── supabase.ts     # Supabase client
 │   │   └── utils.ts         # Utility functions
 │   ├── pages/
-│   │   ├── SignUp.tsx       # Registration
-│   │   ├── SignIn.tsx       # Login
+│   │   ├── SignUp.tsx       # Combined Sign Up/Sign In with tab switcher
+│   │   ├── Import.tsx       # Content import functionality
 │   │   ├── Welcome.tsx      # Post-signup welcome
 │   │   ├── Onboarding.tsx   # 10-question flow
 │   │   ├── WelcomeComplete.tsx # Onboarding complete
 │   │   ├── Profile.tsx      # LinkedIn profile view
 │   │   ├── Strategy.tsx     # Content strategy
 │   │   ├── ContentIdeas.tsx # Idea collection
-│   │   ├── Approve.tsx      # Content approval
+│   │   ├── Approve.tsx      # Content approval (Tinder-style swipe)
 │   │   └── UserAnalytics.tsx # Performance metrics
 │   ├── services/
 │   │   └── database.service.ts # Client-filtered queries
@@ -61,18 +61,23 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ## Key Features
 
 ### 1. Authentication Flow
-- **SignUp** (`/signup`) - Clean minimal design
-- **SignIn** (`/signin`) - Simple email authentication
+- **SignUp** (`/signup`) - Combined Sign Up/Sign In page with tab switcher
+  - Toggle between Sign Up and Sign In modes
+  - Sign Up flow: Registration → Welcome → Onboarding
+  - Sign In flow: Login → Profile
+  - Admin bypass: URL param `?admin=true` or keyboard shortcut `Ctrl+Shift+A`
 - **Welcome** (`/welcome`) - Post-signup greeting
 - **Onboarding** (`/onboarding`) - 10-question story capture
 - **WelcomeComplete** (`/welcome-complete`) - Success celebration
 
 ### 2. Main Portal Pages
+- **Import** (`/import`) - Upload existing content (CSV, XLSX, JSON)
 - **Profile** (`/profile`) - LinkedIn profile management
-- **Strategy** (`/strategy`) - Content strategy overview
 - **Ideas** (`/ideas`) - Content idea collection with drag-drop
-- **Approvals** (`/approve`) - Tinder-style content approval
+- **Approvals** (`/approve`) - Tinder-style content approval for admin-approved content
 - **Analytics** (`/user-analytics`) - Performance dashboard
+
+Note: Navigation shows only these 5 essential pages
 
 ### 3. Design System
 
@@ -230,12 +235,39 @@ npm run preview
 - Compatible data structures
 - Synchronized content flow
 
-### Content Flow
-1. Ghostwriter creates content → Status: 'pending'
-2. Content appears in approval queue
-3. Admin approves → Status: 'approved'
-4. Client sees approved content in their portal
-5. Scheduled posts appear in calendar
+### Two-Step Approval Flow
+1. Ghostwriter creates content → Status: 'draft'
+2. Admin reviews in Ghostwriter Portal
+3. Admin approves → Status: 'admin_approved'
+4. Content appears in client's Approval queue
+5. Client approves → Status: 'client_approved'
+6. Auto-scheduled for publication
+7. Published → Status: 'published'
+
+## Recent Updates (December 2024)
+
+### Authentication Improvements
+- Combined Sign Up and Sign In into single page with tab switcher
+- Added admin bypass for onboarding (URL param or Ctrl+Shift+A)
+- Improved authentication flow with proper routing
+
+### Navigation Updates
+- Simplified navigation to 5 essential items
+- Removed Strategy page from main navigation
+- Added Import page for content upload
+- Mobile navigation pending implementation
+
+### Database & Content Flow
+- Fixed generated_content table creation
+- Implemented two-step approval flow (admin → client)
+- Added client selection requirement in Ghostwriter Portal
+- Status progression: draft → admin_approved → client_approved → published
+
+### Code Cleanup
+- Removed duplicate SignIn component
+- Cleaned up unused page components
+- Updated routing with proper redirects
+- Improved TypeScript typing throughout
 
 ## Next Steps & Roadmap
 - [ ] Implement real-time updates with Supabase subscriptions
