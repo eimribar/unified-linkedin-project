@@ -7,6 +7,7 @@ export type { GeneratedContent };
 // Generated Content Service
 export const generatedContentService = {
   async getAllAdminApproved() {
+    console.log('Fetching all admin-approved content from database...');
     const { data, error } = await supabase
       .from('generated_content')
       .select('*')
@@ -15,8 +16,10 @@ export const generatedContentService = {
     
     if (error) {
       console.error('Error fetching admin approved content:', error);
+      console.error('Error details:', error.message, error.details);
       return [];
     }
+    console.log('Database returned:', data?.length || 0, 'admin-approved items');
     return data || [];
   },
   
@@ -41,15 +44,19 @@ export const generatedContentService = {
   },
   
   async update(id: string, updates: Partial<GeneratedContent>) {
-    const { error } = await supabase
+    console.log('Updating content:', id, 'with:', updates);
+    const { data, error } = await supabase
       .from('generated_content')
       .update(updates)
-      .eq('id', id);
+      .eq('id', id)
+      .select();
     
     if (error) {
       console.error('Error updating content:', error);
+      console.error('Error details:', error.message, error.details);
       return false;
     }
+    console.log('Update successful:', data);
     return true;
   }
 };

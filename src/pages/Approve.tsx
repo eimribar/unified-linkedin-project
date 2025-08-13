@@ -20,9 +20,16 @@ const Approve = () => {
 
   const loadPendingContent = async () => {
     setLoading(true);
+    console.log('Loading admin-approved content from database...');
     try {
       // Get ALL content that's been approved by admin (no client filter for testing)
       const allContent = await generatedContentService.getAllAdminApproved();
+      
+      console.log('Admin-approved content fetched:', allContent);
+      console.log('Number of items:', allContent.length);
+      if (allContent.length > 0) {
+        console.log('First item status:', allContent[0].status);
+      }
       
       setContent(allContent);
       setCurrentIndex(0);
@@ -37,26 +44,33 @@ const Approve = () => {
     const currentContent = content[currentIndex];
     if (!currentContent) return;
     
+    console.log('Approving content:', currentContent.id);
     setProcessing(true);
     try {
       // Update status to client_approved
-      await generatedContentService.update(currentContent.id, {
+      console.log('Updating content status to client_approved...');
+      const updateSuccess = await generatedContentService.update(currentContent.id, {
         status: 'client_approved',
-        approved_at: new Date(),
+        approved_at: new Date().toISOString() as any,
         approved_by: user?.id || 'client'
       });
+      
+      console.log('Update success:', updateSuccess);
       
       // Auto-schedule for next available slot
       const scheduledFor = new Date();
       scheduledFor.setDate(scheduledFor.getDate() + 1);
       scheduledFor.setHours(10, 0, 0, 0);
       
-      await scheduledPostsService.schedule(
+      console.log('Scheduling post for:', scheduledFor);
+      const scheduleResult = await scheduledPostsService.schedule(
         currentContent.id,
         currentContent.client_id || 'no-client', // Use content's client_id or default
         scheduledFor,
         'linkedin'
       );
+      
+      console.log('Schedule result:', scheduleResult);
       
       // Move to next content
       if (currentIndex < content.length - 1) {
@@ -67,6 +81,7 @@ const Approve = () => {
       }
     } catch (error) {
       console.error('Error approving content:', error);
+      alert('Failed to approve content. Check console for details.');
     } finally {
       setProcessing(false);
     }
