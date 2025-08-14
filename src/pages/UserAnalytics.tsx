@@ -97,7 +97,7 @@ const UserAnalytics = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SEO
-        title={`Analytics – ${user?.profile?.fullName || 'Your'} Content Performance`}
+        title="Analytics – Content Performance"
         description="Track your LinkedIn content performance and engagement metrics"
         canonicalPath="/analytics"
       />
