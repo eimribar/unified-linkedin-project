@@ -7,7 +7,13 @@ export type { GeneratedContent };
 // Generated Content Service
 export const generatedContentService = {
   async getAllAdminApproved() {
-    console.log('Fetching all admin-approved content from database...');
+    console.log('🔍 Fetching all admin-approved content from database...');
+    console.log('Supabase URL:', supabase.supabaseUrl);
+    
+    // First check authentication status
+    const { data: { user } } = await supabase.auth.getUser();
+    console.log('Auth status:', user ? `Authenticated as ${user.email}` : 'Not authenticated (anonymous)');
+    
     const { data, error } = await supabase
       .from('generated_content')
       .select('*')
@@ -15,11 +21,32 @@ export const generatedContentService = {
       .order('created_at', { ascending: false });
     
     if (error) {
-      console.error('Error fetching admin approved content:', error);
-      console.error('Error details:', error.message, error.details);
+      console.error('❌ Error fetching admin approved content:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      console.error('Error details:', error.details);
+      console.error('Error hint:', error.hint);
+      
+      // Try a simpler query to debug
+      console.log('Trying simpler query without filter...');
+      const { data: allData, error: allError } = await supabase
+        .from('generated_content')
+        .select('id, status')
+        .limit(5);
+      
+      if (allError) {
+        console.error('Even simple query failed:', allError);
+      } else {
+        console.log('Simple query worked, found:', allData?.length, 'items');
+        console.log('Statuses:', allData?.map(d => d.status));
+      }
+      
       return [];
     }
-    console.log('Database returned:', data?.length || 0, 'admin-approved items');
+    console.log('✅ Database returned:', data?.length || 0, 'admin-approved items');
+    if (data && data.length > 0) {
+      console.log('Sample content:', data[0].content_text?.substring(0, 50) + '...');
+    }
     return data || [];
   },
   

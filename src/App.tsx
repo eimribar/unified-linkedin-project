@@ -72,9 +72,7 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/approve" element={
-                <ProtectedRoute>
-                  <UserLayout><Approve /></UserLayout>
-                </ProtectedRoute>
+                <UserLayout><Approve /></UserLayout>
               } />
               <Route path="/user-analytics" element={
                 <ProtectedRoute>

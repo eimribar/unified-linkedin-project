@@ -4,8 +4,16 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
+console.log('🔧 Initializing Supabase client...');
+console.log('Supabase URL:', supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'NOT SET');
+console.log('Anon Key:', supabaseAnonKey ? `${supabaseAnonKey.substring(0, 20)}...` : 'NOT SET');
+
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase credentials not configured. Database features will not work.');
+  console.error('❌ CRITICAL: Supabase credentials not configured!');
+  console.error('Make sure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set in .env.local');
+  console.warn('Database features will not work.');
+} else {
+  console.log('✅ Supabase credentials found, initializing client...');
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);

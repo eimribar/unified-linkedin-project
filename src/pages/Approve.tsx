@@ -20,21 +20,29 @@ const Approve = () => {
 
   const loadPendingContent = async () => {
     setLoading(true);
-    console.log('Loading admin-approved content from database...');
+    console.log('🔄 Loading admin-approved content from database...');
+    console.log('Current user:', user);
+    console.log('User authenticated:', !!user);
+    
     try {
       // Get ALL content that's been approved by admin (no client filter for testing)
       const allContent = await generatedContentService.getAllAdminApproved();
       
-      console.log('Admin-approved content fetched:', allContent);
-      console.log('Number of items:', allContent.length);
+      console.log('✅ Admin-approved content fetched:', allContent);
+      console.log('📊 Number of items:', allContent.length);
       if (allContent.length > 0) {
         console.log('First item status:', allContent[0].status);
+        console.log('First item preview:', allContent[0].content_text?.substring(0, 100) + '...');
+      } else {
+        console.log('⚠️ No admin-approved content found!');
+        console.log('Make sure to approve some content in the Ghostwriter Portal first.');
       }
       
       setContent(allContent);
       setCurrentIndex(0);
     } catch (error) {
-      console.error('Error loading content:', error);
+      console.error('❌ Error loading content:', error);
+      console.error('Error details:', error);
     } finally {
       setLoading(false);
     }
