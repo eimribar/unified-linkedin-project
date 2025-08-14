@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
 import SEO from "@/components/seo/SEO";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -53,13 +52,8 @@ const StatCard = ({
 
 const UserAnalytics = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-
-  useEffect(() => {
-    if (!user) {
-      navigate('/signup');
-    }
-  }, [user, navigate]);
+  
+  // No authentication check needed
 
   // Mock data for demonstration
   const weeklyPosts = [
