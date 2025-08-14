@@ -3,12 +3,10 @@ import NavBar from "@/components/layout/NavBar";
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/seo/SEO";
 import { CheckCircle, XCircle, Clock, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
-import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { generatedContentService, scheduledPostsService, type GeneratedContent } from '@/services/database.service';
 import { cn } from '@/lib/utils';
 
 const Approve = () => {
-  const { user } = useSupabaseAuth();
   const [content, setContent] = useState<GeneratedContent[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -21,11 +19,9 @@ const Approve = () => {
   const loadPendingContent = async () => {
     setLoading(true);
     console.log('🔄 Loading admin-approved content from database...');
-    console.log('Current user:', user);
-    console.log('User authenticated:', !!user);
     
     try {
-      // Get ALL content that's been approved by admin (no client filter for testing)
+      // Get ALL content that's been approved by admin (no user filter)
       const allContent = await generatedContentService.getAllAdminApproved();
       
       console.log('✅ Admin-approved content fetched:', allContent);
@@ -60,7 +56,7 @@ const Approve = () => {
       const updateSuccess = await generatedContentService.update(currentContent.id, {
         status: 'client_approved',
         approved_at: new Date().toISOString() as any,
-        approved_by: user?.id || 'client'
+        approved_by: 'client'
       });
       
       console.log('Update success:', updateSuccess);

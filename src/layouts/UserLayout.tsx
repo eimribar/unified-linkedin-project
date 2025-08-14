@@ -1,15 +1,15 @@
 import { ReactNode } from "react";
-import UserNav from "@/components/layout/UserNav";
+import SimpleNav from "@/components/layout/SimpleNav";
 
 interface UserLayoutProps {
   children: ReactNode;
 }
 
-// Dedicated environment for signed-in user flows: clean, focused, same language as onboarding
+// Simple layout for the User Portal - no authentication required
 const UserLayout = ({ children }: UserLayoutProps) => {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <UserNav />
+      <SimpleNav />
       {children}
     </div>
   );

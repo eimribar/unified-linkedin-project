@@ -10,9 +10,8 @@ export const generatedContentService = {
     console.log('🔍 Fetching all admin-approved content from database...');
     console.log('Supabase URL:', supabase.supabaseUrl);
     
-    // First check authentication status
-    const { data: { user } } = await supabase.auth.getUser();
-    console.log('Auth status:', user ? `Authenticated as ${user.email}` : 'Not authenticated (anonymous)');
+    // No authentication check - works for anonymous users
+    console.log('Fetching as anonymous/public user...');
     
     const { data, error } = await supabase
       .from('generated_content')

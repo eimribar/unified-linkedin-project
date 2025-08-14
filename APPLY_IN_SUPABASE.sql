@@ -21,11 +21,12 @@ DROP POLICY IF EXISTS "public_read_admin_approved" ON generated_content;
 
 -- Step 3: Create new comprehensive policies
 
--- Allow ALL users (even anonymous) to READ admin-approved content
+-- CRITICAL: Allow ALL users (even anonymous) to READ admin-approved content
+-- This is what makes the User Portal work without authentication!
 CREATE POLICY "anyone_read_admin_approved" 
 ON generated_content 
 FOR SELECT 
-TO public 
+TO anon, authenticated, public
 USING (status IN ('admin_approved', 'client_approved', 'published'));
 
 -- Allow authenticated users to read ALL content
