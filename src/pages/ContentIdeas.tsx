@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import SEO from "@/components/seo/SEO";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,7 +54,6 @@ interface ContentIdea {
 
 const ContentIdeas = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [ideas, setIdeas] = useState<ContentIdea[]>([]);
   const [input, setInput] = useState("");
@@ -65,12 +63,7 @@ const ContentIdeas = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [isStarredInput, setIsStarredInput] = useState(false);
 
-  // Check authentication
-  useEffect(() => {
-    if (!user) {
-      navigate('/signup');
-    }
-  }, [user, navigate]);
+  // No authentication check needed anymore
 
   // Load ideas from localStorage
   useEffect(() => {

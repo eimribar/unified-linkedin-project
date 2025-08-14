@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import NavBar from "@/components/layout/NavBar";
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/seo/SEO";
 import { CheckCircle, XCircle, Clock, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
@@ -138,7 +137,6 @@ const Approve = () => {
         description="Review and approve your LinkedIn content before it goes live."
         canonicalPath="/approve"
       />
-      <NavBar />
       
       <main className="mx-auto max-w-[1440px] px-4 py-12">
         <div className="mb-8">
