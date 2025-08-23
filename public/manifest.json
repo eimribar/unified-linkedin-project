@@ -1,26 +1,64 @@
 {
-  "name": "LinkedIn Content Engine",
-  "short_name": "LI Content",
-  "description": "Premium LinkedIn content management portal",
-  "start_url": "/",
+  "name": "Client Content Portal",
+  "short_name": "Content Portal",
+  "description": "Review and approve your personalized LinkedIn content",
+  "start_url": "/client-approve",
   "display": "standalone",
-  "theme_color": "#3B82F6",
-  "background_color": "#ffffff",
+  "background_color": "#fafafa",
+  "theme_color": "#18181b",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["productivity", "business", "social"],
+  "lang": "en-US",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
     },
     {
       "src": "/favicon.ico",
       "sizes": "48x48",
-      "type": "image/x-icon"
+      "type": "image/x-icon",
+      "purpose": "any"
     },
     {
       "src": "/apple-touch-icon.png",
       "sizes": "180x180",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable any"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Review Content",
+      "short_name": "Review",
+      "description": "Quickly review pending content",
+      "url": "/client-approve",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "View Analytics",
+      "short_name": "Analytics", 
+      "description": "Check your content performance",
+      "url": "/user-analytics",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }
