@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,16 +8,24 @@ import { SupabaseAuthProvider } from "./contexts/SupabaseAuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import PortalSwitcher from "./components/PortalSwitcher";
 import ImpersonationBanner from "./components/ImpersonationBanner";
-import Auth from "./pages/Auth";
-import Approve from "./pages/Approve";
-import UserAnalytics from "./pages/UserAnalytics";
-import ContentIdeas from "./pages/ContentIdeas";
 import UserLayout from "./layouts/UserLayout";
-import Profile from "./pages/Profile";
-import Import from "./pages/Import";
-import ClientApproval from "./pages/ClientApproval";
+
+// Lazy load pages for better code splitting
+const Auth = lazy(() => import("./pages/Auth"));
+const Approve = lazy(() => import("./pages/Approve"));
+const UserAnalytics = lazy(() => import("./pages/UserAnalytics"));
+const ContentIdeas = lazy(() => import("./pages/ContentIdeas"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Import = lazy(() => import("./pages/Import"));
+const ClientApproval = lazy(() => import("./pages/ClientApproval"));
 
 const queryClient = new QueryClient();
+
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -27,6 +36,7 @@ const App = () => (
           <Sonner />
           <ImpersonationBanner />
           <BrowserRouter>
+            <Suspense fallback={<LoadingFallback />}>
             <Routes>
               {/* Public Authentication Route */}
               <Route path="/auth" element={<Auth />} />
@@ -75,6 +85,7 @@ const App = () => (
               {/* Fallback for unknown routes */}
               <Route path="*" element={<Navigate to="/auth" replace />} />
             </Routes>
+            </Suspense>
           </BrowserRouter>
           <PortalSwitcher />
         </>
