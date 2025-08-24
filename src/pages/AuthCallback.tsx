@@ -93,18 +93,35 @@ const AuthCallback: React.FC = () => {
         console.log('🎟️ Processing invitation token from URL:', invitationToken);
         setMessage('Linking your account...');
         
-        // Call the database function to complete OAuth signup
-        const { data, error } = await supabase.rpc('complete_oauth_signup', {
-          p_invitation_token: invitationToken
-        });
-        
-        if (error) {
-          console.error('❌ Database function error:', error);
-          toast.error('Failed to link account. Please contact support.');
+        try {
+          // Call the database function to complete OAuth signup
+          const { data, error } = await supabase.rpc('complete_oauth_signup', {
+            p_invitation_token: invitationToken
+          });
+          
+          console.log('Database function response:', { data, error });
+          
+          if (error) {
+            console.error('❌ Database function error:', error);
+            // Check if it's a function not found error
+            if (error.message?.includes('function') || error.message?.includes('does not exist')) {
+              toast.error('System configuration error. Please contact support.');
+              console.error('Function not found - run the SQL script to create it');
+            } else {
+              toast.error('Failed to link account. Please contact support.');
+            }
+            setStatus('error');
+            setMessage('Failed to link account. Redirecting...');
+            
+            // Still redirect to client-approve as they're authenticated
+            setTimeout(() => navigate('/client-approve'), 3000);
+            return;
+          }
+        } catch (err) {
+          console.error('❌ Unexpected error calling database function:', err);
+          toast.error('An unexpected error occurred.');
           setStatus('error');
           setMessage('Failed to link account. Redirecting...');
-          
-          // Still redirect to client-approve as they're authenticated
           setTimeout(() => navigate('/client-approve'), 3000);
           return;
         }
