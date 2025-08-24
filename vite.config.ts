@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => ({
           'supabase': ['@supabase/supabase-js', '@supabase/auth-ui-react', '@supabase/auth-ui-shared'],
           'animation': ['framer-motion', '@react-spring/web'],
           'charts': ['recharts'],
+          'three': ['three', '@react-three/fiber'],
         },
       },
     },

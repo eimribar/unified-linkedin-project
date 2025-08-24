@@ -1,5 +1,3 @@
-"use client"
-
 import { useRef } from "react"
 import confetti from "canvas-confetti"
 import type { ConfettiRef } from "@/components/ui/confetti"

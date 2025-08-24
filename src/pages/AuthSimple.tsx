@@ -6,7 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import { SignInPage } from '@/components/ui/sign-in-flow-with-canvas';
+import { SignInPage } from '@/components/ui/sign-in-flow-1';
 import toast from 'react-hot-toast';
 
 const AuthSimple: React.FC = () => {
