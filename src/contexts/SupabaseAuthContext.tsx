@@ -7,6 +7,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import { buildOAuthRedirectUrl, getProductionUrl, getBaseUrl } from '@/utils/urlHelpers';
 import toast from 'react-hot-toast';
 
 // Import admin auth service for impersonation
@@ -283,7 +284,7 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({ chil
         email,
         password,
         options: {
-          emailRedirectTo: window.location.origin + '/client-approve',
+          emailRedirectTo: getProductionUrl() + '/client-approve',
           data: {
             client_name: existingClient.name
           }
@@ -333,22 +334,26 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({ chil
       const invitationToken = urlParams.get('invitation');
       const pendingInvitation = localStorage.getItem('pending_invitation');
       
-      // Build redirect URL with invitation token if present
-      let redirectUrl = window.location.origin + '/auth/callback';
+      // Build redirect URL params
+      const params: Record<string, string> = {};
+      
       if (invitationToken) {
-        redirectUrl += `?invitation=${invitationToken}`;
+        params.invitation = invitationToken;
       } else if (pendingInvitation) {
         try {
           const inviteData = JSON.parse(pendingInvitation);
           if (inviteData.token) {
-            redirectUrl += `?invitation=${inviteData.token}`;
+            params.invitation = inviteData.token;
           }
         } catch (e) {
           console.error('Failed to parse pending invitation:', e);
         }
       }
       
-      console.log('🔐 OAuth redirect URL:', redirectUrl);
+      // Use helper to ensure production URL
+      const redirectUrl = buildOAuthRedirectUrl('/auth/callback', params);
+      
+      console.log('🔐 OAuth redirect URL (PRODUCTION):', redirectUrl);
       
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -386,7 +391,7 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({ chil
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: window.location.origin + '/client-approve'
+          emailRedirectTo: getProductionUrl() + '/client-approve'
         }
       });
 
@@ -421,7 +426,7 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({ chil
   const resetPassword = async (email: string) => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/reset-password'
+        redirectTo: getProductionUrl() + '/reset-password'
       });
 
       if (error) {
