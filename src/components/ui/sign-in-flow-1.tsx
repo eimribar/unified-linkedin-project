@@ -69,9 +69,8 @@ export const CanvasRevealEffect = ({
         />
       </div>
       {showGradient && (
-        // Adjust gradient colors if needed based on background (was bg-white, now likely uses containerClassName bg)
-        // Example assuming a dark background like the SignInPage uses:
-         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
+        // Light theme gradient
+         <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
       )}
     </div>
   );
@@ -362,8 +361,8 @@ const Shader: React.FC<ShaderProps> = ({ source, uniforms, maxFps = 60 }) => {
 };
 
 const AnimatedNavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
-  const defaultTextColor = 'text-gray-300';
-  const hoverTextColor = 'text-white';
+  const defaultTextColor = 'text-gray-600';
+  const hoverTextColor = 'text-gray-900';
   const textSizeClass = 'text-sm';
 
   return (
@@ -407,10 +406,10 @@ function MiniNavbar() {
 
   const logoElement = (
     <div className="relative w-5 h-5 flex items-center justify-center">
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 top-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 left-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 right-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 bottom-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
+    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-800 top-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
+    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-800 left-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
+    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-800 right-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
+    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-800 bottom-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
  </div>
   );
 
@@ -421,7 +420,7 @@ function MiniNavbar() {
   ];
 
   const loginButtonElement = (
-    <a href="https://ghostwriter-portal.vercel.app" className="px-4 py-2 sm:px-3 text-xs sm:text-sm border border-[#333] bg-[rgba(31,31,31,0.62)] text-gray-300 rounded-full hover:border-white/50 hover:text-white transition-colors duration-200 w-full sm:w-auto">
+    <a href="https://ghostwriter-portal.vercel.app" className="px-4 py-2 sm:px-3 text-xs sm:text-sm border border-gray-300 bg-white/70 text-gray-700 rounded-full hover:border-gray-400 hover:bg-white hover:text-gray-900 transition-colors duration-200 w-full sm:w-auto">
       Admin Portal
     </a>
   );
@@ -434,7 +433,7 @@ function MiniNavbar() {
                      opacity-40 filter blur-lg pointer-events-none
                      transition-all duration-300 ease-out
                      group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
-       <button className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full sm:w-auto">
+       <button className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-white bg-gradient-to-br from-gray-800 to-gray-900 rounded-full hover:from-gray-900 hover:to-black transition-all duration-200 w-full sm:w-auto">
          Get Started
        </button>
     </div>
@@ -445,9 +444,9 @@ function MiniNavbar() {
                        flex flex-col items-center
                        pl-6 pr-6 py-3 backdrop-blur-sm
                        ${headerShapeClass}
-                       border border-[#333] bg-[#1f1f1f57]
+                       border border-gray-200 bg-white/80
                        w-[calc(100%-2rem)] sm:w-auto
-                       transition-[border-radius] duration-0 ease-in-out`}>
+                       transition-[border-radius] duration-0 ease-in-out shadow-lg`}>
 
       <div className="flex items-center justify-between w-full gap-x-6 sm:gap-x-8">
         <div className="flex items-center">
@@ -467,7 +466,7 @@ function MiniNavbar() {
           {signupButtonElement}
         </div>
 
-        <button className="sm:hidden flex items-center justify-center w-8 h-8 text-gray-300 focus:outline-none" onClick={toggleMenu} aria-label={isOpen ? 'Close Menu' : 'Open Menu'}>
+        <button className="sm:hidden flex items-center justify-center w-8 h-8 text-gray-700 focus:outline-none" onClick={toggleMenu} aria-label={isOpen ? 'Close Menu' : 'Open Menu'}>
           {isOpen ? (
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           ) : (
@@ -480,7 +479,7 @@ function MiniNavbar() {
                        ${isOpen ? 'max-h-[1000px] opacity-100 pt-4' : 'max-h-0 opacity-0 pt-0 pointer-events-none'}`}>
         <nav className="flex flex-col items-center space-y-4 text-base w-full">
           {navLinksData.map((link) => (
-            <a key={link.href} href={link.href} className="text-gray-300 hover:text-white transition-colors w-full text-center">
+            <a key={link.href} href={link.href} className="text-gray-600 hover:text-gray-900 transition-colors w-full text-center">
               {link.label}
             </a>
           ))}
@@ -654,17 +653,17 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
   };
 
   return (
-    <div className={cn("flex w-[100%] flex-col min-h-screen bg-black relative", className)}>
+    <div className={cn("flex w-[100%] flex-col min-h-screen bg-white relative", className)}>
       <div className="absolute inset-0 z-0">
         {/* Initial canvas (forward animation) */}
         {initialCanvasVisible && (
           <div className="absolute inset-0">
             <CanvasRevealEffect
               animationSpeed={3}
-              containerClassName="bg-black"
+              containerClassName="bg-white"
               colors={[
-                [255, 255, 255],
-                [255, 255, 255],
+                [59, 130, 246],
+                [147, 51, 234],
               ]}
               dotSize={6}
               reverse={false}
@@ -677,10 +676,10 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
           <div className="absolute inset-0">
             <CanvasRevealEffect
               animationSpeed={4}
-              containerClassName="bg-black"
+              containerClassName="bg-white"
               colors={[
-                [255, 255, 255],
-                [255, 255, 255],
+                [59, 130, 246],
+                [147, 51, 234],
               ]}
               dotSize={6}
               reverse={true}
@@ -688,8 +687,8 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
           </div>
         )}
         
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,1)_0%,_transparent_100%)]" />
-        <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-black to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.8)_0%,_transparent_100%)]" />
+        <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-white/90 to-transparent" />
       </div>
       
       {/* Content Layer */}
@@ -713,8 +712,8 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                     className="space-y-6 text-center"
                   >
                     <div className="space-y-1">
-                      <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">{getWelcomeMessage()}</h1>
-                      <p className="text-[1.8rem] text-white/70 font-light">
+                      <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-gray-900">{getWelcomeMessage()}</h1>
+                      <p className="text-[1.8rem] text-gray-600 font-light">
                         {invitationToken 
                           ? 'Accept your invitation'
                           : 'Access your content portal'
@@ -727,16 +726,16 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                       <button 
                         onClick={handleGoogleSignIn}
                         disabled={loading}
-                        className="backdrop-blur-[2px] w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-full py-3 px-4 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="backdrop-blur-[2px] w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white border border-gray-900 rounded-full py-3 px-4 transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <span className="text-lg">G</span>
                         <span>{loading ? 'Signing in...' : 'Sign in with Google'}</span>
                       </button>
                       
                       <div className="flex items-center gap-4">
-                        <div className="h-px bg-white/10 flex-1" />
-                        <span className="text-white/40 text-sm">or</span>
-                        <div className="h-px bg-white/10 flex-1" />
+                        <div className="h-px bg-gray-300 flex-1" />
+                        <span className="text-gray-400 text-sm">or</span>
+                        <div className="h-px bg-gray-300 flex-1" />
                       </div>
                       
                       <form onSubmit={handleEmailSubmit}>
@@ -746,14 +745,14 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                             placeholder="info@gmail.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full backdrop-blur-[1px] bg-white/5 text-white border-1 border-white/10 rounded-full py-3 px-4 focus:outline-none focus:border focus:border-white/30 text-center placeholder-white/40"
+                            className="w-full backdrop-blur-[1px] bg-gray-50 text-gray-900 border border-gray-300 rounded-full py-3 px-4 focus:outline-none focus:border-gray-500 focus:bg-white text-center placeholder-gray-400"
                             required
                             disabled={loading}
                           />
                           <button 
                             type="submit"
                             disabled={loading || !email}
-                            className="absolute right-1.5 top-1.5 text-white w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors group overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="absolute right-1.5 top-1.5 text-white w-9 h-9 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 transition-colors group overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <span className="relative w-full h-full block overflow-hidden">
                               <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 group-hover:translate-x-full">
@@ -769,13 +768,13 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                     </div>
                     
                     {invitationToken && (
-                      <p className="text-sm text-green-400/80 bg-green-500/10 px-4 py-2 rounded-full">
+                      <p className="text-sm text-green-600 bg-green-50 border border-green-200 px-4 py-2 rounded-full">
                         ✓ You've been invited! Sign in to accept.
                       </p>
                     )}
                     
-                    <p className="text-xs text-white/40 pt-10">
-                      By signing up, you agree to our <Link to="#" className="underline text-white/40 hover:text-white/60 transition-colors">Terms of Service</Link> and <Link to="#" className="underline text-white/40 hover:text-white/60 transition-colors">Privacy Policy</Link>.
+                    <p className="text-xs text-gray-500 pt-10">
+                      By signing up, you agree to our <Link to="#" className="underline text-gray-500 hover:text-gray-700 transition-colors">Terms of Service</Link> and <Link to="#" className="underline text-gray-500 hover:text-gray-700 transition-colors">Privacy Policy</Link>.
                     </p>
                   </motion.div>
                 ) : step === "code" ? (
@@ -788,12 +787,12 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                     className="space-y-6 text-center"
                   >
                     <div className="space-y-1">
-                      <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">We sent you a code</h1>
-                      <p className="text-[1.25rem] text-white/50 font-light">Please enter it below</p>
+                      <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-gray-900">We sent you a code</h1>
+                      <p className="text-[1.25rem] text-gray-600 font-light">Please enter it below</p>
                     </div>
                     
                     <div className="w-full">
-                      <div className="relative rounded-full py-4 px-5 border border-white/10 bg-transparent">
+                      <div className="relative rounded-full py-4 px-5 border border-gray-300 bg-white">
                         <div className="flex items-center justify-center">
                           {code.map((digit, i) => (
                             <div key={i} className="flex items-center">
@@ -809,17 +808,17 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                                   value={digit}
                                   onChange={e => handleCodeChange(i, e.target.value)}
                                   onKeyDown={e => handleKeyDown(i, e)}
-                                  className="w-8 text-center text-xl bg-transparent text-white border-none focus:outline-none focus:ring-0 appearance-none"
+                                  className="w-8 text-center text-xl bg-transparent text-gray-900 border-none focus:outline-none focus:ring-0 appearance-none"
                                   style={{ caretColor: 'transparent' }}
                                   disabled={loading}
                                 />
                                 {!digit && (
                                   <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center pointer-events-none">
-                                    <span className="text-xl text-white/20">0</span>
+                                    <span className="text-xl text-gray-300">0</span>
                                   </div>
                                 )}
                               </div>
-                              {i < 5 && <span className="text-white/20 text-xl">|</span>}
+                              {i < 5 && <span className="text-gray-300 text-xl">|</span>}
                             </div>
                           ))}
                         </div>
@@ -828,7 +827,7 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                     
                     <div>
                       <motion.p 
-                        className="text-white/50 hover:text-white/70 transition-colors cursor-pointer text-sm"
+                        className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer text-sm"
                         whileHover={{ scale: 1.02 }}
                         transition={{ duration: 0.2 }}
                         onClick={() => handleEmailSubmit({ preventDefault: () => {} } as React.FormEvent)}
@@ -840,7 +839,7 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                     <div className="flex w-full gap-3">
                       <motion.button 
                         onClick={handleBackClick}
-                        className="rounded-full bg-white text-black font-medium px-8 py-3 hover:bg-white/90 transition-colors w-[30%]"
+                        className="rounded-full bg-gray-200 text-gray-900 font-medium px-8 py-3 hover:bg-gray-300 transition-colors w-[30%]"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         transition={{ duration: 0.2 }}
@@ -851,8 +850,8 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                       <motion.button 
                         className={`flex-1 rounded-full font-medium py-3 border transition-all duration-300 ${
                           code.every(d => d !== "") 
-                          ? "bg-white text-black border-transparent hover:bg-white/90 cursor-pointer" 
-                          : "bg-[#111] text-white/50 border-white/10 cursor-not-allowed"
+                          ? "bg-gray-900 text-white border-gray-900 hover:bg-black cursor-pointer" 
+                          : "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed"
                         }`}
                         disabled={!code.every(d => d !== "") || loading}
                         onClick={() => code.every(d => d !== "") && verifyOTP(code.join(''))}
@@ -862,8 +861,8 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                     </div>
                     
                     <div className="pt-16">
-                      <p className="text-xs text-white/40">
-                        By signing up, you agree to our <Link to="#" className="underline text-white/40 hover:text-white/60 transition-colors">Terms of Service</Link> and <Link to="#" className="underline text-white/40 hover:text-white/60 transition-colors">Privacy Policy</Link>.
+                      <p className="text-xs text-gray-500">
+                        By signing up, you agree to our <Link to="#" className="underline text-gray-500 hover:text-gray-700 transition-colors">Terms of Service</Link> and <Link to="#" className="underline text-gray-500 hover:text-gray-700 transition-colors">Privacy Policy</Link>.
                       </p>
                     </div>
                   </motion.div>
@@ -876,8 +875,8 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                     className="space-y-6 text-center"
                   >
                     <div className="space-y-1">
-                      <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">You're in!</h1>
-                      <p className="text-[1.25rem] text-white/50 font-light">Welcome to your content portal</p>
+                      <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-gray-900">You're in!</h1>
+                      <p className="text-[1.25rem] text-gray-600 font-light">Welcome to your content portal</p>
                     </div>
                     
                     <motion.div 
@@ -886,8 +885,8 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                       transition={{ duration: 0.5, delay: 0.5 }}
                       className="py-10"
                     >
-                      <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-white to-white/70 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-black" viewBox="0 0 20 20" fill="currentColor">
+                      <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       </div>
@@ -897,7 +896,7 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 1 }}
-                      className="w-full rounded-full bg-white text-black font-medium py-3 hover:bg-white/90 transition-colors"
+                      className="w-full rounded-full bg-gray-900 text-white font-medium py-3 hover:bg-black transition-colors"
                       onClick={handleContinueToDashboard}
                     >
                       Continue to Dashboard

@@ -76,8 +76,8 @@ const AuthSimple: React.FC = () => {
   // Show loading briefly while fetching client name
   if (loading && invitationToken) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white/50">Loading...</div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
       </div>
     );
   }
