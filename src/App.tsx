@@ -81,8 +81,8 @@ const App = () => (
               <Route path="/client-login" element={<Navigate to="/auth" replace />} />
               <Route path="/approvals" element={<Navigate to="/approve" replace />} />
               
-              {/* Root redirect */}
-              <Route path="/" element={<Navigate to="/client-approve" replace />} />
+              {/* Root redirect - Changed to /auth to prevent blank page issues */}
+              <Route path="/" element={<Navigate to="/auth" replace />} />
               
               {/* Fallback for unknown routes */}
               <Route path="*" element={<Navigate to="/auth" replace />} />

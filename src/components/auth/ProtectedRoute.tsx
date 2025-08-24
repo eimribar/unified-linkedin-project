@@ -4,10 +4,10 @@
 // Redirects to auth page if not authenticated
 // =====================================================
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
-import { Loader2, Building } from 'lucide-react';
+import { Loader2, Building, AlertCircle } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -20,9 +20,21 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const { isAuthenticated, isLoading, user, client } = useSupabaseAuth();
   const location = useLocation();
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
 
-  // Show loading spinner while checking auth
-  if (isLoading) {
+  // Add timeout to prevent infinite loading
+  useEffect(() => {
+    if (isLoading) {
+      const timer = setTimeout(() => {
+        setLoadingTimeout(true);
+      }, 5000); // 5 second timeout
+
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
+
+  // Show loading spinner while checking auth (with timeout)
+  if (isLoading && !loadingTimeout) {
     return (
       <div className="min-h-screen bg-zinc-50 flex flex-col items-center justify-center">
         <div className="text-center">
@@ -33,6 +45,21 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           <p className="text-zinc-500 text-sm mt-2">This will only take a moment</p>
         </div>
       </div>
+    );
+  }
+
+  // If loading times out, redirect to auth
+  if (loadingTimeout) {
+    console.warn('Auth check timed out, redirecting to login');
+    return (
+      <Navigate 
+        to="/auth" 
+        state={{ 
+          redirect: location.pathname + location.search,
+          message: 'Session check timed out. Please sign in.'
+        }} 
+        replace 
+      />
     );
   }
 
