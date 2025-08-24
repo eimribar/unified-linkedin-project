@@ -6,7 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { useSimpleAuth } from '@/contexts/SimpleAuthContext';
 import { supabase } from '@/lib/supabase';
 import ApprovalStack from '@/components/approval/ApprovalStack';
 import { 
@@ -49,7 +49,8 @@ interface GeneratedContent {
 
 const ClientApproval: React.FC = () => {
   const navigate = useNavigate();
-  const { client, signOut, isLoading } = useSupabaseAuth();
+  const { user, signOut, loading: isLoading } = useSimpleAuth();
+  const [client, setClient] = useState<any>(null);
   
   const [content, setContent] = useState<GeneratedContent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,13 +83,56 @@ const ClientApproval: React.FC = () => {
     reason: ''
   });
 
-  // Load content on mount
+  // Load client data when user is authenticated
+  useEffect(() => {
+    if (user) {
+      loadClientData();
+    }
+  }, [user]);
+
+  // Load content when client is loaded
   useEffect(() => {
     if (client) {
       loadContent();
       loadStats();
     }
   }, [client]);
+
+  const loadClientData = async () => {
+    if (!user) return;
+    
+    try {
+      // Fetch client data linked to this auth user
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('auth_user_id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error loading client:', error);
+        // Try to fetch by email as fallback
+        const { data: emailClient, error: emailError } = await supabase
+          .from('clients')
+          .select('*')
+          .eq('email', user.email)
+          .single();
+        
+        if (emailError) {
+          console.error('Error loading client by email:', emailError);
+          toast.error('Unable to find your client account');
+          return;
+        }
+        
+        setClient(emailClient);
+      } else {
+        setClient(data);
+      }
+    } catch (err) {
+      console.error('Error in loadClientData:', err);
+      toast.error('Failed to load client data');
+    }
+  };
 
   const loadContent = async () => {
     if (!client) return;
