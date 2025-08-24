@@ -99,7 +99,6 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
         colors[2],
       ];
     }
-
     return {
       u_colors: {
         value: colorsArray.map((color) => [
@@ -121,17 +120,90 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
         value: dotSize,
         type: "uniform1f",
       },
+      u_reverse: {
+        value: shader.includes("u_reverse_active") ? 1 : 0,
+        type: "uniform1i",
+      },
     };
-  }, [colors, opacities, totalSize, dotSize]);
+  }, [colors, opacities, totalSize, dotSize, shader]);
 
   return (
-    <Canvas
-      className="h-full w-full"
-      style={{ backgroundColor: "transparent" }}
-      orthographic
-    >
-      <ShaderMaterial source={shader} uniforms={uniforms} maxFps={120} />
-    </Canvas>
+    <Shader
+      source={`
+        precision mediump float;
+        in vec2 fragCoord;
+
+        uniform float u_time;
+        uniform float u_opacities[10];
+        uniform vec3 u_colors[6];
+        uniform float u_total_size;
+        uniform float u_dot_size;
+        uniform vec2 u_resolution;
+        uniform int u_reverse;
+
+        out vec4 fragColor;
+
+        float PHI = 1.61803398874989484820459;
+        float random(vec2 xy) {
+            return fract(tan(distance(xy * PHI, xy) * 0.5) * xy.x);
+        }
+        float map(float value, float min1, float max1, float min2, float max2) {
+            return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+        }
+
+        void main() {
+            vec2 st = fragCoord.xy;
+            ${
+              center.includes("x")
+                ? "st.x -= abs(floor((mod(u_resolution.x, u_total_size) - u_dot_size) * 0.5));"
+                : ""
+            }
+            ${
+              center.includes("y")
+                ? "st.y -= abs(floor((mod(u_resolution.y, u_total_size) - u_dot_size) * 0.5));"
+                : ""
+            }
+
+            float opacity = step(0.0, st.x);
+            opacity *= step(0.0, st.y);
+
+            vec2 st2 = vec2(int(st.x / u_total_size), int(st.y / u_total_size));
+
+            float frequency = 5.0;
+            float show_offset = random(st2);
+            float rand = random(st2 * floor((u_time / frequency) + show_offset + frequency));
+            opacity *= u_opacities[int(rand * 10.0)];
+            opacity *= 1.0 - step(u_dot_size / u_total_size, fract(st.x / u_total_size));
+            opacity *= 1.0 - step(u_dot_size / u_total_size, fract(st.y / u_total_size));
+
+            vec3 color = u_colors[int(show_offset * 6.0)];
+
+            float animation_speed_factor = 0.5;
+            vec2 center_grid = u_resolution / 2.0 / u_total_size;
+            float dist_from_center = distance(center_grid, st2);
+
+            float timing_offset_intro = dist_from_center * 0.01 + (random(st2) * 0.15);
+
+            float max_grid_dist = distance(center_grid, vec2(0.0, 0.0));
+            float timing_offset_outro = (max_grid_dist - dist_from_center) * 0.02 + (random(st2 + 42.0) * 0.2);
+
+            float current_timing_offset;
+            if (u_reverse == 1) {
+                current_timing_offset = timing_offset_outro;
+                opacity *= 1.0 - step(current_timing_offset, u_time * animation_speed_factor);
+                opacity *= clamp((step(current_timing_offset + 0.1, u_time * animation_speed_factor)) * 1.25, 1.0, 1.25);
+            } else {
+                current_timing_offset = timing_offset_intro;
+                opacity *= step(current_timing_offset, u_time * animation_speed_factor);
+                opacity *= clamp((1.0 - step(current_timing_offset + 0.1, u_time * animation_speed_factor)) * 1.25, 1.0, 1.25);
+            }
+
+            fragColor = vec4(color, opacity);
+            fragColor.rgb *= fragColor.a;
+        }`}
+      uniforms={uniforms}
+      maxFps={60}
+    />
   );
 };
 
@@ -146,153 +218,111 @@ interface ShaderProps {
   maxFps?: number;
 }
 
-const ShaderMaterial: React.FC<ShaderProps> = ({
+const ShaderMaterial = ({
   source,
   uniforms,
   maxFps = 60,
+}: {
+  source: string;
+  hovered?: boolean;
+  maxFps?: number;
+  uniforms: any;
 }) => {
   const { size } = useThree();
-  const ref = useRef<THREE.Mesh | null>(null);
+  const ref = useRef<THREE.Mesh>(null);
   let lastFrameTime = 0;
 
   useFrame(({ clock }) => {
     if (!ref.current) return;
     const timestamp = clock.getElapsedTime();
-    if (timestamp - lastFrameTime < 1 / maxFps) {
-      return;
-    }
+
     lastFrameTime = timestamp;
-    
-    const material = ref.current.material as THREE.ShaderMaterial;
-    const extractedReverse = source.includes('u_reverse_active');
-    const speedMatch = source.match(/animation_speed_factor_([\d.]+)_/);
-    const speed = speedMatch ? parseFloat(speedMatch[1]) : 10;
-    
-    material.uniforms.u_time.value = extractedReverse
-      ? 20 - (timestamp * speed) % 40
-      : (timestamp * speed) % 40;
+
+    const material: any = ref.current.material;
+    const timeLocation = material.uniforms.u_time;
+    timeLocation.value = timestamp;
   });
 
-  const material = React.useMemo(() => {
-    const mat = new THREE.ShaderMaterial({
+  const getUniforms = () => {
+    const preparedUniforms: any = {};
+
+    for (const uniformName in uniforms) {
+      const uniform: any = uniforms[uniformName];
+
+      switch (uniform.type) {
+        case "uniform1f":
+          preparedUniforms[uniformName] = { value: uniform.value, type: "1f" };
+          break;
+        case "uniform1i":
+          preparedUniforms[uniformName] = { value: uniform.value, type: "1i" };
+          break;
+        case "uniform3f":
+          preparedUniforms[uniformName] = {
+            value: new THREE.Vector3().fromArray(uniform.value),
+            type: "3f",
+          };
+          break;
+        case "uniform1fv":
+          preparedUniforms[uniformName] = { value: uniform.value, type: "1fv" };
+          break;
+        case "uniform3fv":
+          preparedUniforms[uniformName] = {
+            value: uniform.value.map((v: number[]) =>
+              new THREE.Vector3().fromArray(v)
+            ),
+            type: "3fv",
+          };
+          break;
+        case "uniform2f":
+          preparedUniforms[uniformName] = {
+            value: new THREE.Vector2().fromArray(uniform.value),
+            type: "2f",
+          };
+          break;
+        default:
+          break;
+      }
+    }
+
+    preparedUniforms["u_time"] = { value: 0, type: "1f" };
+    preparedUniforms["u_resolution"] = {
+      value: new THREE.Vector2(size.width * 2, size.height * 2),
+    };
+    return preparedUniforms;
+  };
+
+  const material = useMemo(() => {
+    const materialObject = new THREE.ShaderMaterial({
       vertexShader: `
-        precision mediump float;
-        attribute vec2 position;
-        void main() {
-          gl_Position = vec4(position, 0.0, 1.0);
-        }
+      precision mediump float;
+      in vec2 coordinates;
+      uniform vec2 u_resolution;
+      out vec2 fragCoord;
+      void main(){
+        float x = position.x;
+        float y = position.y;
+        gl_Position = vec4(x, y, 0.0, 1.0);
+        fragCoord = (position.xy + vec2(1.0)) * 0.5 * u_resolution;
+        fragCoord.y = u_resolution.y - fragCoord.y;
+      }
       `,
-      fragmentShader: `
-        precision mediump float;
-        uniform vec3 u_colors[6];
-        uniform float u_opacities[10];
-        uniform float u_total_size;
-        uniform float u_dot_size;
-        uniform float u_time;
-        uniform vec2 u_resolution;
-        
-        float circle(vec2 coord, float size, float blur) {
-          float dist = length(coord);
-          float c = smoothstep(size + blur, size - blur, dist);
-          return c;
-        }
-        
-        void main() {
-          vec2 st = gl_FragCoord.xy / u_resolution.xy;
-          st.y = 1.0 - st.y;
-          
-          float aspectRatio = u_resolution.x / u_resolution.y;
-          vec2 grid = vec2(u_total_size * aspectRatio, u_total_size);
-          vec2 gridSt = st * grid;
-          
-          vec2 cellIndex = floor(gridSt);
-          vec2 cellCenter = fract(gridSt) - 0.5;
-          
-          float minDim = min(u_resolution.x, u_resolution.y);
-          float dotRadius = (u_dot_size / u_total_size) * 0.5;
-          float scaleFactor = minDim / u_total_size;
-          
-          float dist = distance(st, vec2(0.5));
-          float time = u_time * 0.5;
-          
-          float wave = sin(dist * 3.0 - time) * 0.5 + 0.5;
-          wave = pow(wave, 2.0);
-          
-          float sizeVariation = mix(0.6, 1.0, wave);
-          
-          float c = circle(cellCenter, dotRadius * sizeVariation, 0.01) * 1.0;
-          
-          vec3 color = mix(u_colors[1], u_colors[4], wave);
-          float opacity = mix(u_opacities[1], u_opacities[6], wave);
-          
-          gl_FragColor = vec4(color, c * opacity);
-        }
-      `,
-      uniforms: {
-        ...Object.fromEntries(
-          Object.entries(uniforms).map(([key, uniform]) => {
-            switch (uniform.type) {
-              case "uniform1f":
-                return [key, { value: uniform.value as number }];
-              case "uniform3f":
-                return [key, {
-                  value: new THREE.Vector3(
-                    ...(uniform.value as [number, number, number])
-                  ),
-                }];
-              case "uniform1fv":
-                return [key, { value: uniform.value as number[] }];
-              case "uniform3fv":
-                return [key, {
-                  value: (uniform.value as number[][]).map(
-                    (v: any) => new THREE.Vector3(...v)
-                  ),
-                }];
-              case "uniform2f":
-                return [key, {
-                  value: new THREE.Vector2(
-                    ...(uniform.value as [number, number])
-                  ),
-                }];
-              default:
-                return [key, { value: uniform.value }];
-            }
-          })
-        ),
-        u_time: { value: 0 },
-        u_resolution: {
-          value: new THREE.Vector2(size.width, size.height),
-        },
-      },
-      transparent: true,
-      depthWrite: false,
-      depthTest: false,
+      fragmentShader: source,
+      uniforms: getUniforms(),
+      glslVersion: THREE.GLSL3,
+      blending: THREE.CustomBlending,
+      blendSrc: THREE.SrcAlphaFactor,
+      blendDst: THREE.OneFactor,
     });
 
-    return mat;
-  }, [uniforms, size]);
+    return materialObject;
+  }, [size.width, size.height, source]);
 
-  React.useEffect(() => {
-    if (ref.current) {
-      (ref.current.material as THREE.ShaderMaterial).uniforms.u_resolution.value = new THREE.Vector2(size.width, size.height);
-    }
-  }, [size]);
-
-  const geometry = React.useMemo(() => {
-    const geo = new THREE.BufferGeometry();
-    const vertices = new Float32Array([
-      -1, -1, 0,
-       1, -1, 0,
-       1,  1, 0,
-      -1, -1, 0,
-       1,  1, 0,
-      -1,  1, 0,
-    ]);
-    geo.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
-    return geo;
-  }, []);
-
-  return <mesh ref={ref} geometry={geometry} material={material} />;
+  return (
+    <mesh ref={ref as any}>
+      <planeGeometry args={[2, 2]} />
+      <primitive object={material} attach="material" />
+    </mesh>
+  );
 };
 
 const AnimatedNavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
