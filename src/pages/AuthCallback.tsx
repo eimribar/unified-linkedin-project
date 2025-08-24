@@ -164,6 +164,19 @@ const AuthCallback: React.FC = () => {
           setTimeout(() => navigate('/client-approve'), 1500);
           return;
         }
+        
+        // CRITICAL FIX: Handle null/undefined data response
+        console.warn('⚠️ No valid response from complete_oauth_signup, data:', data);
+        console.warn('User is authenticated but invitation linking may have failed');
+        
+        // Don't block the user - they're authenticated, let them in
+        setStatus('success');
+        setMessage('Authenticated! Redirecting...');
+        toast.warning('Account linked with limited access. Contact support if you need assistance.');
+        
+        // Redirect to client portal anyway - they're authenticated
+        setTimeout(() => navigate('/client-approve'), 1500);
+        return;
       } else {
         // No invitation token - regular sign in
         console.log('ℹ️ Regular OAuth sign-in (no invitation)');
