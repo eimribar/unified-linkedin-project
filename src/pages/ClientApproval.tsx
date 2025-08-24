@@ -1,7 +1,6 @@
 // =====================================================
 // CLIENT APPROVAL PAGE - REDESIGNED
-// Modern card-based approval interface with SSO auth
-// Beautiful UX with stack view and swipe gestures
+// High-quality UI with animations and modern design
 // =====================================================
 
 import React, { useState, useEffect } from 'react';
@@ -9,30 +8,13 @@ import { useNavigate } from 'react-router-dom';
 import { useSimpleAuth } from '@/contexts/SimpleAuthContext';
 import { supabase } from '@/lib/supabase';
 import { isAdmin } from '@/utils/authHelpers';
-import ApprovalStack from '@/components/approval/ApprovalStack';
-import { 
-  LogOut,
-  Building,
-  User,
-  Calendar,
-  BarChart3,
-  Settings,
-  Bell,
-  Search,
-  Filter,
-  Loader2,
-  CheckCircle2,
-  Clock,
-  XCircle
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { ClientPortalRedesign } from '@/components/ui/client-portal-redesign';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import toast from 'react-hot-toast';
+import { Loader2 } from 'lucide-react';
 
 interface GeneratedContent {
   id: string;
@@ -90,6 +72,10 @@ const ClientApproval: React.FC = () => {
   // Load client data when user is authenticated
   useEffect(() => {
     if (user) {
+      // Check if user is admin and redirect
+      if (isAdmin(user.email)) {
+        setIsAdminMode(true);
+      }
       loadClientData();
     }
   }, [user]);
@@ -278,24 +264,29 @@ const ClientApproval: React.FC = () => {
     try {
       const { error } = await supabase
         .from('generated_content')
-        .update({
+        .update({ 
           status: 'client_approved',
           approved_at: new Date().toISOString(),
-          revision_notes: `Approved by ${client?.name}`
+          approved_by: client?.name
         })
         .eq('id', item.id);
 
       if (error) throw error;
       
-      // Remove from current content and reload stats
+      // Remove from current list
       setContent(prev => prev.filter(c => c.id !== item.id));
-      loadStats();
       
-      toast.success('Content approved! 🎉');
+      // Update stats
+      setStats(prev => ({
+        ...prev,
+        pending: prev.pending - 1,
+        approved: prev.approved + 1
+      }));
+      
+      toast.success('Content approved successfully!');
     } catch (error) {
       console.error('Error approving content:', error);
       toast.error('Failed to approve content');
-      throw error; // Re-throw to be handled by ApprovalStack
     }
   };
 
@@ -368,172 +359,42 @@ const ClientApproval: React.FC = () => {
     }
   };
 
+  const handleClientChange = (clientId: string) => {
+    const newClient = allClients.find(c => c.id === clientId);
+    if (newClient) {
+      setSelectedClientId(clientId);
+      setClient(newClient);
+      setContent([]); // Clear content to reload
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-zinc-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-zinc-600" />
-          <p className="text-zinc-600">Loading your portal...</p>
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-gray-600" />
+          <p className="text-gray-600">Loading your portal...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-50 to-white">
-      {/* Header */}
-      <header className="bg-white border-b border-zinc-200 sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo & Client Info */}
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-zinc-900 to-zinc-700 rounded-xl flex items-center justify-center">
-                <Building className="w-6 h-6 text-white" />
-              </div>
-              
-              <div>
-                <h1 className="text-lg font-semibold text-zinc-900">
-                  {client?.company || 'Content Portal'}
-                </h1>
-                <p className="text-sm text-zinc-600">
-                  {isAdminMode ? `Admin viewing: ${client?.name}` : `Welcome, ${client?.name}`}
-                </p>
-              </div>
-              
-              {/* Admin Client Selector */}
-              {isAdminMode && allClients.length > 0 && (
-                <select
-                  className="ml-4 px-3 py-1 border border-zinc-300 rounded-lg text-sm"
-                  value={selectedClientId || ''}
-                  onChange={(e) => {
-                    const newClient = allClients.find(c => c.id === e.target.value);
-                    if (newClient) {
-                      setSelectedClientId(e.target.value);
-                      setClient(newClient);
-                      setContent([]); // Clear content to reload
-                    }
-                  }}
-                >
-                  <option value="">Select Client</option>
-                  {allClients.map(c => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} ({c.email})
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              {isAdminMode && (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => window.location.href = 'https://ghostwriter-portal.vercel.app'}
-                >
-                  Back to Admin Portal
-                </Button>
-              )}
-              
-              <Button variant="ghost" size="sm">
-                <Bell className="w-4 h-4" />
-              </Button>
-              
-              <Button variant="ghost" size="sm">
-                <Settings className="w-4 h-4" />
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => signOut()}
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Dashboard */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-zinc-900">{stats.pending}</p>
-                  <p className="text-xs text-zinc-600">Pending Review</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <CheckCircle2 className="w-5 h-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-zinc-900">{stats.approved}</p>
-                  <p className="text-xs text-zinc-600">Approved</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                  <XCircle className="w-5 h-5 text-red-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-zinc-900">{stats.rejected}</p>
-                  <p className="text-xs text-zinc-600">Rejected</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-zinc-900">{stats.total}</p>
-                  <p className="text-xs text-zinc-600">Total Content</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Approval Interface */}
-        {loading ? (
-          <div className="text-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-zinc-600" />
-            <p className="text-zinc-600">Loading your content...</p>
-          </div>
-        ) : (
-          <ApprovalStack
-            content={content}
-            clientName={client?.name}
-            onApprove={handleApprove}
-            onReject={handleReject}
-            onEdit={handleEdit}
-          />
-        )}
-      </main>
+    <>
+      <ClientPortalRedesign
+        client={client}
+        content={content}
+        stats={stats}
+        loading={loading}
+        isAdminMode={isAdminMode}
+        allClients={allClients}
+        selectedClientId={selectedClientId}
+        onClientChange={handleClientChange}
+        onApprove={handleApprove}
+        onReject={handleReject}
+        onEdit={handleEdit}
+        onSignOut={signOut}
+      />
 
       {/* Edit Modal */}
       <Dialog open={editModal.open} onOpenChange={(open) => !open && setEditModal({ open: false, item: null, editedText: '' })}>
@@ -541,30 +402,23 @@ const ClientApproval: React.FC = () => {
           <DialogHeader>
             <DialogTitle>Edit Content</DialogTitle>
             <DialogDescription>
-              Make your changes below. The content will be sent back to your content team for review.
+              Make changes to the content below. Your edits will be sent back for review.
             </DialogDescription>
           </DialogHeader>
-          
-          <div className="space-y-4">
+          <div className="space-y-4 mt-4">
             <div>
-              <Label htmlFor="content">Content</Label>
+              <Label>Content Text</Label>
               <Textarea
-                id="content"
                 value={editModal.editedText}
                 onChange={(e) => setEditModal(prev => ({ ...prev, editedText: e.target.value }))}
                 className="min-h-[200px] mt-2"
-                placeholder="Edit your content here..."
               />
             </div>
-            
-            <div className="flex justify-end gap-2">
-              <Button 
-                variant="outline" 
-                onClick={() => setEditModal({ open: false, item: null, editedText: '' })}
-              >
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setEditModal({ open: false, item: null, editedText: '' })}>
                 Cancel
               </Button>
-              <Button onClick={saveEdit}>
+              <Button onClick={saveEdit} className="bg-gray-900 text-white hover:bg-black">
                 Save Changes
               </Button>
             </div>
@@ -572,43 +426,37 @@ const ClientApproval: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Reject Modal */}
+      {/* Rejection Modal */}
       <Dialog open={rejectModal.open} onOpenChange={(open) => !open && setRejectModal({ open: false, item: null, reason: '' })}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Reject Content</DialogTitle>
             <DialogDescription>
-              Please provide feedback on why this content doesn't meet your needs.
+              Please provide a reason for rejecting this content (optional).
             </DialogDescription>
           </DialogHeader>
-          
-          <div className="space-y-4">
+          <div className="space-y-4 mt-4">
             <div>
-              <Label htmlFor="reason">Reason for rejection (optional)</Label>
+              <Label>Rejection Reason</Label>
               <Textarea
-                id="reason"
                 value={rejectModal.reason}
                 onChange={(e) => setRejectModal(prev => ({ ...prev, reason: e.target.value }))}
+                placeholder="Enter your feedback..."
                 className="mt-2"
-                placeholder="Please provide specific feedback to help improve future content..."
               />
             </div>
-            
-            <div className="flex justify-end gap-2">
-              <Button 
-                variant="outline" 
-                onClick={() => setRejectModal({ open: false, item: null, reason: '' })}
-              >
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setRejectModal({ open: false, item: null, reason: '' })}>
                 Cancel
               </Button>
-              <Button variant="destructive" onClick={confirmReject}>
+              <Button onClick={confirmReject} className="bg-red-600 text-white hover:bg-red-700">
                 Reject Content
               </Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };
 
