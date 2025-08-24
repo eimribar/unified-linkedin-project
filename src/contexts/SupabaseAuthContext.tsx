@@ -168,75 +168,14 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({ chil
         setUser(session?.user ?? null);
         
         if (event === 'SIGNED_IN' && session?.user) {
-          // Check for pending invitation after OAuth callback
-          const pendingInvitation = localStorage.getItem('pending_invitation');
-          if (pendingInvitation) {
-            try {
-              const inviteData = JSON.parse(pendingInvitation);
-              console.log('🔐 Processing OAuth signup with invitation:', {
-                hasToken: !!inviteData.token,
-                userEmail: session.user.email
-              });
-              
-              // Call secure database function to complete OAuth signup
-              const { data, error } = await supabase.rpc('complete_oauth_signup', {
-                p_invitation_token: inviteData.token
-              });
-              
-              if (error) {
-                console.error('Database function error:', error);
-                toast.error('Failed to complete account setup. Please contact support.');
-                
-                // Log detailed error for debugging (production would use proper error tracking)
-                console.error('OAuth signup error details:', {
-                  error,
-                  user: session.user.email,
-                  provider: session.user.app_metadata?.provider
-                });
-              } else if (data && !data.success) {
-                // Handle specific error codes from the function
-                console.warn('OAuth signup failed:', data);
-                
-                const errorMessages: Record<string, string> = {
-                  'EMAIL_MISMATCH': 'The invitation was sent to a different email address.',
-                  'ALREADY_LINKED': 'This account is already linked to another user.',
-                  'INVITATION_INVALID': 'The invitation link has expired or is invalid.',
-                  'AUTH_REQUIRED': 'Authentication is required to complete signup.',
-                  'default': data.error || 'Failed to complete signup. Please contact support.'
-                };
-                
-                toast.error(errorMessages[data.code] || errorMessages.default);
-                
-                // Clear invalid invitation data
-                localStorage.removeItem('pending_invitation');
-              } else if (data && data.success) {
-                console.log('✅ OAuth signup completed successfully:', data);
-                
-                // Clear the pending invitation
-                localStorage.removeItem('pending_invitation');
-                
-                // Show success message with client name
-                toast.success(
-                  data.client_name 
-                    ? `Welcome to ${data.client_name}'s portal!` 
-                    : 'Account setup complete! Welcome aboard!'
-                );
-              }
-            } catch (err) {
-              console.error('Unexpected error processing invitation:', err);
-              toast.error('An unexpected error occurred. Please try again.');
-              
-              // Clear potentially corrupted data
-              localStorage.removeItem('pending_invitation');
-            }
-          }
-          
-          // Always try to load the client profile after sign in
+          // Load the client profile after sign in
           await loadClientProfile(session.user.id);
           await updateLastLogin();
           
-          // Only show generic welcome if not processing invitation
-          if (!pendingInvitation) {
+          // Only show welcome message if not coming from OAuth callback
+          // The callback page handles its own messaging
+          const isFromCallback = window.location.pathname.includes('/auth/callback');
+          if (!isFromCallback) {
             toast.success(`Welcome back!`);
           }
         } else if (event === 'SIGNED_OUT') {
@@ -389,10 +328,32 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({ chil
 
   const signInWithProvider = async (provider: 'google' | 'github' | 'microsoft') => {
     try {
+      // Check for invitation token in current URL or localStorage
+      const urlParams = new URLSearchParams(window.location.search);
+      const invitationToken = urlParams.get('invitation');
+      const pendingInvitation = localStorage.getItem('pending_invitation');
+      
+      // Build redirect URL with invitation token if present
+      let redirectUrl = window.location.origin + '/auth/callback';
+      if (invitationToken) {
+        redirectUrl += `?invitation=${invitationToken}`;
+      } else if (pendingInvitation) {
+        try {
+          const inviteData = JSON.parse(pendingInvitation);
+          if (inviteData.token) {
+            redirectUrl += `?invitation=${inviteData.token}`;
+          }
+        } catch (e) {
+          console.error('Failed to parse pending invitation:', e);
+        }
+      }
+      
+      console.log('🔐 OAuth redirect URL:', redirectUrl);
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: window.location.origin + '/client-approve'
+          redirectTo: redirectUrl
         }
       });
 

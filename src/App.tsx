@@ -12,6 +12,7 @@ import UserLayout from "./layouts/UserLayout";
 
 // Lazy load pages for better code splitting
 const Auth = lazy(() => import("./pages/Auth"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const Approve = lazy(() => import("./pages/Approve"));
 const UserAnalytics = lazy(() => import("./pages/UserAnalytics"));
 const ContentIdeas = lazy(() => import("./pages/ContentIdeas"));
@@ -38,8 +39,9 @@ const App = () => (
           <BrowserRouter>
             <Suspense fallback={<LoadingFallback />}>
             <Routes>
-              {/* Public Authentication Route */}
+              {/* Public Authentication Routes */}
               <Route path="/auth" element={<Auth />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               
               {/* Protected Client Portal Routes */}
               <Route path="/client-approve" element={

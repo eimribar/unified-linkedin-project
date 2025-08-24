@@ -218,19 +218,12 @@ const Auth: React.FC = () => {
     const oauthTracker = trackOAuthFlow('provider');
     
     try {
-      // Store invitation data if present before OAuth redirect
+      // The signInWithProvider function now handles passing the invitation token
+      // via the redirect URL, so we don't need localStorage anymore
+      console.log('🔐 Initiating OAuth with provider:', provider);
+      
       if (invitationData) {
-        const invitationPayload = {
-          token: searchParams.get('invitation'),
-          clientId: invitationData.client.id,
-          clientEmail: invitationData.client.email,
-          timestamp: Date.now()
-        };
-        
-        localStorage.setItem('pending_invitation', JSON.stringify(invitationPayload));
-        
-        // Track OAuth initiation with invitation
-        console.log('🔐 Initiating OAuth with invitation for:', invitationData.client.email);
+        console.log('📧 OAuth with invitation for:', invitationData.client.email);
       }
       
       await signInWithProvider(provider);
