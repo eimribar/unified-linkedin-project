@@ -173,47 +173,69 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({ chil
           if (pendingInvitation) {
             try {
               const inviteData = JSON.parse(pendingInvitation);
-              console.log('📧 Processing pending invitation after OAuth:', inviteData);
+              console.log('🔐 Processing OAuth signup with invitation:', {
+                hasToken: !!inviteData.token,
+                userEmail: session.user.email
+              });
               
-              // Link the auth user to the client record
-              const { error: updateError } = await supabase
-                .from('clients')
-                .update({
-                  auth_user_id: session.user.id,
-                  invitation_status: 'accepted',
-                  auth_status: 'active',
-                  auth_provider: session.user.app_metadata?.provider || 'oauth',
-                  last_login_at: new Date().toISOString()
-                })
-                .eq('id', inviteData.clientId)
-                .eq('email', inviteData.clientEmail);
-                
-              if (updateError) {
-                console.error('Failed to link auth user to client:', updateError);
+              // Call secure database function to complete OAuth signup
+              const { data, error } = await supabase.rpc('complete_oauth_signup', {
+                p_invitation_token: inviteData.token
+              });
+              
+              if (error) {
+                console.error('Database function error:', error);
                 toast.error('Failed to complete account setup. Please contact support.');
-              } else {
-                console.log('✅ Successfully linked OAuth user to client');
                 
-                // Update invitation status
-                await supabase
-                  .from('client_invitations')
-                  .update({ 
-                    status: 'accepted',
-                    accepted_at: new Date().toISOString()
-                  })
-                  .eq('token', inviteData.token);
-                  
+                // Log detailed error for debugging (production would use proper error tracking)
+                console.error('OAuth signup error details:', {
+                  error,
+                  user: session.user.email,
+                  provider: session.user.app_metadata?.provider
+                });
+              } else if (data && !data.success) {
+                // Handle specific error codes from the function
+                console.warn('OAuth signup failed:', data);
+                
+                const errorMessages: Record<string, string> = {
+                  'EMAIL_MISMATCH': 'The invitation was sent to a different email address.',
+                  'ALREADY_LINKED': 'This account is already linked to another user.',
+                  'INVITATION_INVALID': 'The invitation link has expired or is invalid.',
+                  'AUTH_REQUIRED': 'Authentication is required to complete signup.',
+                  'default': data.error || 'Failed to complete signup. Please contact support.'
+                };
+                
+                toast.error(errorMessages[data.code] || errorMessages.default);
+                
+                // Clear invalid invitation data
+                localStorage.removeItem('pending_invitation');
+              } else if (data && data.success) {
+                console.log('✅ OAuth signup completed successfully:', data);
+                
                 // Clear the pending invitation
                 localStorage.removeItem('pending_invitation');
-                toast.success('Account setup complete! Welcome aboard!');
+                
+                // Show success message with client name
+                toast.success(
+                  data.client_name 
+                    ? `Welcome to ${data.client_name}'s portal!` 
+                    : 'Account setup complete! Welcome aboard!'
+                );
               }
             } catch (err) {
-              console.error('Error processing pending invitation:', err);
+              console.error('Unexpected error processing invitation:', err);
+              toast.error('An unexpected error occurred. Please try again.');
+              
+              // Clear potentially corrupted data
+              localStorage.removeItem('pending_invitation');
             }
           }
           
+          // Always try to load the client profile after sign in
           await loadClientProfile(session.user.id);
           await updateLastLogin();
+          
+          // Only show generic welcome if not processing invitation
           if (!pendingInvitation) {
             toast.success(`Welcome back!`);
           }

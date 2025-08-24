@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { supabase } from '@/lib/supabase';
+import { errorTracker, trackOAuthFlow } from '@/utils/errorTracking';
 import { 
   Mail, 
   Lock, 
@@ -214,18 +215,44 @@ const Auth: React.FC = () => {
   };
 
   const handleProviderAuth = async (provider: 'google' | 'github' | 'microsoft') => {
+    const oauthTracker = trackOAuthFlow('provider');
+    
     try {
       // Store invitation data if present before OAuth redirect
       if (invitationData) {
-        localStorage.setItem('pending_invitation', JSON.stringify({
+        const invitationPayload = {
           token: searchParams.get('invitation'),
           clientId: invitationData.client.id,
-          clientEmail: invitationData.client.email
-        }));
+          clientEmail: invitationData.client.email,
+          timestamp: Date.now()
+        };
+        
+        localStorage.setItem('pending_invitation', JSON.stringify(invitationPayload));
+        
+        // Track OAuth initiation with invitation
+        console.log('🔐 Initiating OAuth with invitation for:', invitationData.client.email);
       }
+      
       await signInWithProvider(provider);
+      
+      // Track successful OAuth initiation
+      oauthTracker.success(provider, {
+        hasInvitation: !!invitationData
+      });
     } catch (err) {
+      // Track OAuth error
+      oauthTracker.error(err, {
+        provider,
+        hasInvitation: !!invitationData
+      });
+      
       toast.error(`Failed to sign in with ${provider}`);
+      
+      // Production error tracking
+      errorTracker.trackError(err as Error, {
+        action: 'oauth_provider_auth',
+        metadata: { provider, hasInvitation: !!invitationData }
+      });
     }
   };
 
