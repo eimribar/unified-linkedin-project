@@ -4,7 +4,7 @@
 // =====================================================
 
 // Admin email - only this user has admin access
-const ADMIN_EMAIL = 'eimri@webloom.ai';
+const ADMIN_EMAIL = 'eimrib@yess.ai';
 
 /**
  * Check if user is the admin

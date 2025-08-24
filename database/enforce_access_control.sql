@@ -56,7 +56,7 @@ SECURITY DEFINER
 AS $$
 BEGIN
     -- Check if user is admin
-    IF LOWER(auth.email()) = 'eimri@webloom.ai' THEN
+    IF LOWER(auth.email()) = 'eimrib@yess.ai' THEN
         RETURN TRUE;
     END IF;
     
@@ -95,6 +95,6 @@ GRANT SELECT ON my_client_info TO authenticated;
 
 -- =====================================================
 -- IMPORTANT: Admin bypass
--- The admin (eimri@webloom.ai) should use the 
+-- The admin (eimrib@yess.ai) should use the 
 -- Ghostwriter Portal which has service role access
 -- =====================================================
