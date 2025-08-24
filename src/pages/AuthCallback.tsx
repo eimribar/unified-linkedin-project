@@ -27,8 +27,12 @@ const AuthCallback: React.FC = () => {
       // First, check if there's a code in the URL (OAuth callback)
       const code = searchParams.get('code');
       
+      let session = null;
+      
       if (code) {
         console.log('📝 OAuth code found, exchanging for session...');
+        setMessage('Authenticating with Google...');
+        
         // Exchange the code for a session
         const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
         
@@ -40,26 +44,41 @@ const AuthCallback: React.FC = () => {
           return;
         }
         
-        console.log('✅ Code exchanged successfully');
-      }
-      
-      // Now get the current session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        console.error('Session error:', sessionError);
-        setStatus('error');
-        setMessage('Authentication failed. Please try again.');
-        setTimeout(() => navigate('/auth'), 3000);
-        return;
+        console.log('✅ Code exchanged successfully, session:', data.session?.user?.email);
+        session = data.session;
+      } else {
+        // No code, try to get existing session
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          setStatus('error');
+          setMessage('Authentication failed. Please try again.');
+          setTimeout(() => navigate('/auth'), 3000);
+          return;
+        }
+        
+        session = sessionData.session;
       }
 
       if (!session) {
         console.error('No session found after OAuth');
-        setStatus('error');
-        setMessage('No session found. Redirecting to login...');
-        setTimeout(() => navigate('/auth'), 3000);
-        return;
+        // Instead of showing error, wait a moment for auth state to propagate
+        setMessage('Completing sign in...');
+        
+        // Wait a bit and try once more
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const { data: { session: retrySession } } = await supabase.auth.getSession();
+        
+        if (!retrySession) {
+          setStatus('error');
+          setMessage('No session found. Redirecting to login...');
+          setTimeout(() => navigate('/auth'), 3000);
+          return;
+        }
+        
+        session = retrySession;
       }
 
       console.log('✅ Session found:', {
