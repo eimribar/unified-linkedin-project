@@ -168,9 +168,55 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({ chil
         setUser(session?.user ?? null);
         
         if (event === 'SIGNED_IN' && session?.user) {
+          // Check for pending invitation after OAuth callback
+          const pendingInvitation = localStorage.getItem('pending_invitation');
+          if (pendingInvitation) {
+            try {
+              const inviteData = JSON.parse(pendingInvitation);
+              console.log('📧 Processing pending invitation after OAuth:', inviteData);
+              
+              // Link the auth user to the client record
+              const { error: updateError } = await supabase
+                .from('clients')
+                .update({
+                  auth_user_id: session.user.id,
+                  invitation_status: 'accepted',
+                  auth_status: 'active',
+                  auth_provider: session.user.app_metadata?.provider || 'oauth',
+                  last_login_at: new Date().toISOString()
+                })
+                .eq('id', inviteData.clientId)
+                .eq('email', inviteData.clientEmail);
+                
+              if (updateError) {
+                console.error('Failed to link auth user to client:', updateError);
+                toast.error('Failed to complete account setup. Please contact support.');
+              } else {
+                console.log('✅ Successfully linked OAuth user to client');
+                
+                // Update invitation status
+                await supabase
+                  .from('client_invitations')
+                  .update({ 
+                    status: 'accepted',
+                    accepted_at: new Date().toISOString()
+                  })
+                  .eq('token', inviteData.token);
+                  
+                // Clear the pending invitation
+                localStorage.removeItem('pending_invitation');
+                toast.success('Account setup complete! Welcome aboard!');
+              }
+            } catch (err) {
+              console.error('Error processing pending invitation:', err);
+            }
+          }
+          
           await loadClientProfile(session.user.id);
           await updateLastLogin();
-          toast.success(`Welcome back!`);
+          if (!pendingInvitation) {
+            toast.success(`Welcome back!`);
+          }
         } else if (event === 'SIGNED_OUT') {
           setClient(null);
           setLoading(false);

@@ -215,6 +215,14 @@ const Auth: React.FC = () => {
 
   const handleProviderAuth = async (provider: 'google' | 'github' | 'microsoft') => {
     try {
+      // Store invitation data if present before OAuth redirect
+      if (invitationData) {
+        localStorage.setItem('pending_invitation', JSON.stringify({
+          token: searchParams.get('invitation'),
+          clientId: invitationData.client.id,
+          clientEmail: invitationData.client.email
+        }));
+      }
       await signInWithProvider(provider);
     } catch (err) {
       toast.error(`Failed to sign in with ${provider}`);
