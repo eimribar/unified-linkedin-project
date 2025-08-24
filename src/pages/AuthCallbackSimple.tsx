@@ -8,6 +8,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { isAdmin, isAuthorizedUser, getAuthRedirect } from '@/utils/authHelpers';
 
 const AuthCallbackSimple: React.FC = () => {
   const navigate = useNavigate();
@@ -44,14 +45,50 @@ const AuthCallbackSimple: React.FC = () => {
       }
 
       console.log('✅ Authenticated as:', session.user.email);
-
-      // If we have an invitation token, link the account
-      if (invitationToken) {
+      
+      setMessage('Verifying access...');
+      
+      // Check if user is admin
+      if (isAdmin(session.user.email)) {
+        console.log('Admin user detected, redirecting to Ghostwriter Portal');
+        toast.success('Welcome back, Admin!');
+        window.location.href = 'https://ghostwriter-portal.vercel.app';
+        return;
+      }
+      
+      // Check if user is a registered client
+      let isRegisteredClient = false;
+      let clientData = null;
+      
+      // First check if they exist in clients table
+      const { data: existingClient, error: checkError } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('email', session.user.email)
+        .single();
+      
+      if (existingClient) {
+        isRegisteredClient = true;
+        clientData = existingClient;
+        
+        // Update auth_user_id if not set
+        if (!existingClient.auth_user_id) {
+          await supabase
+            .from('clients')
+            .update({
+              auth_user_id: session.user.id,
+              last_login_at: new Date().toISOString()
+            })
+            .eq('id', existingClient.id);
+        }
+      }
+      
+      // If we have an invitation token, try to link the account
+      if (invitationToken && !isRegisteredClient) {
         setMessage('Linking your account...');
         
         try {
-          // Simple direct database update
-          const { data: clientData, error: updateError } = await supabase
+          const { data: inviteClient, error: updateError } = await supabase
             .from('clients')
             .update({
               auth_user_id: session.user.id,
@@ -60,25 +97,38 @@ const AuthCallbackSimple: React.FC = () => {
               updated_at: new Date().toISOString()
             })
             .eq('invitation_token', invitationToken)
-            .eq('email', session.user.email) // Security: only link if emails match
+            .eq('email', session.user.email)
             .select()
             .single();
 
-          if (updateError) {
-            console.error('Failed to link account:', updateError);
-            // Still let them in - they're authenticated
-            toast.warning('Account created but not linked to invitation');
-          } else if (clientData) {
-            console.log('✅ Account linked successfully:', clientData);
-            toast.success(`Welcome, ${clientData.name || session.user.email}!`);
+          if (!updateError && inviteClient) {
+            console.log('✅ Account linked successfully:', inviteClient);
+            toast.success(`Welcome, ${inviteClient.name || session.user.email}!`);
+            isRegisteredClient = true;
+            clientData = inviteClient;
           }
         } catch (err) {
           console.error('Error linking account:', err);
-          // Don't block - they're authenticated
         }
       }
-
-      // Redirect to client portal
+      
+      // Check if user is authorized
+      if (!isAuthorizedUser(session.user.email, isRegisteredClient)) {
+        console.error('Unauthorized user:', session.user.email);
+        toast.error('You are not authorized to access this platform. Please contact your administrator.');
+        
+        // Sign them out
+        await supabase.auth.signOut();
+        
+        // Redirect to auth with error
+        navigate('/auth?error=unauthorized');
+        return;
+      }
+      
+      // User is authorized - redirect to client portal
+      if (clientData) {
+        toast.success(`Welcome back, ${clientData.name || session.user.email}!`);
+      }
       navigate('/client-approve');
       
     } catch (error) {

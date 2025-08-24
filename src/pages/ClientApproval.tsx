@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSimpleAuth } from '@/contexts/SimpleAuthContext';
 import { supabase } from '@/lib/supabase';
+import { isAdmin } from '@/utils/authHelpers';
 import ApprovalStack from '@/components/approval/ApprovalStack';
 import { 
   LogOut,
@@ -86,6 +87,12 @@ const ClientApproval: React.FC = () => {
   // Load client data when user is authenticated
   useEffect(() => {
     if (user) {
+      // Check if user is admin and redirect
+      if (isAdmin(user.email)) {
+        console.log('Admin detected, redirecting to Ghostwriter Portal');
+        window.location.href = 'https://ghostwriter-portal.vercel.app';
+        return;
+      }
       loadClientData();
     }
   }, [user]);
@@ -133,7 +140,14 @@ const ClientApproval: React.FC = () => {
           
           if (caseError) {
             console.error('No client found for email:', user.email);
-            toast.error('No client account found. Please contact support.');
+            toast.error('You are not authorized to access this platform. Please contact your administrator.');
+            
+            // Sign out unauthorized user
+            setTimeout(async () => {
+              await signOut();
+              navigate('/auth?error=unauthorized');
+            }, 2000);
+            
             setLoading(false); // Important: stop loading
             return;
           }

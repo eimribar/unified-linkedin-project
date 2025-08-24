@@ -18,11 +18,17 @@ const AuthSimple: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const invitationToken = searchParams.get('invitation');
+  const errorType = searchParams.get('error');
 
   // Check if already authenticated
   useEffect(() => {
     checkAuth();
-  }, []);
+    
+    // Show error message if redirected with error
+    if (errorType === 'unauthorized') {
+      toast.error('You are not authorized to access this platform. Please contact your administrator.');
+    }
+  }, [errorType]);
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
