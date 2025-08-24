@@ -1,28 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Using the same Supabase instance as the ghostwriter portal
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// These should be set in Vercel environment variables
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://ifwscuvbtdokljwwbvex.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlmd3NjdXZidGRva2xqd3didmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwMDI0NDMsImV4cCI6MjA3MDU3ODQ0M30.QzxtYT8nbLPx9T3-PLABLXx7XtkjAg77ffUlghnQ0Xc';
 
-// Delay credential check to allow environment variables to load
-// This prevents false "NOT SET" errors on initial load
-if (typeof window !== 'undefined') {
-  setTimeout(() => {
-    if (!supabaseUrl || !supabaseAnonKey) {
-      console.warn('⚠️ Supabase credentials may not be configured properly');
-      console.warn('If you see authentication errors, check that VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set');
-    } else {
-      console.log('✅ Supabase client initialized');
-    }
-  }, 1000);
+// Log initialization status
+console.log('🔧 Initializing Supabase client...');
+if (import.meta.env.VITE_SUPABASE_URL) {
+  console.log('✅ Using environment variables for Supabase');
+} else {
+  console.warn('⚠️ Using fallback Supabase configuration');
 }
 
-// Create client even with empty strings - Vite will inject the real values
-// This prevents initialization errors
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-key'
-);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Database types matching the ghostwriter portal schema
 export interface Client {
