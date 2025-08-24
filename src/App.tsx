@@ -4,15 +4,15 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { SupabaseAuthProvider } from "./contexts/SupabaseAuthContext";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
+import { SimpleAuthProvider } from "./contexts/SimpleAuthContext";
+import SimpleProtectedRoute from "./components/auth/SimpleProtectedRoute";
 import PortalSwitcher from "./components/PortalSwitcher";
-import ImpersonationBanner from "./components/ImpersonationBanner";
 import UserLayout from "./layouts/UserLayout";
 
 // Lazy load pages for better code splitting
-const Auth = lazy(() => import("./pages/Auth"));
-const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+// Using simplified auth pages for cleaner flow
+const Auth = lazy(() => import("./pages/AuthSimple"));
+const AuthCallback = lazy(() => import("./pages/AuthCallbackSimple"));
 const Approve = lazy(() => import("./pages/Approve"));
 const UserAnalytics = lazy(() => import("./pages/UserAnalytics"));
 const ContentIdeas = lazy(() => import("./pages/ContentIdeas"));
@@ -31,11 +31,10 @@ const LoadingFallback = () => (
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <SupabaseAuthProvider>
+      <SimpleAuthProvider>
         <>
           <Toaster />
           <Sonner />
-          <ImpersonationBanner />
           <BrowserRouter>
             <Suspense fallback={<LoadingFallback />}>
             <Routes>
@@ -45,36 +44,36 @@ const App = () => (
               
               {/* Protected Client Portal Routes */}
               <Route path="/client-approve" element={
-                <ProtectedRoute>
+                <SimpleProtectedRoute>
                   <ClientApproval />
-                </ProtectedRoute>
+                </SimpleProtectedRoute>
               } />
               
               {/* Protected Main Portal Routes */}
               <Route path="/approve" element={
-                <ProtectedRoute>
+                <SimpleProtectedRoute>
                   <UserLayout><Approve /></UserLayout>
-                </ProtectedRoute>
+                </SimpleProtectedRoute>
               } />
               <Route path="/user-analytics" element={
-                <ProtectedRoute>
+                <SimpleProtectedRoute>
                   <UserLayout><UserAnalytics /></UserLayout>
-                </ProtectedRoute>
+                </SimpleProtectedRoute>
               } />
               <Route path="/ideas" element={
-                <ProtectedRoute>
+                <SimpleProtectedRoute>
                   <UserLayout><ContentIdeas /></UserLayout>
-                </ProtectedRoute>
+                </SimpleProtectedRoute>
               } />
               <Route path="/import" element={
-                <ProtectedRoute>
+                <SimpleProtectedRoute>
                   <UserLayout><Import /></UserLayout>
-                </ProtectedRoute>
+                </SimpleProtectedRoute>
               } />
               <Route path="/profile" element={
-                <ProtectedRoute>
+                <SimpleProtectedRoute>
                   <UserLayout><Profile /></UserLayout>
-                </ProtectedRoute>
+                </SimpleProtectedRoute>
               } />
               
               {/* Legacy Redirects */}
@@ -91,7 +90,7 @@ const App = () => (
           </BrowserRouter>
           <PortalSwitcher />
         </>
-      </SupabaseAuthProvider>
+      </SimpleAuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
