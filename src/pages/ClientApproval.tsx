@@ -52,6 +52,9 @@ const ClientApproval: React.FC = () => {
   const navigate = useNavigate();
   const { user, signOut, loading: isLoading } = useSimpleAuth();
   const [client, setClient] = useState<any>(null);
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const [allClients, setAllClients] = useState<any[]>([]);
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   
   const [content, setContent] = useState<GeneratedContent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,12 +90,6 @@ const ClientApproval: React.FC = () => {
   // Load client data when user is authenticated
   useEffect(() => {
     if (user) {
-      // Check if user is admin and redirect
-      if (isAdmin(user.email)) {
-        console.log('Admin detected, redirecting to Ghostwriter Portal');
-        window.location.href = 'https://ghostwriter-portal.vercel.app';
-        return;
-      }
       loadClientData();
     }
   }, [user]);
@@ -111,6 +108,47 @@ const ClientApproval: React.FC = () => {
     try {
       console.log('Loading client data for user:', user.email);
       
+      // Check if user is admin
+      if (isAdmin(user.email)) {
+        console.log('Admin mode activated');
+        setIsAdminMode(true);
+        
+        // Load all clients for admin to choose from
+        const { data: clients, error: clientsError } = await supabase
+          .from('clients')
+          .select('*')
+          .order('name');
+        
+        if (clientsError) {
+          console.error('Error loading clients:', clientsError);
+          toast.error('Failed to load clients');
+          setLoading(false);
+          return;
+        }
+        
+        setAllClients(clients || []);
+        
+        // Check if there's a client ID in URL params (for direct access from Ghostwriter portal)
+        const urlParams = new URLSearchParams(window.location.search);
+        const clientIdParam = urlParams.get('client_id');
+        
+        if (clientIdParam) {
+          const selectedClient = clients?.find(c => c.id === clientIdParam);
+          if (selectedClient) {
+            setClient(selectedClient);
+            setSelectedClientId(clientIdParam);
+          }
+        } else if (clients && clients.length > 0) {
+          // Default to first client if no specific one selected
+          setClient(clients[0]);
+          setSelectedClientId(clients[0].id);
+        }
+        
+        setLoading(false);
+        return;
+      }
+      
+      // Regular client flow
       // First try to fetch by auth_user_id
       const { data, error } = await supabase
         .from('clients')
@@ -358,13 +396,46 @@ const ClientApproval: React.FC = () => {
                   {client?.company || 'Content Portal'}
                 </h1>
                 <p className="text-sm text-zinc-600">
-                  Welcome, {client?.name}
+                  {isAdminMode ? `Admin viewing: ${client?.name}` : `Welcome, ${client?.name}`}
                 </p>
               </div>
+              
+              {/* Admin Client Selector */}
+              {isAdminMode && allClients.length > 0 && (
+                <select
+                  className="ml-4 px-3 py-1 border border-zinc-300 rounded-lg text-sm"
+                  value={selectedClientId || ''}
+                  onChange={(e) => {
+                    const newClient = allClients.find(c => c.id === e.target.value);
+                    if (newClient) {
+                      setSelectedClientId(e.target.value);
+                      setClient(newClient);
+                      setContent([]); // Clear content to reload
+                    }
+                  }}
+                >
+                  <option value="">Select Client</option>
+                  {allClients.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} ({c.email})
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             {/* Actions */}
             <div className="flex items-center gap-2">
+              {isAdminMode && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.location.href = 'https://ghostwriter-portal.vercel.app'}
+                >
+                  Back to Admin Portal
+                </Button>
+              )}
+              
               <Button variant="ghost" size="sm">
                 <Bell className="w-4 h-4" />
               </Button>

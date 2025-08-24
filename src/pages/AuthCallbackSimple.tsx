@@ -48,12 +48,10 @@ const AuthCallbackSimple: React.FC = () => {
       
       setMessage('Verifying access...');
       
-      // Check if user is admin
-      if (isAdmin(session.user.email)) {
-        console.log('Admin user detected, redirecting to Ghostwriter Portal');
-        toast.success('Welcome back, Admin!');
-        window.location.href = 'https://ghostwriter-portal.vercel.app';
-        return;
+      // Check if user is admin - admin can access everything
+      const isAdminUser = isAdmin(session.user.email);
+      if (isAdminUser) {
+        console.log('Admin user detected - granting full access');
       }
       
       // Check if user is a registered client
@@ -112,8 +110,8 @@ const AuthCallbackSimple: React.FC = () => {
         }
       }
       
-      // Check if user is authorized
-      if (!isAuthorizedUser(session.user.email, isRegisteredClient)) {
+      // Check if user is authorized (admin always authorized)
+      if (!isAdminUser && !isAuthorizedUser(session.user.email, isRegisteredClient)) {
         console.error('Unauthorized user:', session.user.email);
         toast.error('You are not authorized to access this platform. Please contact your administrator.');
         
