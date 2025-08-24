@@ -102,7 +102,9 @@ const ClientApproval: React.FC = () => {
     if (!user) return;
     
     try {
-      // Fetch client data linked to this auth user
+      console.log('Loading client data for user:', user.email);
+      
+      // First try to fetch by auth_user_id
       const { data, error } = await supabase
         .from('clients')
         .select('*')
@@ -110,7 +112,8 @@ const ClientApproval: React.FC = () => {
         .single();
       
       if (error) {
-        console.error('Error loading client:', error);
+        console.log('No client found by auth_user_id, trying email...');
+        
         // Try to fetch by email as fallback
         const { data: emailClient, error: emailError } = await supabase
           .from('clients')
@@ -120,17 +123,53 @@ const ClientApproval: React.FC = () => {
         
         if (emailError) {
           console.error('Error loading client by email:', emailError);
-          toast.error('Unable to find your client account');
-          return;
+          
+          // Check if this is a case sensitivity issue
+          const { data: caseInsensitive, error: caseError } = await supabase
+            .from('clients')
+            .select('*')
+            .ilike('email', user.email)
+            .single();
+          
+          if (caseError) {
+            console.error('No client found for email:', user.email);
+            toast.error('No client account found. Please contact support.');
+            setLoading(false); // Important: stop loading
+            return;
+          }
+          
+          // Update the auth_user_id if we found a match
+          if (caseInsensitive && !caseInsensitive.auth_user_id) {
+            await supabase
+              .from('clients')
+              .update({ auth_user_id: user.id })
+              .eq('id', caseInsensitive.id);
+            
+            setClient(caseInsensitive);
+            console.log('Client found and linked:', caseInsensitive);
+          } else {
+            setClient(caseInsensitive);
+            console.log('Client found:', caseInsensitive);
+          }
+        } else {
+          // Update the auth_user_id if not set
+          if (emailClient && !emailClient.auth_user_id) {
+            await supabase
+              .from('clients')
+              .update({ auth_user_id: user.id })
+              .eq('id', emailClient.id);
+          }
+          setClient(emailClient);
+          console.log('Client found by email:', emailClient);
         }
-        
-        setClient(emailClient);
       } else {
         setClient(data);
+        console.log('Client found by auth_user_id:', data);
       }
     } catch (err) {
       console.error('Error in loadClientData:', err);
       toast.error('Failed to load client data');
+      setLoading(false); // Important: stop loading on error
     }
   };
 
