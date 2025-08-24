@@ -6,29 +6,13 @@ import { supabase } from "@/lib/supabase";
 import toast from "react-hot-toast";
 
 // Lazy load the Three.js component
-const DotMatrixLazy = lazy(() => import('./DotMatrixComponent'));
+const CanvasRevealEffect = lazy(() => import('./DotMatrixComponent'));
 
 interface SignInPageProps {
   className?: string;
   invitationToken?: string | null;
   clientName?: string | null;
 }
-
-// Lazy-loaded wrapper for Canvas effect
-export const CanvasRevealEffect = (props: any) => {
-  return (
-    <Suspense fallback={
-      <div className={cn("h-full relative w-full", props.containerClassName)}>
-        <div className="h-full w-full bg-gradient-to-br from-gray-50 to-white" />
-        {props.showGradient !== false && (
-          <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
-        )}
-      </div>
-    }>
-      <DotMatrixLazy {...props} />
-    </Suspense>
-  );
-};
 
 const AnimatedNavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   const defaultTextColor = 'text-gray-600';
@@ -328,32 +312,44 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
         {/* Initial canvas (forward animation) */}
         {initialCanvasVisible && (
           <div className="absolute inset-0">
-            <CanvasRevealEffect
-              animationSpeed={3}
-              containerClassName="bg-white"
-              colors={[
-                [59, 130, 246],
-                [147, 51, 234],
-              ]}
-              dotSize={6}
-              reverse={false}
-            />
+            <Suspense fallback={
+              <div className="h-full w-full bg-gradient-to-br from-gray-50 to-white">
+                <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
+              </div>
+            }>
+              <CanvasRevealEffect
+                animationSpeed={3}
+                containerClassName="bg-white"
+                colors={[
+                  [59, 130, 246],
+                  [147, 51, 234],
+                ]}
+                dotSize={6}
+                reverse={false}
+              />
+            </Suspense>
           </div>
         )}
         
         {/* Reverse canvas (appears when code is complete) */}
         {reverseCanvasVisible && (
           <div className="absolute inset-0">
-            <CanvasRevealEffect
-              animationSpeed={4}
-              containerClassName="bg-white"
-              colors={[
-                [59, 130, 246],
-                [147, 51, 234],
-              ]}
-              dotSize={6}
-              reverse={true}
-            />
+            <Suspense fallback={
+              <div className="h-full w-full bg-gradient-to-br from-gray-50 to-white">
+                <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
+              </div>
+            }>
+              <CanvasRevealEffect
+                animationSpeed={4}
+                containerClassName="bg-white"
+                colors={[
+                  [59, 130, 246],
+                  [147, 51, 234],
+                ]}
+                dotSize={6}
+                reverse={true}
+              />
+            </Suspense>
           </div>
         )}
         
