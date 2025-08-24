@@ -298,4 +298,4 @@ const ShaderMaterial: React.FC<ShaderProps> = ({
   return <mesh ref={ref} geometry={geometry} material={material} />;
 };
 
-export default { CanvasRevealEffect };
+export default CanvasRevealEffect;

@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import toast from "react-hot-toast";
 
 // Lazy load the Three.js component
-const DotMatrixComponent = lazy(() => import('./DotMatrixComponent'));
+const DotMatrixLazy = lazy(() => import('./DotMatrixComponent'));
 
 interface SignInPageProps {
   className?: string;
@@ -25,7 +25,7 @@ export const CanvasRevealEffect = (props: any) => {
         )}
       </div>
     }>
-      <DotMatrixComponent.CanvasRevealEffect {...props} />
+      <DotMatrixLazy {...props} />
     </Suspense>
   );
 };
