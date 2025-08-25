@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import toast from "react-hot-toast";
 
-// Lazy load the Three.js component
-const CanvasRevealEffect = lazy(() => import('./DotMatrixComponent'));
+// Lazy load the Three.js background component
+const DotMatrixBackground = lazy(() => import('./DotMatrixBackground'));
 
 interface SignInPageProps {
   className?: string;
@@ -60,11 +60,11 @@ function MiniNavbar() {
 
   const logoElement = (
     <div className="relative w-5 h-5 flex items-center justify-center">
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-800 top-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-800 left-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-800 right-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
-    <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-800 bottom-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
- </div>
+      <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-800 top-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
+      <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-800 left-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
+      <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-800 right-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
+      <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-800 bottom-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
+    </div>
   );
 
   const navLinksData = [
@@ -81,15 +81,15 @@ function MiniNavbar() {
 
   const signupButtonElement = (
     <div className="relative group w-full sm:w-auto">
-       <div className="absolute inset-0 -m-2 rounded-full
+      <div className="absolute inset-0 -m-2 rounded-full
                      hidden sm:block
                      bg-gray-100
                      opacity-40 filter blur-lg pointer-events-none
                      transition-all duration-300 ease-out
                      group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
-       <button className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-white bg-gradient-to-br from-gray-800 to-gray-900 rounded-full hover:from-gray-900 hover:to-black transition-all duration-200 w-full sm:w-auto">
-         Get Started
-       </button>
+      <button className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-white bg-gradient-to-br from-gray-800 to-gray-900 rounded-full hover:from-gray-900 hover:to-black transition-all duration-200 w-full sm:w-auto">
+        Get Started
+      </button>
     </div>
   );
 
@@ -104,7 +104,7 @@ function MiniNavbar() {
 
       <div className="flex items-center justify-between w-full gap-x-6 sm:gap-x-8">
         <div className="flex items-center">
-           {logoElement}
+          {logoElement}
         </div>
 
         <nav className="hidden sm:flex items-center space-x-4 sm:space-x-6 text-sm">
@@ -122,9 +122,9 @@ function MiniNavbar() {
 
         <button className="sm:hidden flex items-center justify-center w-8 h-8 text-gray-700 focus:outline-none" onClick={toggleMenu} aria-label={isOpen ? 'Close Menu' : 'Open Menu'}>
           {isOpen ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
           )}
         </button>
       </div>
@@ -152,7 +152,6 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
   const [step, setStep] = useState<"email" | "code" | "success">("email");
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const codeInputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [initialCanvasVisible, setInitialCanvasVisible] = useState(true);
   const [reverseCanvasVisible, setReverseCanvasVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -168,12 +167,13 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true);
-      
       let redirectUrl = `${window.location.origin}/auth/callback`;
       
       if (invitationToken) {
         redirectUrl += `?invitation=${invitationToken}`;
       }
+      
+      console.log('Google OAuth redirect URL:', redirectUrl);
       
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -182,9 +182,13 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('OAuth error details:', error);
+        throw error;
+      }
     } catch (error: any) {
-      toast.error('Failed to sign in with Google: ' + (error.message || 'Unknown error'));
+      console.error('OAuth error:', error);
+      toast.error('Failed to sign in with Google. Please try again.');
       setLoading(false);
     }
   };
@@ -215,7 +219,7 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
         setStep("code");
         toast.success('Check your email for the magic link!');
       } catch (error: any) {
-        // Magic link error occurred
+        console.error('Magic link error:', error);
         toast.error('Failed to send magic link');
       } finally {
         setLoading(false);
@@ -279,7 +283,7 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
         setStep("success");
       }, 2000);
     } catch (error: any) {
-      // OTP verification error occurred
+      console.error('OTP verification error:', error);
       toast.error('Invalid code. Please try again.');
       setCode(["", "", "", "", "", ""]);
       codeInputRefs.current[0]?.focus();
@@ -306,52 +310,42 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
     window.location.href = '/client-approve';
   };
 
+  // Fallback gradient for when Three.js is loading
+  const fallbackBackground = (
+    <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50" />
+  );
+
   return (
     <div className={cn("flex w-[100%] flex-col min-h-screen bg-white relative", className)}>
       <div className="absolute inset-0 z-0">
-        {/* Initial canvas (forward animation) */}
-        {initialCanvasVisible && (
-          <div className="absolute inset-0">
-            <Suspense fallback={
-              <div className="h-full w-full bg-gradient-to-br from-gray-50 to-white">
-                <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
-              </div>
-            }>
-              <CanvasRevealEffect
+        {/* Use Suspense to lazy load the Three.js background */}
+        <Suspense fallback={fallbackBackground}>
+          {/* Initial canvas (forward animation) */}
+          {initialCanvasVisible && (
+            <div className="absolute inset-0">
+              <DotMatrixBackground
                 animationSpeed={3}
                 containerClassName="bg-white"
-                colors={[
-                  [59, 130, 246],
-                  [147, 51, 234],
-                ]}
+                colors={[[59, 130, 246], [147, 51, 234]]}
                 dotSize={6}
                 reverse={false}
               />
-            </Suspense>
-          </div>
-        )}
-        
-        {/* Reverse canvas (appears when code is complete) */}
-        {reverseCanvasVisible && (
-          <div className="absolute inset-0">
-            <Suspense fallback={
-              <div className="h-full w-full bg-gradient-to-br from-gray-50 to-white">
-                <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
-              </div>
-            }>
-              <CanvasRevealEffect
+            </div>
+          )}
+          
+          {/* Reverse canvas (appears when code is complete) */}
+          {reverseCanvasVisible && (
+            <div className="absolute inset-0">
+              <DotMatrixBackground
                 animationSpeed={4}
                 containerClassName="bg-white"
-                colors={[
-                  [59, 130, 246],
-                  [147, 51, 234],
-                ]}
+                colors={[[59, 130, 246], [147, 51, 234]]}
                 dotSize={6}
                 reverse={true}
               />
-            </Suspense>
-          </div>
-        )}
+            </div>
+          )}
+        </Suspense>
         
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.8)_0%,_transparent_100%)]" />
         <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-white/90 to-transparent" />
@@ -363,7 +357,7 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
         <MiniNavbar />
 
         {/* Main content container */}
-        <div className="flex flex-1 flex-col lg:flex-row ">
+        <div className="flex flex-1 flex-col lg:flex-row">
           {/* Left side (form) */}
           <div className="flex-1 flex flex-col justify-center items-center">
             <div className="w-full mt-[150px] max-w-sm">
@@ -386,7 +380,6 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                         }
                       </p>
                     </div>
-                    
                     
                     <div className="space-y-4">
                       <button 
@@ -572,7 +565,6 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
               </AnimatePresence>
             </div>
           </div>
-          
         </div>
       </div>
     </div>
