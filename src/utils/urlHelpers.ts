@@ -10,7 +10,8 @@
 export function getProductionUrl(): string {
   // ALWAYS use production URL for OAuth redirects
   // This prevents localhost issues and ensures OAuth always works
-  return 'https://unified-linkedin-project.vercel.app';
+  // Trim to prevent any accidental spaces
+  return 'https://unified-linkedin-project.vercel.app'.trim();
 }
 
 /**
@@ -19,12 +20,12 @@ export function getProductionUrl(): string {
  */
 export function getBaseUrl(): string {
   if (import.meta.env.PROD) {
-    return 'https://unified-linkedin-project.vercel.app';
+    return 'https://unified-linkedin-project.vercel.app'.trim();
   }
   
   // In development, still use production for OAuth-related stuff
   // but allow localhost for other purposes
-  return window.location.origin;
+  return window.location.origin.trim();
 }
 
 /**
@@ -35,12 +36,15 @@ export function buildOAuthRedirectUrl(
   params?: Record<string, string>
 ): string {
   const baseUrl = getProductionUrl(); // ALWAYS use production for OAuth
-  let url = baseUrl + path;
+  // Ensure path starts with /
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  let url = (baseUrl + cleanPath).trim();
   
   if (params && Object.keys(params).length > 0) {
     const searchParams = new URLSearchParams(params);
     url += '?' + searchParams.toString();
   }
   
-  return url;
+  // Final trim to ensure no spaces
+  return url.trim();
 }

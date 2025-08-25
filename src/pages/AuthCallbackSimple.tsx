@@ -21,6 +21,10 @@ const AuthCallbackSimple: React.FC = () => {
 
   const handleCallback = async () => {
     try {
+      // Log the full URL for debugging
+      console.log('📍 Callback URL:', window.location.href);
+      console.log('📍 Search params:', searchParams.toString());
+      
       // Get the invitation token if present
       const invitationToken = searchParams.get('invitation');
       
@@ -31,17 +35,33 @@ const AuthCallbackSimple: React.FC = () => {
       const { data: { session }, error } = await supabase.auth.getSession();
       
       if (error) {
-        console.error('Session error:', error);
-        toast.error('Authentication failed');
+        console.error('❌ Session error:', error);
+        console.error('❌ Error details:', {
+          message: error.message,
+          status: error.status,
+          details: error
+        });
+        toast.error(`Authentication failed: ${error.message || 'Unknown error'}`);
         navigate('/auth');
         return;
       }
 
       if (!session) {
-        console.error('No session found');
-        toast.error('Authentication failed. Please try again.');
-        navigate('/auth');
-        return;
+        console.error('❌ No session found after OAuth callback');
+        console.log('🔄 Attempting to refresh session...');
+        
+        // Try to refresh the session
+        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+        
+        if (refreshData?.session) {
+          console.log('✅ Session refreshed successfully');
+          // Continue with the refreshed session
+        } else {
+          console.error('❌ Failed to refresh session:', refreshError);
+          toast.error('Authentication failed. Please try signing in again.');
+          navigate('/auth');
+          return;
+        }
       }
 
       console.log('✅ Authenticated as:', session.user.email);

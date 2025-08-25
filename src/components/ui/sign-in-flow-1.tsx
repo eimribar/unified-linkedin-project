@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
+import { buildOAuthRedirectUrl } from "@/utils/urlHelpers";
 import toast from "react-hot-toast";
 
 // Lazy load the Three.js background component
@@ -167,13 +168,22 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true);
-      let redirectUrl = `${window.location.origin}/auth/callback`;
       
-      if (invitationToken) {
-        redirectUrl += `?invitation=${invitationToken}`;
+      // Use helper function to build proper OAuth URL
+      const redirectUrl = buildOAuthRedirectUrl(
+        '/auth/callback',
+        invitationToken ? { invitation: invitationToken } : undefined
+      ).trim(); // Extra trim for safety
+      
+      console.log('🔗 Google OAuth redirect URL:', redirectUrl);
+      console.log('🔍 URL length:', redirectUrl.length);
+      console.log('🔍 First char code:', redirectUrl.charCodeAt(0)); // Should be 104 for 'h'
+      
+      // Validate URL doesn't have spaces
+      if (redirectUrl !== redirectUrl.trim()) {
+        console.error('❌ URL has leading/trailing spaces!');
+        throw new Error('Invalid redirect URL format');
       }
-      
-      console.log('Google OAuth redirect URL:', redirectUrl);
       
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -183,12 +193,15 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
       });
 
       if (error) {
-        console.error('OAuth error details:', error);
+        console.error('❌ OAuth error details:', error);
+        console.error('❌ OAuth error message:', error.message);
         throw error;
       }
+      
+      console.log('✅ OAuth initiated successfully');
     } catch (error: any) {
-      console.error('OAuth error:', error);
-      toast.error('Failed to sign in with Google. Please try again.');
+      console.error('❌ OAuth error:', error);
+      toast.error(error.message || 'Failed to sign in with Google. Please try again.');
       setLoading(false);
     }
   };
@@ -199,15 +212,16 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
       try {
         setLoading(true);
         
-        // Send magic link via Supabase
-        let redirectUrl = `${window.location.origin}/auth/callback`;
+        // Use helper function to build proper redirect URL
+        const redirectUrl = buildOAuthRedirectUrl(
+          '/auth/callback',
+          invitationToken ? { invitation: invitationToken } : undefined
+        ).trim(); // Extra trim for safety
         
-        if (invitationToken) {
-          redirectUrl += `?invitation=${invitationToken}`;
-        }
+        console.log('📧 Magic link redirect URL:', redirectUrl);
         
         const { error } = await supabase.auth.signInWithOtp({
-          email,
+          email: email.trim(), // Also trim the email
           options: {
             emailRedirectTo: redirectUrl
           }
@@ -219,7 +233,7 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
         setStep("code");
         toast.success('Check your email for the magic link!');
       } catch (error: any) {
-        console.error('Magic link error:', error);
+        console.error('❌ Magic link error:', error);
         toast.error('Failed to send magic link');
       } finally {
         setLoading(false);
