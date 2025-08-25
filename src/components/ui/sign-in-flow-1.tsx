@@ -68,11 +68,7 @@ function MiniNavbar() {
     </div>
   );
 
-  const navLinksData = [
-    { label: 'About', href: '#about' },
-    { label: 'Features', href: '#features' },
-    { label: 'Contact', href: '#contact' },
-  ];
+  const navLinksData: { label: string; href: string }[] = [];
 
   const loginButtonElement = (
     <a href="https://ghostwriter-portal.vercel.app" className="px-4 py-2 sm:px-3 text-xs sm:text-sm border border-gray-300 bg-white/70 text-gray-700 rounded-full hover:border-gray-400 hover:bg-white hover:text-gray-900 transition-colors duration-200 w-full sm:w-auto">
@@ -445,10 +441,6 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                         ✓ You've been invited! Sign in to accept.
                       </p>
                     )}
-                    
-                    <p className="text-xs text-gray-500 pt-10">
-                      By signing up, you agree to our <Link to="#" className="underline text-gray-500 hover:text-gray-700 transition-colors">Terms of Service</Link> and <Link to="#" className="underline text-gray-500 hover:text-gray-700 transition-colors">Privacy Policy</Link>.
-                    </p>
                   </motion.div>
                 ) : step === "code" ? (
                   <motion.div 
@@ -531,12 +523,6 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
                       >
                         {loading ? 'Verifying...' : 'Continue'}
                       </motion.button>
-                    </div>
-                    
-                    <div className="pt-16">
-                      <p className="text-xs text-gray-500">
-                        By signing up, you agree to our <Link to="#" className="underline text-gray-500 hover:text-gray-700 transition-colors">Terms of Service</Link> and <Link to="#" className="underline text-gray-500 hover:text-gray-700 transition-colors">Privacy Policy</Link>.
-                      </p>
                     </div>
                   </motion.div>
                 ) : (
