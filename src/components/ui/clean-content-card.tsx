@@ -34,13 +34,6 @@ function CleanContentCard({ item, onApprove, onReject, onEdit }: CleanContentCar
         </span>
       </div>
 
-      {/* Hook */}
-      {item.hook && (
-        <div className="mb-3">
-          <p className="text-base text-slate-800 font-medium leading-relaxed">{item.hook}</p>
-        </div>
-      )}
-
       {/* Content */}
       <div className="mb-4">
         <p className="text-base leading-relaxed text-slate-700 whitespace-pre-wrap">
