@@ -20,7 +20,7 @@ export function isAdmin(email: string | null | undefined): boolean {
 export function getAuthRedirect(email: string | null | undefined, isRegisteredClient: boolean): string {
   // Admin always goes to ghostwriter portal
   if (isAdmin(email)) {
-    return 'https://ghostwriter-portal.vercel.app';
+    return 'https://admin.agentss.app';
   }
   
   // Registered clients go to client portal

@@ -71,7 +71,7 @@ function MiniNavbar() {
   const navLinksData: { label: string; href: string }[] = [];
 
   const loginButtonElement = (
-    <a href="https://ghostwriter-portal.vercel.app" className="px-4 py-2 sm:px-3 text-xs sm:text-sm border border-gray-300 bg-white/70 text-gray-700 rounded-full hover:border-gray-400 hover:bg-white hover:text-gray-900 transition-colors duration-200 w-full sm:w-auto">
+    <a href="https://admin.agentss.app" className="px-4 py-2 sm:px-3 text-xs sm:text-sm border border-gray-300 bg-white/70 text-gray-700 rounded-full hover:border-gray-400 hover:bg-white hover:text-gray-900 transition-colors duration-200 w-full sm:w-auto">
       Admin Portal
     </a>
   );

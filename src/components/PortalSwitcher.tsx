@@ -3,7 +3,7 @@ import { ArrowUpRight, Building2, Wand2 } from 'lucide-react';
 const PortalSwitcher = () => {
   const currentPortal = 'user';
   const ghostwriterPortalUrl = import.meta.env.PROD 
-    ? 'https://ghostwriter-portal.vercel.app' 
+    ? 'https://admin.agentss.app' 
     : 'http://localhost:5173';
   
   return (

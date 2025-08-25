@@ -58,7 +58,7 @@ const adminAuthService: AdminAuthService = {
       }
       localStorage.removeItem('admin_impersonation_token');
     }
-    window.location.href = 'https://ghostwriter-portal.vercel.app';
+    window.location.href = 'https://admin.agentss.app';
   },
 
   async validateImpersonationToken(token: string) {
@@ -470,7 +470,7 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({ chil
     } catch (err) {
       console.error('Error exiting impersonation:', err);
       // Force redirect even if ending session failed
-      window.location.href = 'https://ghostwriter-portal.vercel.app';
+      window.location.href = 'https://admin.agentss.app';
     }
   };
 

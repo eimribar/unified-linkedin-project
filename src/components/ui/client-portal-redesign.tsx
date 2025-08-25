@@ -229,7 +229,7 @@ const ModernHeader = ({ client, isAdminMode, allClients, selectedClientId, onCli
                 variant="ghost"
                 size="sm"
                 className="text-gray-600 hover:text-gray-900"
-                onClick={() => window.location.href = 'https://ghostwriter-portal.vercel.app'}
+                onClick={() => window.location.href = 'https://admin.agentss.app'}
               >
                 Back to Admin
               </Button>

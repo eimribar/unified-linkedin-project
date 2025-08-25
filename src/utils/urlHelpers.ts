@@ -11,7 +11,7 @@ export function getProductionUrl(): string {
   // ALWAYS use production URL for OAuth redirects
   // This prevents localhost issues and ensures OAuth always works
   // Trim to prevent any accidental spaces
-  return 'https://unified-linkedin-project.vercel.app'.trim();
+  return 'https://www.agentss.app'.trim();
 }
 
 /**
@@ -20,7 +20,7 @@ export function getProductionUrl(): string {
  */
 export function getBaseUrl(): string {
   if (import.meta.env.PROD) {
-    return 'https://unified-linkedin-project.vercel.app'.trim();
+    return 'https://www.agentss.app'.trim();
   }
   
   // In development, still use production for OAuth-related stuff
