@@ -1,31 +1,36 @@
-import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
+import { Stats } from "@/components/ui/stats-section"
+import { ContentStats } from "@/components/ui/content-stats-section"
 
-export function PlaceholdersAndVanishInputDemo() {
-  const placeholders = [
-    "What's the first rule of Fight Club?",
-    "Who is Tyler Durden?",
-    "Where is Andrew Laeddis hiding?",
-    "Write a JavaScript method to reverse a string",
-    "How to assemble your own PC?",
-  ];
+function StatsDemo() {
+  // Demo data for content stats
+  const contentStatsData = {
+    pending: 12,
+    approved: 48,
+    rejected: 3,
+    total: 63
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
-  };
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("submitted");
-  };
   return (
-    <div className="h-[40rem] flex flex-col justify-center items-center px-4">
-      <h2 className="mb-10 sm:mb-20 text-xl text-center sm:text-5xl text-foreground">
-        Ask Aceternity UI Anything
-      </h2>
-      <PlaceholdersAndVanishInput
-        placeholders={placeholders}
-        onChange={handleChange}
-        onSubmit={onSubmit}
-      />
+    <div className="w-full space-y-12 p-8">
+      {/* Original Stats Component */}
+      <div>
+        <h2 className="text-2xl font-bold mb-4">General Stats Section</h2>
+        <Stats />
+      </div>
+      
+      {/* Content-specific Stats Component */}
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Content Stats Section (Currently in Use)</h2>
+        <ContentStats stats={contentStatsData} />
+      </div>
+      
+      {/* Loading State Demo */}
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Loading State</h2>
+        <ContentStats stats={contentStatsData} loading={true} />
+      </div>
     </div>
   );
 }
+
+export { StatsDemo };

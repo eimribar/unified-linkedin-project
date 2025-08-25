@@ -35,6 +35,7 @@ import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { ContentStats } from '@/components/ui/content-stats-section';
 import toast from 'react-hot-toast';
 
 interface ClientPortalProps {
@@ -56,39 +57,6 @@ interface ClientPortalProps {
   onEdit: (item: any) => void;
   onSignOut: () => void;
 }
-
-// Animated stat card component
-const StatCard = ({ icon: Icon, value, label, color, delay = 0 }: any) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay }}
-      whileHover={{ scale: 1.05 }}
-      className="relative"
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-white rounded-2xl blur-xl opacity-60" />
-      <Card className="relative bg-white/80 backdrop-blur-sm border-gray-200 rounded-2xl overflow-hidden">
-        <div className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-3xl font-bold bg-gradient-to-br from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                {value}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">{label}</p>
-            </div>
-            <div className={cn(
-              "w-12 h-12 rounded-xl flex items-center justify-center",
-              color
-            )}>
-              <Icon className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
-      </Card>
-    </motion.div>
-  );
-};
 
 // Content approval card with high-quality design
 const ContentCard = ({ item, onApprove, onReject, onEdit, index }: any) => {
@@ -346,37 +314,12 @@ export const ClientPortalRedesign: React.FC<ClientPortalProps> = ({
             <p className="text-gray-500 mt-2">Review and manage your LinkedIn content</p>
           </motion.div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <StatCard
-              icon={Clock}
-              value={stats.pending}
-              label="Pending Review"
-              color="bg-gradient-to-br from-amber-500 to-orange-600"
-              delay={0}
-            />
-            <StatCard
-              icon={CheckCircle2}
-              value={stats.approved}
-              label="Approved"
-              color="bg-gradient-to-br from-green-500 to-emerald-600"
-              delay={0.1}
-            />
-            <StatCard
-              icon={XCircle}
-              value={stats.rejected}
-              label="Rejected"
-              color="bg-gradient-to-br from-red-500 to-rose-600"
-              delay={0.2}
-            />
-            <StatCard
-              icon={BarChart3}
-              value={stats.total}
-              label="Total Content"
-              color="bg-gradient-to-br from-blue-500 to-purple-600"
-              delay={0.3}
-            />
-          </div>
+          {/* Enhanced Stats Section */}
+          <ContentStats 
+            stats={stats} 
+            loading={loading}
+            className="mb-8"
+          />
 
           {/* Content Section */}
           <motion.div
