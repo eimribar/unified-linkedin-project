@@ -1,19 +1,20 @@
 import { useState } from 'react';
-import { ChevronDown, Edit2 } from 'lucide-react';
+import { ChevronDown, Edit2, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CleanContentCardProps {
   item: any;
-  onApprove: (item: any) => void;
-  onReject: (item: any) => void;
+  onApprove: (item: any) => Promise<void>;
+  onReject: (item: any) => Promise<void>;
   onEdit: (item: any) => void;
 }
 
 function CleanContentCard({ item, onApprove, onReject, onEdit }: CleanContentCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isProcessing, setIsProcessing] = useState<string | null>(null);
   
   return (
-    <div className="border-2 rounded-lg p-6 hover:border-slate-300 transition-all duration-200 bg-white hover:shadow-sm">
+    <div className="border-2 rounded-lg p-8 hover:border-slate-300 transition-all duration-200 bg-white hover:shadow-sm">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
@@ -35,29 +36,17 @@ function CleanContentCard({ item, onApprove, onReject, onEdit }: CleanContentCar
 
       {/* Hook */}
       {item.hook && (
-        <div className="mb-4">
-          <p className="text-xs font-medium text-indigo-600 mb-1.5">Hook</p>
-          <p className="text-base text-slate-800 font-medium">{item.hook}</p>
+        <div className="mb-6 bg-indigo-50 border-l-4 border-indigo-400 p-4 rounded-r-md">
+          <p className="text-xs font-medium text-indigo-600 mb-2 uppercase tracking-wider">Hook</p>
+          <p className="text-lg text-slate-800 font-medium leading-relaxed">{item.hook}</p>
         </div>
       )}
 
       {/* Content */}
-      <div className="mb-4">
-        <p className="text-sm leading-relaxed text-slate-700">
-          {isExpanded ? item.content_text : `${item.content_text.substring(0, 200)}...`}
+      <div className="mb-6">
+        <p className="text-base leading-relaxed text-slate-700 whitespace-pre-wrap">
+          {item.content_text}
         </p>
-        {item.content_text.length > 200 && (
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="text-sm text-indigo-600 mt-2 flex items-center gap-1 hover:text-indigo-700 transition-colors"
-          >
-            {isExpanded ? 'Show less' : 'Read more'}
-            <ChevronDown className={cn(
-              "w-3 h-3 transition-transform",
-              isExpanded && "rotate-180"
-            )} />
-          </button>
-        )}
       </div>
 
       {/* Hashtags */}
@@ -72,22 +61,66 @@ function CleanContentCard({ item, onApprove, onReject, onEdit }: CleanContentCar
       )}
 
       {/* Actions */}
-      <div className="flex items-center gap-2 pt-4 border-t border-slate-100">
+      <div className="flex items-center gap-3 pt-6 border-t border-slate-200">
         <button
-          onClick={() => onApprove(item)}
-          className="flex-1 border-2 border-emerald-200 text-emerald-700 rounded-md py-2 px-4 text-sm hover:bg-emerald-50 transition-all duration-200 font-medium"
+          onClick={async () => {
+            setIsProcessing('approve');
+            try {
+              await onApprove(item);
+            } catch (error) {
+              console.error('Error approving:', error);
+            } finally {
+              setIsProcessing(null);
+            }
+          }}
+          disabled={isProcessing !== null}
+          className="flex-1 bg-emerald-600 text-white rounded-md py-3 px-6 text-base hover:bg-emerald-700 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
         >
-          Approve
+          {isProcessing === 'approve' ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              Approving...
+            </>
+          ) : (
+            'Approve'
+          )}
         </button>
         <button
-          onClick={() => onReject(item)}
-          className="flex-1 border-2 border-rose-200 text-rose-700 rounded-md py-2 px-4 text-sm hover:bg-rose-50 transition-all duration-200 font-medium"
+          onClick={async () => {
+            setIsProcessing('reject');
+            try {
+              await onReject(item);
+            } catch (error) {
+              console.error('Error rejecting:', error);
+            } finally {
+              setIsProcessing(null);
+            }
+          }}
+          disabled={isProcessing !== null}
+          className="flex-1 bg-rose-600 text-white rounded-md py-3 px-6 text-base hover:bg-rose-700 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
         >
-          Reject
+          {isProcessing === 'reject' ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              Rejecting...
+            </>
+          ) : (
+            'Reject'
+          )}
         </button>
         <button
-          onClick={() => onEdit(item)}
-          className="border-2 border-slate-200 rounded-md p-2 hover:bg-slate-50 transition-all duration-200 text-slate-600"
+          onClick={() => {
+            setIsProcessing('edit');
+            try {
+              onEdit(item);
+            } catch (error) {
+              console.error('Error editing:', error);
+            } finally {
+              setIsProcessing(null);
+            }
+          }}
+          disabled={isProcessing !== null}
+          className="border-2 border-slate-300 rounded-md p-3 hover:bg-slate-50 transition-all duration-200 text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Edit"
         >
           <Edit2 className="w-4 h-4" />

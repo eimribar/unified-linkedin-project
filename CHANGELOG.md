@@ -7,6 +7,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2025-08-25 - MAJOR RELEASE 🎉
+
+### 🚀 Major Features
+- **Complete Design System Overhaul**: Professional, sophisticated UI replacing childish animations
+- **Custom Domain Implementation**: Branded domains (www.agentss.app) for production
+- **OAuth Authentication Fix**: Resolved critical 500 error during Google sign-in
+- **Performance Optimization**: 98% bundle size reduction (861KB → 15.79KB)
+
+### ✨ New Components
+- **CleanStats**: Professional statistics display with subtle color accents
+- **CleanContentCard**: Minimal, sophisticated content review cards
+- **CleanClientPortal**: Complete portal redesign with modern aesthetics
+- **DotMatrixBackground**: Three.js animation component (lazy-loaded)
+
+### 🎨 Design Improvements
+- **Color Palette**: Sophisticated slate-based system with strategic accent colors
+- **Typography**: Professional hierarchy (4xl → base → sm) with proper tracking
+- **Interactions**: Removed excessive animations, added subtle hover states
+- **Layout**: Improved spacing, alignment, and responsive behavior
+
+### 🔧 Technical Improvements
+- **Code Splitting**: Three.js components lazy-loaded for performance
+- **URL Management**: Centralized URL helpers for consistent domain handling
+- **Build Optimization**: Manual chunking configuration for optimal loading
+- **Error Handling**: Enhanced OAuth callback processing with retry logic
+
+### 🔒 Authentication Enhancements
+- **OAuth Flow**: Fixed 500 errors and improved callback handling
+- **Session Management**: Better error recovery and debugging
+- **Admin Routing**: Automatic redirection to admin portal for admin users
+- **Security**: Improved token validation and session refresh
+
+### 🌐 Domain & Infrastructure
+- **Custom Domains**: 
+  - Client Portal: `www.agentss.app`
+  - Admin Portal: `admin.agentss.app`
+- **Professional URLs**: All hardcoded references updated
+- **Cross-Portal Navigation**: Seamless switching between client and admin interfaces
+
+### 🗑️ Removed Features
+- Irrelevant navigation tabs (About, Features, Contact)
+- Terms of Service text from sign-in flow
+- Excessive gradient effects and animations
+- Redundant StatCard components
+
+### ⚠️ Breaking Changes
+- Complete design system overhaul
+- Domain changes require Supabase configuration updates
+- Several components renamed/replaced
+- OAuth settings require manual updates
+
+## [1.5.1] - 2025-08-25
+
+### 🐛 Critical Bug Fixes
+- **OAuth Bundle Size**: Fixed 500 error caused by 861KB bundle size
+- **URL Parsing**: Resolved spaces in OAuth redirect URLs
+- **Session Handling**: Improved callback processing and error recovery
+
+### 🔧 Performance Improvements
+- Lazy loading implementation for Three.js components
+- Bundle size optimization through code splitting
+- Manual chunking configuration for optimal loading
+
 ## [2024.12.13.2] - 2024-12-13
 
 ### Added

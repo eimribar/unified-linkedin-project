@@ -291,11 +291,30 @@ const ClientApproval: React.FC = () => {
   };
 
   const handleReject = async (item: GeneratedContent) => {
-    setRejectModal({
-      open: true,
-      item,
-      reason: ''
-    });
+    try {
+      const { error } = await supabase
+        .from('generated_content')
+        .update({
+          status: 'client_rejected',
+          revision_notes: 'Rejected by client'
+        })
+        .eq('id', item.id);
+
+      if (error) throw error;
+      
+      // Remove from current content and reload stats
+      setContent(prev => prev.filter(c => c.id !== item.id));
+      setStats(prev => ({
+        ...prev,
+        pending: prev.pending - 1,
+        rejected: prev.rejected + 1
+      }));
+      
+      toast.success('Content rejected');
+    } catch (error) {
+      console.error('Error rejecting content:', error);
+      toast.error('Failed to reject content');
+    }
   };
 
   const confirmReject = async () => {

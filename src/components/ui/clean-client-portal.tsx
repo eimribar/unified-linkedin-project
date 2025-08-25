@@ -159,7 +159,7 @@ export const CleanClientPortal: React.FC<CleanClientPortalProps> = ({
             </div>
           </div>
 
-          {/* Content Grid */}
+          {/* Content Display - Single Column Layout */}
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <div className="text-center">
@@ -175,7 +175,7 @@ export const CleanClientPortal: React.FC<CleanClientPortalProps> = ({
               </p>
             </div>
           ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="max-w-4xl mx-auto space-y-6">
               {filteredContent.map((item) => (
                 <CleanContentCard
                   key={item.id}
