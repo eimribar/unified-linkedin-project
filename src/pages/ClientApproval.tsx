@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSimpleAuth } from '@/contexts/SimpleAuthContext';
 import { supabase } from '@/lib/supabase';
 import { isAdmin } from '@/utils/authHelpers';
-import { ClientPortalRedesign } from '@/components/ui/client-portal-redesign';
+import { CleanClientPortal } from '@/components/ui/clean-client-portal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -381,7 +381,7 @@ const ClientApproval: React.FC = () => {
 
   return (
     <>
-      <ClientPortalRedesign
+      <CleanClientPortal
         client={client}
         content={content}
         stats={stats}
