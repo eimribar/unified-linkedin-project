@@ -5,8 +5,8 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://ifwscuvbtdokljwwbvex.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlmd3NjdXZidGRva2xqd3didmV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwMDI0NDMsImV4cCI6MjA3MDU3ODQ0M30.QzxtYT8nbLPx9T3-PLABLXx7XtkjAg77ffUlghnQ0Xc';
 
-// Log initialization status
-console.log('🔧 Initializing Supabase client...');
+// Log initialization status with timestamp for deployment verification
+console.log('🔧 Initializing Supabase client...', new Date().toISOString());
 if (import.meta.env.VITE_SUPABASE_URL) {
   console.log('✅ Using environment variables for Supabase');
 } else {
