@@ -109,53 +109,30 @@ export const CleanClientPortal: React.FC<CleanClientPortalProps> = ({
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Title */}
-        <div className="mb-8">
-          <h2 className="text-3xl tracking-tight font-light text-slate-900">Content Overview</h2>
-          <p className="text-slate-600 mt-1">Review and manage your LinkedIn content</p>
-        </div>
-
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Stats Section */}
-        <div className="mb-12">
+        <div className="mb-6">
           <CleanStats stats={stats} loading={loading} />
         </div>
 
         {/* Content Section */}
         <div>
           {/* Section Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-medium text-slate-900">
-              Content for Review
-              {content.length > 0 && (
-                <span className="text-slate-500 ml-2 font-normal">
-                  ({content.length})
-                </span>
-              )}
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-medium text-slate-900">
+              {content.length > 0 && `${content.length} post${content.length > 1 ? 's' : ''} for review`}
             </h3>
 
-            {/* Search and Filter */}
-            <div className="flex items-center gap-3">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search content..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="border-2 border-slate-200 rounded-md pl-9 pr-3 py-1.5 text-sm focus:outline-none focus:border-indigo-300 w-64 transition-colors"
-                />
-              </div>
-
-              {/* Filter */}
-              <button
-                onClick={() => setFilterOpen(!filterOpen)}
-                className="border-2 border-slate-200 rounded-md p-2 hover:bg-slate-50 transition-all duration-200 text-slate-600"
-                aria-label="Filter"
-              >
-                <Filter className="w-4 h-4" />
-              </button>
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="border border-slate-200 rounded-md pl-9 pr-3 py-1.5 text-sm focus:outline-none focus:border-indigo-300 w-48 transition-colors"
+              />
             </div>
           </div>
 
@@ -175,7 +152,7 @@ export const CleanClientPortal: React.FC<CleanClientPortalProps> = ({
               </p>
             </div>
           ) : (
-            <div className="max-w-4xl mx-auto space-y-6">
+            <div className="max-w-4xl mx-auto space-y-4">
               {filteredContent.map((item) => (
                 <CleanContentCard
                   key={item.id}

@@ -14,7 +14,7 @@ function CleanContentCard({ item, onApprove, onReject, onEdit }: CleanContentCar
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
   
   return (
-    <div className="border-2 rounded-lg p-8 hover:border-slate-300 transition-all duration-200 bg-white hover:shadow-sm">
+    <div className="border rounded-lg p-6 hover:border-slate-300 transition-all duration-200 bg-white hover:shadow-sm">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
@@ -36,14 +36,13 @@ function CleanContentCard({ item, onApprove, onReject, onEdit }: CleanContentCar
 
       {/* Hook */}
       {item.hook && (
-        <div className="mb-6 bg-indigo-50 border-l-4 border-indigo-400 p-4 rounded-r-md">
-          <p className="text-xs font-medium text-indigo-600 mb-2 uppercase tracking-wider">Hook</p>
-          <p className="text-lg text-slate-800 font-medium leading-relaxed">{item.hook}</p>
+        <div className="mb-3">
+          <p className="text-base text-slate-800 font-medium leading-relaxed">{item.hook}</p>
         </div>
       )}
 
       {/* Content */}
-      <div className="mb-6">
+      <div className="mb-4">
         <p className="text-base leading-relaxed text-slate-700 whitespace-pre-wrap">
           {item.content_text}
         </p>
@@ -61,7 +60,7 @@ function CleanContentCard({ item, onApprove, onReject, onEdit }: CleanContentCar
       )}
 
       {/* Actions */}
-      <div className="flex items-center gap-3 pt-6 border-t border-slate-200">
+      <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
         <button
           onClick={async () => {
             setIsProcessing('approve');
@@ -74,7 +73,7 @@ function CleanContentCard({ item, onApprove, onReject, onEdit }: CleanContentCar
             }
           }}
           disabled={isProcessing !== null}
-          className="flex-1 bg-emerald-600 text-white rounded-md py-3 px-6 text-base hover:bg-emerald-700 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="flex-1 border border-emerald-500 text-emerald-600 rounded-md py-2.5 px-4 text-sm hover:bg-emerald-50 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
         >
           {isProcessing === 'approve' ? (
             <>
@@ -97,7 +96,7 @@ function CleanContentCard({ item, onApprove, onReject, onEdit }: CleanContentCar
             }
           }}
           disabled={isProcessing !== null}
-          className="flex-1 bg-rose-600 text-white rounded-md py-3 px-6 text-base hover:bg-rose-700 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="flex-1 border border-rose-500 text-rose-600 rounded-md py-2.5 px-4 text-sm hover:bg-rose-50 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
         >
           {isProcessing === 'reject' ? (
             <>
@@ -120,7 +119,7 @@ function CleanContentCard({ item, onApprove, onReject, onEdit }: CleanContentCar
             }
           }}
           disabled={isProcessing !== null}
-          className="border-2 border-slate-300 rounded-md p-3 hover:bg-slate-50 transition-all duration-200 text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="border border-slate-300 rounded-md p-2.5 hover:bg-slate-50 transition-all duration-200 text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Edit"
         >
           <Edit2 className="w-4 h-4" />

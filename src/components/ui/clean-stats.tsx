@@ -52,12 +52,11 @@ function CleanStats({ stats, loading = false }: CleanStatsProps) {
   if (loading) {
     return (
       <div className="w-full">
-        <div className="grid text-left grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full gap-4 lg:gap-8">
+        <div className="grid text-left grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full gap-3">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="flex gap-0 flex-col justify-between p-6 border rounded-md">
-              <div className="h-4 w-4 mb-10" />
-              <div className="h-10 bg-gray-100 rounded w-24 mb-2 animate-pulse" />
-              <div className="h-4 bg-gray-100 rounded w-32 animate-pulse" />
+            <div key={i} className="flex flex-col p-3 border rounded-md">
+              <div className="h-6 bg-gray-100 rounded w-16 mb-1 animate-pulse" />
+              <div className="h-3 bg-gray-100 rounded w-20 animate-pulse" />
             </div>
           ))}
         </div>
@@ -67,28 +66,13 @@ function CleanStats({ stats, loading = false }: CleanStatsProps) {
 
   return (
     <div className="w-full">
-      <div className="grid text-left grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full gap-4 lg:gap-8">
+      <div className="grid text-left grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full gap-3">
         {statsData.map((stat, index) => (
-          <div key={index} className={`flex gap-0 flex-col justify-between p-6 border-2 rounded-lg transition-all duration-200 ${stat.accentColor}`}>
-            {stat.trend === "up" && (
-              <MoveUpRight className={`w-4 h-4 mb-10 ${stat.trendColor}`} />
-            )}
-            {stat.trend === "down" && (
-              <MoveDownLeft className={`w-4 h-4 mb-10 ${stat.trendColor}`} />
-            )}
-            {!stat.trend && (
-              <div className="w-4 h-4 mb-10" />
-            )}
-            
-            <h2 className="text-4xl tracking-tighter max-w-xl text-left font-regular flex flex-row gap-4 items-end text-gray-900">
+          <div key={index} className={`flex flex-col p-3 border rounded-md transition-all duration-200 ${stat.accentColor}`}>
+            <h2 className="text-2xl tracking-tight text-gray-900 mb-1">
               {stat.value}
-              {stat.trendValue && (
-                <span className={`text-sm tracking-normal ${stat.trendColor}`}>
-                  {stat.trendValue}
-                </span>
-              )}
             </h2>
-            <p className="text-base leading-relaxed tracking-tight text-gray-600 max-w-xl text-left">
+            <p className="text-xs text-gray-600">
               {stat.label}
             </p>
           </div>
