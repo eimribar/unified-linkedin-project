@@ -57,13 +57,8 @@ function CleanContentCard({ item, onApprove, onReject, onEdit }: CleanContentCar
         <button
           onClick={async () => {
             setIsProcessing('approve');
-            try {
-              await onApprove(item);
-            } catch (error) {
-              console.error('Error approving:', error);
-            } finally {
-              setIsProcessing(null);
-            }
+            await onApprove(item);
+            setIsProcessing(null);
           }}
           disabled={isProcessing !== null}
           className="flex-1 border border-emerald-500 text-emerald-600 rounded-md py-2.5 px-4 text-sm hover:bg-emerald-50 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
@@ -80,13 +75,8 @@ function CleanContentCard({ item, onApprove, onReject, onEdit }: CleanContentCar
         <button
           onClick={async () => {
             setIsProcessing('reject');
-            try {
-              await onReject(item);
-            } catch (error) {
-              console.error('Error rejecting:', error);
-            } finally {
-              setIsProcessing(null);
-            }
+            await onReject(item);
+            setIsProcessing(null);
           }}
           disabled={isProcessing !== null}
           className="flex-1 border border-rose-500 text-rose-600 rounded-md py-2.5 px-4 text-sm hover:bg-rose-50 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
@@ -102,14 +92,7 @@ function CleanContentCard({ item, onApprove, onReject, onEdit }: CleanContentCar
         </button>
         <button
           onClick={() => {
-            setIsProcessing('edit');
-            try {
-              onEdit(item);
-            } catch (error) {
-              console.error('Error editing:', error);
-            } finally {
-              setIsProcessing(null);
-            }
+            onEdit(item);
           }}
           disabled={isProcessing !== null}
           className="border border-slate-300 rounded-md p-2.5 hover:bg-slate-50 transition-all duration-200 text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"

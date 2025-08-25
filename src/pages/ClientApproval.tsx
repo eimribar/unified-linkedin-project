@@ -267,7 +267,7 @@ const ClientApproval: React.FC = () => {
         .update({ 
           status: 'client_approved',
           approved_at: new Date().toISOString(),
-          approved_by: client?.name
+          approved_by: client?.id  // Use UUID instead of name
         })
         .eq('id', item.id);
 
