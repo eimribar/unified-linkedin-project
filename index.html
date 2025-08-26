@@ -15,6 +15,28 @@
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#3B82F6" />
 
+    <!-- Mobile Debug Console - Remove after debugging -->
+    <script>
+      // Mobile console debugging
+      if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/eruda@3.2.3/eruda.min.js';
+        script.onload = function() {
+          if (window.eruda) window.eruda.init();
+        };
+        document.head.appendChild(script);
+        
+        // Also capture and display errors
+        window.addEventListener('error', function(e) {
+          console.error('Error:', e.error?.stack || e.message);
+          const errorDiv = document.createElement('div');
+          errorDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:red;color:white;padding:10px;z-index:9999;font-size:12px;';
+          errorDiv.textContent = 'Error: ' + (e.error?.message || e.message);
+          document.body?.appendChild(errorDiv);
+        });
+      }
+    </script>
+
     <meta property="og:title" content="LinkedIn Content Engine · Premium Apple Design" />
     <meta property="og:description" content="Premium, minimal, Apple-inspired LinkedIn content workflow UI." />
     <meta property="og:type" content="website" />
