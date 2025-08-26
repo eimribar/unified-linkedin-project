@@ -169,7 +169,7 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
       const redirectUrl = buildOAuthRedirectUrl(
         '/auth/callback',
         invitationToken ? { invitation: invitationToken } : undefined
-      ).trim(); // Extra trim for safety
+      ).replace(/\s+/g, '').trim(); // Extra defensive space removal
       
       console.log('🔗 Google OAuth redirect URL:', redirectUrl);
       console.log('🔍 URL length:', redirectUrl.length);
@@ -184,7 +184,7 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectUrl
+          redirectTo: redirectUrl.replace(/\s+/g, '').trim() // Final defensive space removal
         }
       });
 
@@ -212,14 +212,14 @@ export const SignInPage = ({ className, invitationToken, clientName }: SignInPag
         const redirectUrl = buildOAuthRedirectUrl(
           '/auth/callback',
           invitationToken ? { invitation: invitationToken } : undefined
-        ).trim(); // Extra trim for safety
+        ).replace(/\s+/g, '').trim(); // Extra defensive space removal
         
         console.log('📧 Magic link redirect URL:', redirectUrl);
         
         const { error } = await supabase.auth.signInWithOtp({
           email: email.trim(), // Also trim the email
           options: {
-            emailRedirectTo: redirectUrl
+            emailRedirectTo: redirectUrl.replace(/\s+/g, '').trim()
           }
         });
 

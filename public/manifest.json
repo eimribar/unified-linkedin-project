@@ -1,11 +1,11 @@
 {
-  "name": "Client Content Portal",
-  "short_name": "Content Portal",
-  "description": "Review and approve your personalized LinkedIn content",
-  "start_url": "/client-approve",
+  "name": "AgentSS Content Review",
+  "short_name": "AgentSS",
+  "description": "Review and approve your LinkedIn content with intuitive swipe gestures",
+  "start_url": "/auth",
   "display": "standalone",
-  "background_color": "#fafafa",
-  "theme_color": "#18181b",
+  "background_color": "#ffffff",
+  "theme_color": "#3B82F6",
   "orientation": "portrait-primary",
   "scope": "/",
   "categories": ["productivity", "business", "social"],
@@ -36,7 +36,7 @@
       "name": "Review Content",
       "short_name": "Review",
       "description": "Quickly review pending content",
-      "url": "/client-approve",
+      "url": "/mobile-review",
       "icons": [
         {
           "src": "/favicon.svg",

@@ -143,11 +143,20 @@ const AuthCallbackSimple: React.FC = () => {
         return;
       }
       
-      // User is authorized - redirect to client portal
+      // User is authorized - check if mobile and redirect appropriately
       if (clientData) {
         toast.success(`Welcome back, ${clientData.name || session.user.email}!`);
       }
-      navigate('/client-approve');
+      
+      // Check if mobile device accessing via mobile path
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const currentPath = window.location.pathname;
+      
+      if (isMobileDevice || currentPath.includes('mobile')) {
+        navigate('/mobile-review');
+      } else {
+        navigate('/client-approve');
+      }
       
     } catch (error) {
       console.error('Callback error:', error);

@@ -284,7 +284,7 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({ chil
         email,
         password,
         options: {
-          emailRedirectTo: getProductionUrl() + '/client-approve',
+          emailRedirectTo: (getProductionUrl() + '/client-approve').replace(/\s+/g, '').trim(),
           data: {
             client_name: existingClient.name
           }
@@ -358,7 +358,7 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({ chil
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: redirectUrl
+          redirectTo: redirectUrl.replace(/\s+/g, '').trim() // Extra defensive space removal
         }
       });
 
@@ -391,7 +391,7 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({ chil
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: getProductionUrl() + '/client-approve'
+          emailRedirectTo: (getProductionUrl() + '/client-approve').replace(/\s+/g, '').trim()
         }
       });
 
@@ -426,7 +426,7 @@ export const SupabaseAuthProvider: React.FC<SupabaseAuthProviderProps> = ({ chil
   const resetPassword = async (email: string) => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: getProductionUrl() + '/reset-password'
+        redirectTo: (getProductionUrl() + '/reset-password').replace(/\s+/g, '').trim()
       });
 
       if (error) {

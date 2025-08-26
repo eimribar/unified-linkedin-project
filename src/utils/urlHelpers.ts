@@ -5,27 +5,31 @@
 
 /**
  * Get the proper base URL for OAuth redirects
- * NEVER returns localhost - always uses production URL
+ * Uses current origin in development for mobile testing
  */
 export function getProductionUrl(): string {
-  // ALWAYS use production URL for OAuth redirects
-  // This prevents localhost issues and ensures OAuth always works
-  // Trim to prevent any accidental spaces
-  return 'https://www.agentss.app'.trim();
+  if (import.meta.env.PROD) {
+    // Remove ALL spaces and trim thoroughly
+    return 'https://www.agentss.app'.replace(/\s+/g, '').trim();
+  }
+  
+  // In development, use current origin to support mobile testing
+  // This allows OAuth to work with IP addresses like 192.168.1.245:8080
+  return window.location.origin.replace(/\s+/g, '').trim();
 }
 
 /**
  * Get the base URL for the application
- * Returns production URL in production, allows localhost in dev
+ * Returns production URL in production, current origin in dev
  */
 export function getBaseUrl(): string {
   if (import.meta.env.PROD) {
-    return 'https://www.agentss.app'.trim();
+    // Remove ALL spaces and trim thoroughly
+    return 'https://www.agentss.app'.replace(/\s+/g, '').trim();
   }
   
-  // In development, still use production for OAuth-related stuff
-  // but allow localhost for other purposes
-  return window.location.origin.trim();
+  // In development, use current origin
+  return window.location.origin.replace(/\s+/g, '').trim();
 }
 
 /**
@@ -36,15 +40,15 @@ export function buildOAuthRedirectUrl(
   params?: Record<string, string>
 ): string {
   const baseUrl = getProductionUrl(); // ALWAYS use production for OAuth
-  // Ensure path starts with /
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  let url = (baseUrl + cleanPath).trim();
+  // Ensure path starts with / and remove any spaces
+  const cleanPath = path.replace(/\s+/g, '').startsWith('/') ? path.replace(/\s+/g, '') : `/${path.replace(/\s+/g, '')}`;
+  let url = (baseUrl + cleanPath).replace(/\s+/g, '').trim();
   
   if (params && Object.keys(params).length > 0) {
     const searchParams = new URLSearchParams(params);
     url += '?' + searchParams.toString();
   }
   
-  // Final trim to ensure no spaces
-  return url.trim();
+  // Final aggressive space removal and trim
+  return url.replace(/\s+/g, '').trim();
 }
