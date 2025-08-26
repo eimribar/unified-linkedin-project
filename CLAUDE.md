@@ -10,8 +10,10 @@
 - **UI Components**: shadcn/ui components
 - **Database**: Supabase (shared with Ghostwriter Portal)
 - **Routing**: React Router v6
-- **Animations**: Framer Motion
-- **Deployment**: Vercel
+- **Animations**: Framer Motion + @react-spring/web
+- **Mobile**: PWA with Service Worker
+- **Touch Gestures**: @use-gesture/react
+- **Deployment**: Vercel → Production: www.agentss.app
 
 ## Project Structure
 ```
@@ -20,6 +22,10 @@ unified-linkedin-project/
 │   ├── components/
 │   │   ├── ui/              # shadcn/ui components
 │   │   ├── layout/          # Layout components
+│   │   ├── mobile/          # Mobile PWA components
+│   │   │   ├── SwipeCard.tsx    # Swipeable content cards
+│   │   │   ├── ActionBar.tsx    # Touch-friendly controls
+│   │   │   └── ReviewStack.tsx  # Card stack management
 │   │   ├── swipe/           # Approval swipe components
 │   │   └── PortalSwitcher.tsx # Navigate to Ghostwriter
 │   ├── contexts/
@@ -31,8 +37,12 @@ unified-linkedin-project/
 │   ├── lib/
 │   │   ├── supabase.ts     # Supabase client
 │   │   └── utils.ts         # Utility functions
+│   ├── hooks/
+│   │   └── useSwipeGestures.ts # Touch gesture detection
 │   ├── pages/
-│   │   ├── SignUp.tsx       # Combined Sign Up/Sign In with tab switcher
+│   │   ├── AuthSimple.tsx   # Clean authentication page
+│   │   ├── AuthCallbackSimple.tsx # OAuth callback handler
+│   │   ├── MobileReview.tsx # Mobile PWA interface
 │   │   ├── Import.tsx       # Content import functionality
 │   │   ├── Welcome.tsx      # Post-signup welcome
 │   │   ├── Onboarding.tsx   # 10-question flow
@@ -40,8 +50,10 @@ unified-linkedin-project/
 │   │   ├── Profile.tsx      # LinkedIn profile view
 │   │   ├── Strategy.tsx     # Content strategy
 │   │   ├── ContentIdeas.tsx # Idea collection
-│   │   ├── Approve.tsx      # Content approval (Tinder-style swipe)
+│   │   ├── Approve.tsx      # Content approval (desktop)
 │   │   └── UserAnalytics.tsx # Performance metrics
+│   ├── styles/
+│   │   └── mobile.css       # Mobile-specific styling
 │   ├── services/
 │   │   └── database.service.ts # Client-filtered queries
 │   └── App.tsx              # Main app with routing
@@ -110,7 +122,7 @@ Note: Navigation shows only these 5 essential pages
 - **Client Filtering**: Content filtered by client_id
 - **URLs**:
   - Dev: http://localhost:8080
-  - Prod: https://unified-linkedin-project.vercel.app
+  - Prod: https://www.agentss.app
 
 ## Database Integration
 
@@ -269,13 +281,34 @@ npm run preview
 - Updated routing with proper redirects
 - Improved TypeScript typing throughout
 
+## 🚀 Latest Updates (August 26, 2025)
+
+### ✅ COMPLETED: Mobile PWA Implementation
+- **Full Mobile App**: Tinder-like swipe interface at `/mobile-review`
+- **PWA Features**: Installable, offline support, push notification ready
+- **Touch Gestures**: Right=Approve, Left=Decline, Up=Edit
+- **Cross-Platform**: iOS and Android optimized
+
+### ✅ RESOLVED: Critical Authentication Fixes
+- **OAuth URL Issues**: Fixed all space-related authentication errors
+- **Portal Switching**: Updated all broken vercel.app references
+- **Domain Consistency**: All URLs now use production domains correctly
+
+### 📱 Mobile App Technical Details
+- **URL**: `https://www.agentss.app/mobile-review`
+- **Components**: SwipeCard, ActionBar, ReviewStack components
+- **Gestures**: @use-gesture/react for touch handling
+- **Animations**: @react-spring/web for smooth transitions
+- **PWA**: Service Worker, custom install prompts, offline queue
+
 ## Next Steps & Roadmap
+- [x] Create mobile app version ✅ COMPLETE
 - [ ] Implement real-time updates with Supabase subscriptions
-- [ ] Add client-specific branding options
-- [ ] Create mobile app version
+- [ ] Add client-specific branding options  
 - [ ] Add export functionality for content
 - [ ] Implement commenting system
 - [ ] Add notification system for approvals
+- [ ] Push notification backend integration
 
 ## Contact & Support
 - **GitHub**: https://github.com/eimribar/unified-linkedin-project

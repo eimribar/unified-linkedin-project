@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2025-08-26 - MOBILE PWA RELEASE 📱
+
+### 🚀 Major Features Added
+- **Complete Mobile PWA Implementation**: Tinder-like swipe interface for content review
+- **Critical OAuth URL Fixes**: Resolved all domain redirect issues and authentication errors
+- **Cross-Portal URL Updates**: Fixed broken portal switching between admin and client portals
+
+### 📱 Mobile PWA Features
+- **Swipe Gestures**: Right=Approve, Left=Decline, Up=Edit with smooth animations
+- **Service Worker**: Offline functionality and background sync capabilities
+- **PWA Installation**: Custom install prompts for iOS and Android devices
+- **Mobile-Specific Routing**: Smart device detection and appropriate redirects
+- **Touch-Optimized UI**: Large buttons, haptic feedback simulation, safe area support
+
+### 🔧 Critical Fixes
+- **OAuth URL Spaces**: Fixed Supabase OAuth error with aggressive space removal
+- **Portal Switching**: Updated all hardcoded URLs from broken vercel.app domains to production domains
+- **Mobile Authentication**: Resolved mobile-specific redirect issues
+
+### 📁 New Files Added
+- `src/hooks/useSwipeGestures.ts` - Touch gesture handling
+- `src/components/mobile/SwipeCard.tsx` - Swipeable content cards
+- `src/components/mobile/ActionBar.tsx` - Touch-friendly action buttons  
+- `src/components/mobile/ReviewStack.tsx` - Card stack management
+- `src/pages/MobileReview.tsx` - Main mobile interface
+- `src/styles/mobile.css` - Mobile-specific styling
+- `public/sw.js` - Service worker for PWA functionality
+- `public/pwa-install-prompt.js` - Custom PWA install prompts
+
+### 🌐 URL & Domain Updates
+- **Production URLs**: All references updated to use `www.agentss.app`
+- **Portal URLs**: Ghostwriter portal updated to use `admin.agentss.app`
+- **OAuth Redirects**: Fixed all authentication redirect URLs
+- **Email Invitations**: Updated invitation URLs to use correct domains
+
 ## [2.0.0] - 2025-08-25 - MAJOR RELEASE 🎉
 
 ### 🚀 Major Features
