@@ -1,5 +1,8 @@
 // Service Worker for AgentSS Mobile App
-const CACHE_NAME = 'agentss-mobile-v2';
+const CACHE_VERSION = 'v4-2025-08-26';
+const CACHE_NAME = `agentss-mobile-${CACHE_VERSION}`;
+
+// Only cache core app shell, not versioned assets
 const urlsToCache = [
   '/',
   '/auth',
@@ -10,44 +13,81 @@ const urlsToCache = [
   '/apple-touch-icon.png'
 ];
 
-// Install event - cache resources
+// Install event - cache resources and skip waiting
 self.addEventListener('install', event => {
+  // Force the waiting service worker to become the active service worker
+  self.skipWaiting();
+  
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Opened cache');
+        console.log('Opened cache:', CACHE_NAME);
         return cache.addAll(urlsToCache);
       })
   );
 });
 
-// Fetch event - serve from cache when offline
+// Fetch event - network first for HTML and assets
 self.addEventListener('fetch', event => {
+  const { request } = event;
+  const url = new URL(request.url);
+  
+  // For HTML pages, always try network first
+  if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          // Clone the response before caching
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(request, responseToCache);
+          });
+          return response;
+        })
+        .catch(() => {
+          // Fall back to cache if offline
+          return caches.match(request);
+        })
+    );
+    return;
+  }
+  
+  // For assets (JS, CSS), skip cache for /assets/ folder to avoid version conflicts
+  if (url.pathname.startsWith('/assets/')) {
+    event.respondWith(fetch(request));
+    return;
+  }
+  
+  // For other resources, try cache first, then network
   event.respondWith(
-    caches.match(event.request)
+    caches.match(request)
       .then(response => {
-        // Return cached version or fetch from network
         if (response) {
           return response;
         }
-        return fetch(event.request);
-      }
-    )
+        return fetch(request);
+      })
   );
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up ALL old caches and claim clients
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    Promise.all([
+      // Delete all old caches
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            if (cacheName !== CACHE_NAME) {
+              console.log('Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }),
+      // Claim all clients immediately
+      clients.claim()
+    ])
   );
 });
 
@@ -110,3 +150,10 @@ function doBackgroundSync() {
     resolve();
   });
 }
+
+// Message event to force update
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});

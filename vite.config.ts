@@ -30,8 +30,14 @@ export default defineConfig(({ mode }) => ({
           'charts': ['recharts'],
           'three': ['three', '@react-three/fiber'],
         },
+        // Ensure consistent naming for assets
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       },
     },
     chunkSizeWarningLimit: 600,
+    // Clear output directory before building
+    emptyOutDir: true,
   },
 }));
