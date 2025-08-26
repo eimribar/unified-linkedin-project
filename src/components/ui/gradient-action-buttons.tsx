@@ -26,7 +26,7 @@ const GradientButton: React.FC<GradientButtonProps> = ({
   return (
     <li
       style={{ '--gradient-from': gradientFrom, '--gradient-to': gradientTo } as React.CSSProperties}
-      className={`relative w-[50px] h-[50px] shadow-md rounded-full flex items-center justify-center transition-all duration-500 hover:w-[140px] hover:shadow-none group ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${className}`}
+      className={`relative w-[44px] h-[44px] sm:w-[50px] sm:h-[50px] shadow-md rounded-full flex items-center justify-center transition-all duration-500 hover:w-[120px] sm:hover:w-[140px] hover:shadow-none group ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${className}`}
       onClick={disabled ? undefined : onClick}
     >
       {/* Gradient background on hover */}

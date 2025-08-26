@@ -357,17 +357,17 @@ const Approve = () => {
               className="bg-white rounded-xl border border-zinc-200 p-4 sm:p-6 hover:shadow-xl hover:border-zinc-300 transition-all duration-200 transform hover:-translate-y-1"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2 flex-wrap">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
                     {getStatusBadge(item.status)}
-                    <span className="text-sm text-zinc-500">
-                      Variant {item.variant_number} •
+                    <span className="text-xs sm:text-sm text-zinc-500">
+                      Variant {item.variant_number} • 
                       {new Date(item.created_at).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
-                {/* Gradient Action Buttons */}
-                <div className="flex justify-end">
+                {/* Gradient Action Buttons - Responsive */}
+                <div className="flex justify-center sm:justify-end">
                   <ClientApprovalActionBar
                     onApprove={() => handleApprove(item)}
                     onDecline={() => handleReject(item)}
@@ -377,33 +377,33 @@ const Approve = () => {
                 </div>
               </div>
 
-              {/* Content Preview */}
-              <div className="prose prose-zinc max-w-none mb-4">
+              {/* Content Preview - Mobile Optimized */}
+              <div className="prose prose-zinc max-w-none">
                 <p className="text-sm text-zinc-700 leading-relaxed line-clamp-3 sm:line-clamp-4">
                   {item.content_text}
                 </p>
               </div>
 
-              {/* Hashtags */}
+              {/* Hashtags - Mobile Friendly */}
               {item.hashtags && item.hashtags.length > 0 && (
-                <div className="mb-4 flex flex-wrap gap-2">
-                  {item.hashtags.slice(0, 5).map((tag: string, i: number) => (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {item.hashtags.slice(0, 3).map((tag: string, i: number) => (
                     <span key={i} className="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded">
                       #{tag}
                     </span>
                   ))}
-                  {item.hashtags.length > 5 && (
+                  {item.hashtags.length > 3 && (
                     <span className="text-xs px-2 py-1 bg-zinc-100 text-zinc-500 rounded">
-                      +{item.hashtags.length - 5} more
+                      +{item.hashtags.length - 3} more
                     </span>
                   )}
                 </div>
               )}
 
-              {/* Expand Button */}
+              {/* Expand Button - Mobile Centered */}
               <button
                 onClick={() => openContentModal(item)}
-                className="text-sm text-zinc-600 hover:text-zinc-900 flex items-center gap-1 w-full sm:w-auto justify-center sm:justify-start"
+                className="mt-4 text-sm text-zinc-600 hover:text-zinc-900 flex items-center gap-1 w-full sm:w-auto justify-center sm:justify-start"
               >
                 View full content
                 <ChevronRight className="w-4 h-4" />
@@ -413,17 +413,17 @@ const Approve = () => {
         </div>
       )}
 
-      {/* Edit Modal */}
+      {/* Edit Modal - Mobile Optimized */}
       {isEditing && selectedContent && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl max-w-3xl w-full max-h-[80vh] overflow-auto p-6">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
+          <div className="bg-white rounded-xl max-w-3xl w-full max-h-[95vh] sm:max-h-[85vh] overflow-auto p-4 sm:p-6 animate-fadeIn">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold">Edit Content</h3>
+              <h3 className="text-lg sm:text-xl font-semibold">Edit Content</h3>
               <button
                 onClick={() => {
                   setIsEditing(false);
                 }}
-                className="p-2 hover:bg-zinc-100 rounded-lg"
+                className="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -432,23 +432,24 @@ const Approve = () => {
             <textarea
               value={editingContent}
               onChange={(e) => setEditingContent(e.target.value)}
-              className="w-full h-64 sm:h-96 p-4 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900 text-sm"
+              className="w-full h-48 sm:h-64 md:h-96 p-3 sm:p-4 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900 text-sm resize-none"
               placeholder="Edit your content here..."
+              autoFocus
             />
             
-            <div className="flex flex-col sm:flex-row justify-end gap-2 mt-4">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 mt-4">
               <button
                 onClick={() => {
                   setIsEditing(false);
                 }}
-                className="px-4 py-2 border border-zinc-200 rounded-lg hover:bg-zinc-50 text-sm"
+                className="px-4 py-2 border border-zinc-200 rounded-lg hover:bg-zinc-50 text-sm transition-colors w-full sm:w-auto"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEdit}
                 disabled={processing === selectedContent.id}
-                className="px-4 py-2 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
+                className="px-4 py-2 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 disabled:opacity-50 flex items-center justify-center gap-2 text-sm transition-colors w-full sm:w-auto"
               >
                 <Save className="w-4 h-4" />
                 Save Changes
@@ -460,36 +461,38 @@ const Approve = () => {
 
       {/* Enhanced Full Content Modal with Actions and Navigation */}
       {selectedContent && !isEditing && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl relative transition-all duration-300 ease-out">
-            {/* Navigation Arrows - Hidden on mobile for touch gestures */}
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] flex flex-col shadow-2xl relative transition-all duration-300 ease-out animate-fadeIn">
+            {/* Navigation Arrows - Desktop Only */}
             {selectedContentIndex > 0 && (
               <button
                 onClick={goToPrevious}
-                className="absolute left-[-60px] top-1/2 -translate-y-1/2 p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-200 z-10 hidden lg:block"
+                className="absolute left-2 sm:left-[-60px] top-1/2 -translate-y-1/2 p-2 sm:p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-200 z-10 hidden lg:block"
                 title="Previous (←)"
               >
-                <ChevronLeft className="w-6 h-6 text-zinc-700" />
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-700" />
               </button>
             )}
             {selectedContentIndex < content.length - 1 && (
               <button
                 onClick={goToNext}
-                className="absolute right-[-60px] top-1/2 -translate-y-1/2 p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-200 z-10 hidden lg:block"
+                className="absolute right-2 sm:right-[-60px] top-1/2 -translate-y-1/2 p-2 sm:p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-200 z-10 hidden lg:block"
                 title="Next (→)"
               >
-                <ChevronRight className="w-6 h-6 text-zinc-700" />
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-700" />
               </button>
             )}
             
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-zinc-200">
-              <div className="flex items-center gap-4 flex-wrap">
+            {/* Header - Mobile Optimized */}
+            <div className="flex items-start sm:items-center justify-between p-4 sm:p-6 border-b border-zinc-200">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                 <h3 className="text-lg sm:text-xl font-semibold">Content Review</h3>
-                <span className="text-sm text-zinc-500 font-medium">
-                  {selectedContentIndex + 1} of {content.length}
-                </span>
-                {getStatusBadge(selectedContent.status)}
+                <div className="flex items-center gap-2 sm:gap-4">
+                  <span className="text-xs sm:text-sm text-zinc-500 font-medium">
+                    {selectedContentIndex + 1} of {content.length}
+                  </span>
+                  {getStatusBadge(selectedContent.status)}
+                </div>
               </div>
               <button
                 onClick={() => {
@@ -502,8 +505,8 @@ const Approve = () => {
               </button>
             </div>
             
-            {/* Content Area - Scrollable */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+            {/* Content Area - Scrollable with Mobile Touch */}
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6">
               <div 
                 key={selectedContent.id} 
                 className="prose prose-zinc max-w-none animate-fadeIn"
@@ -515,10 +518,10 @@ const Approve = () => {
               
               {selectedContent.hashtags && selectedContent.hashtags.length > 0 && (
                 <div className="mt-6 pt-4 border-t border-zinc-200">
-                  <p className="text-sm font-medium text-zinc-600 mb-3">Hashtags</p>
-                  <div className="flex flex-wrap gap-2">
+                  <p className="text-xs sm:text-sm font-medium text-zinc-600 mb-3">Hashtags</p>
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     {selectedContent.hashtags.map((tag: string, i: number) => (
-                      <span key={i} className="text-sm px-3 py-1 bg-blue-50 text-blue-600 rounded-full">
+                      <span key={i} className="text-xs sm:text-sm px-2 sm:px-3 py-1 bg-blue-50 text-blue-600 rounded-full">
                         #{tag}
                       </span>
                     ))}
@@ -527,7 +530,7 @@ const Approve = () => {
               )}
             </div>
             
-            {/* Action Bar - Fixed at Bottom */}
+            {/* Action Bar - Fixed at Bottom, Mobile Optimized */}
             <div className="border-t border-zinc-200 p-4 sm:p-6 bg-zinc-50">
               <div className="flex items-center justify-center">
                 <ClientApprovalActionBar
@@ -544,35 +547,41 @@ const Approve = () => {
                   onClick={goToPrevious}
                   disabled={selectedContentIndex === 0}
                   className={cn(
-                    "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm",
+                    "flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg transition-colors text-xs sm:text-sm",
                     selectedContentIndex === 0
                       ? "bg-zinc-100 text-zinc-400 cursor-not-allowed"
                       : "bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-50"
                   )}
                 >
-                  <ChevronLeft className="w-4 h-4" />
-                  Previous
+                  <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Previous</span>
+                  <span className="sm:hidden">Prev</span>
                 </button>
+
+                <span className="text-xs text-zinc-500 flex items-center">
+                  {selectedContentIndex + 1}/{content.length}
+                </span>
 
                 <button
                   onClick={goToNext}
                   disabled={selectedContentIndex === content.length - 1}
                   className={cn(
-                    "flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm",
+                    "flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg transition-colors text-xs sm:text-sm",
                     selectedContentIndex === content.length - 1
                       ? "bg-zinc-100 text-zinc-400 cursor-not-allowed"
                       : "bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-50"
                   )}
                 >
                   Next
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
               </div>
               
-              {/* Schedule info */}
-              <div className="text-center mt-4 p-2 bg-green-50 rounded-lg">
-                <p className="text-sm text-green-600">
-                  ✅ Approved content will be automatically scheduled for posting
+              {/* Schedule info - Mobile Friendly */}
+              <div className="text-center mt-3 sm:mt-4 p-2 bg-green-50 rounded-lg">
+                <p className="text-xs sm:text-sm text-green-600">
+                  <span className="hidden sm:inline">✅ Approved content will be automatically scheduled for posting</span>
+                  <span className="sm:hidden">✅ Auto-scheduled when approved</span>
                 </p>
               </div>
             </div>
