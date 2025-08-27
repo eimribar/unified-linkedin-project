@@ -50,27 +50,27 @@ export const useSwipeGestures = ({
             if (dx > 0 && mx > threshold) {
               // Swipe right - Approve
               api.start({ 
-                x: window.innerWidth, 
+                x: window.innerWidth * 1.5, 
                 rotate: 30, 
-                config: { tension: 200 } 
+                config: { tension: 280, friction: 20 } 
               });
-              setTimeout(onSwipeRight, 200);
+              setTimeout(onSwipeRight, 100);
             } else if (dx < 0 && mx < -threshold) {
               // Swipe left - Decline  
               api.start({ 
-                x: -window.innerWidth, 
+                x: -window.innerWidth * 1.5, 
                 rotate: -30, 
-                config: { tension: 200 } 
+                config: { tension: 280, friction: 20 } 
               });
-              setTimeout(onSwipeLeft, 200);
+              setTimeout(onSwipeLeft, 100);
             }
           } else if (dy < 0 && my < -threshold) {
             // Swipe up - Edit
             api.start({ 
-              y: -window.innerHeight, 
-              config: { tension: 200 } 
+              y: -window.innerHeight * 1.5, 
+              config: { tension: 280, friction: 20 } 
             });
-            setTimeout(onSwipeUp, 200);
+            setTimeout(onSwipeUp, 100);
           }
         } else {
           // Snap back to center

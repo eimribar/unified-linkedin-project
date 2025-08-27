@@ -7,7 +7,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SimpleAuthProvider } from "./contexts/SimpleAuthContext";
 import SimpleProtectedRoute from "./components/auth/SimpleProtectedRoute";
-import PortalSwitcher from "./components/PortalSwitcher";
 import UserLayout from "./layouts/UserLayout";
 
 // Lazy load pages for better code splitting
@@ -96,7 +95,6 @@ const App = () => (
             </Routes>
             </Suspense>
           </BrowserRouter>
-          <PortalSwitcher />
         </>
       </SimpleAuthProvider>
     </TooltipProvider>

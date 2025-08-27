@@ -189,8 +189,10 @@ const SwipeApproval = () => {
       // Add to history
       setHistory(prev => [...prev, { item, action: 'approved' }]);
       
-      // Move to next
-      setCurrentIndex(prev => prev + 1);
+      // Delay moving to next card to let animation complete
+      setTimeout(() => {
+        setCurrentIndex(prev => prev + 1);
+      }, 300);
       
       // Haptic feedback
       if ('vibrate' in navigator) {
@@ -222,8 +224,10 @@ const SwipeApproval = () => {
       // Add to history
       setHistory(prev => [...prev, { item, action: 'declined' }]);
       
-      // Move to next
-      setCurrentIndex(prev => prev + 1);
+      // Delay moving to next card to let animation complete
+      setTimeout(() => {
+        setCurrentIndex(prev => prev + 1);
+      }, 300);
       
       // Haptic feedback
       if ('vibrate' in navigator) {
@@ -269,8 +273,10 @@ const SwipeApproval = () => {
       // Add to history
       setHistory(prev => [...prev, { item: editingItem, action: 'edited' }]);
       
-      // Move to next
-      setCurrentIndex(prev => prev + 1);
+      // Delay moving to next card to let animation complete
+      setTimeout(() => {
+        setCurrentIndex(prev => prev + 1);
+      }, 300);
       
       toast.success('Content edited and sent for review', {
         icon: '✏️',
