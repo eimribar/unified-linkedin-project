@@ -1,20 +1,12 @@
-// =====================================================
-// CLIENT APPROVAL PAGE - REDESIGNED
-// High-quality UI with animations and modern design
-// =====================================================
-
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSimpleAuth } from '@/contexts/SimpleAuthContext';
 import { supabase } from '@/lib/supabase';
 import { isAdmin } from '@/utils/authHelpers';
-import { CleanClientPortal } from '@/components/ui/clean-client-portal';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
+import { CheckCircle, XCircle, Clock, ChevronLeft, ChevronRight, Calendar, Building, Sparkles, Edit2, X, Save, ChevronDown, LogOut } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { ClientApprovalActionBar } from '@/components/ui/gradient-action-buttons';
 import toast from 'react-hot-toast';
-import { Loader2 } from 'lucide-react';
 
 interface GeneratedContent {
   id: string;
@@ -30,7 +22,7 @@ interface GeneratedContent {
   updated_at: string;
 }
 
-const ClientApproval: React.FC = () => {
+const ClientApproval = () => {
   const navigate = useNavigate();
   const { user, signOut, loading: isLoading } = useSimpleAuth();
   const [client, setClient] = useState<any>(null);
@@ -40,39 +32,22 @@ const ClientApproval: React.FC = () => {
   
   const [content, setContent] = useState<GeneratedContent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState<string | null>(null);
+  const [selectedContent, setSelectedContent] = useState<GeneratedContent | null>(null);
+  const [selectedContentIndex, setSelectedContentIndex] = useState<number>(-1);
+  const [editingContent, setEditingContent] = useState<string>('');
+  const [isEditing, setIsEditing] = useState(false);
+  
   const [stats, setStats] = useState({
     total: 0,
     approved: 0,
     rejected: 0,
     pending: 0
   });
-  
-  // Edit modal state
-  const [editModal, setEditModal] = useState<{
-    open: boolean;
-    item: GeneratedContent | null;
-    editedText: string;
-  }>({
-    open: false,
-    item: null,
-    editedText: ''
-  });
-  
-  // Rejection modal state
-  const [rejectModal, setRejectModal] = useState<{
-    open: boolean;
-    item: GeneratedContent | null;
-    reason: string;
-  }>({
-    open: false,
-    item: null,
-    reason: ''
-  });
 
   // Load client data when user is authenticated
   useEffect(() => {
     if (user) {
-      // Check if user is admin and redirect
       if (isAdmin(user.email)) {
         setIsAdminMode(true);
       }
@@ -88,18 +63,75 @@ const ClientApproval: React.FC = () => {
     }
   }, [client]);
 
+  // Navigation functions
+  const navigateToContent = (index: number) => {
+    if (index >= 0 && index < content.length) {
+      setSelectedContent(content[index]);
+      setSelectedContentIndex(index);
+    }
+  };
+
+  const goToPrevious = () => {
+    if (selectedContentIndex > 0) {
+      navigateToContent(selectedContentIndex - 1);
+    }
+  };
+
+  const goToNext = () => {
+    if (selectedContentIndex < content.length - 1) {
+      navigateToContent(selectedContentIndex + 1);
+    }
+  };
+
+  // Open modal with specific content
+  const openContentModal = (item: GeneratedContent) => {
+    const index = content.findIndex(c => c.id === item.id);
+    setSelectedContent(item);
+    setSelectedContentIndex(index);
+  };
+
+  // Keyboard shortcuts for modal
+  useEffect(() => {
+    if (!selectedContent) return;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (isEditing) return;
+      
+      switch(e.key.toLowerCase()) {
+        case 'a':
+          if (!processing) handleApprove(selectedContent);
+          break;
+        case 'd':
+          if (!processing) handleReject(selectedContent);
+          break;
+        case 'e':
+          if (!processing) handleEdit(selectedContent);
+          break;
+        case 'arrowleft':
+          goToPrevious();
+          break;
+        case 'arrowright':
+          goToNext();
+          break;
+        case 'escape':
+          if (!isEditing) setSelectedContent(null);
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [selectedContent, selectedContentIndex, content.length, processing, isEditing]);
+
   const loadClientData = async () => {
     if (!user) return;
     
     try {
-      console.log('Loading client data for user:', user.email);
-      
       // Check if user is admin
       if (isAdmin(user.email)) {
-        console.log('Admin mode activated');
         setIsAdminMode(true);
         
-        // Load all clients for admin to choose from
+        // Load all clients for admin
         const { data: clients, error: clientsError } = await supabase
           .from('clients')
           .select('*')
@@ -114,7 +146,7 @@ const ClientApproval: React.FC = () => {
         
         setAllClients(clients || []);
         
-        // Check if there's a client ID in URL params (for direct access from Ghostwriter portal)
+        // Check URL params for client_id
         const urlParams = new URLSearchParams(window.location.search);
         const clientIdParam = urlParams.get('client_id');
         
@@ -125,7 +157,6 @@ const ClientApproval: React.FC = () => {
             setSelectedClientId(clientIdParam);
           }
         } else if (clients && clients.length > 0) {
-          // Default to first client if no specific one selected
           setClient(clients[0]);
           setSelectedClientId(clients[0].id);
         }
@@ -135,7 +166,6 @@ const ClientApproval: React.FC = () => {
       }
       
       // Regular client flow
-      // First try to fetch by auth_user_id
       const { data, error } = await supabase
         .from('clients')
         .select('*')
@@ -143,71 +173,38 @@ const ClientApproval: React.FC = () => {
         .single();
       
       if (error) {
-        console.log('No client found by auth_user_id, trying email...');
-        
-        // Try to fetch by email as fallback
+        // Try by email as fallback
         const { data: emailClient, error: emailError } = await supabase
           .from('clients')
           .select('*')
-          .eq('email', user.email)
+          .ilike('email', user.email)
           .single();
         
         if (emailError) {
-          console.error('Error loading client by email:', emailError);
-          
-          // Check if this is a case sensitivity issue
-          const { data: caseInsensitive, error: caseError } = await supabase
-            .from('clients')
-            .select('*')
-            .ilike('email', user.email)
-            .single();
-          
-          if (caseError) {
-            console.error('No client found for email:', user.email);
-            toast.error('You are not authorized to access this platform. Please contact your administrator.');
-            
-            // Sign out unauthorized user
-            setTimeout(async () => {
-              await signOut();
-              navigate('/auth?error=unauthorized');
-            }, 2000);
-            
-            setLoading(false); // Important: stop loading
-            return;
-          }
-          
-          // Update the auth_user_id if we found a match
-          if (caseInsensitive && !caseInsensitive.auth_user_id) {
-            await supabase
-              .from('clients')
-              .update({ auth_user_id: user.id })
-              .eq('id', caseInsensitive.id);
-            
-            setClient(caseInsensitive);
-            console.log('Client found and linked:', caseInsensitive);
-          } else {
-            setClient(caseInsensitive);
-            console.log('Client found:', caseInsensitive);
-          }
-        } else {
-          // Update the auth_user_id if not set
-          if (emailClient && !emailClient.auth_user_id) {
-            await supabase
-              .from('clients')
-              .update({ auth_user_id: user.id })
-              .eq('id', emailClient.id);
-          }
-          setClient(emailClient);
-          console.log('Client found by email:', emailClient);
+          toast.error('You are not authorized to access this platform.');
+          setTimeout(async () => {
+            await signOut();
+            navigate('/auth?error=unauthorized');
+          }, 2000);
+          setLoading(false);
+          return;
         }
+        
+        // Update auth_user_id if needed
+        if (emailClient && !emailClient.auth_user_id) {
+          await supabase
+            .from('clients')
+            .update({ auth_user_id: user.id })
+            .eq('id', emailClient.id);
+        }
+        setClient(emailClient);
       } else {
         setClient(data);
-        console.log('Client found by auth_user_id:', data);
       }
     } catch (err) {
       console.error('Error in loadClientData:', err);
       toast.error('Failed to load client data');
-      setLoading(false); // Important: stop loading on error
+      setLoading(false);
     }
   };
 
@@ -216,7 +213,6 @@ const ClientApproval: React.FC = () => {
     
     setLoading(true);
     try {
-      // Fetch all admin-approved content for this client
       const { data, error } = await supabase
         .from('generated_content')
         .select('*')
@@ -261,22 +257,21 @@ const ClientApproval: React.FC = () => {
   };
 
   const handleApprove = async (item: GeneratedContent) => {
+    setProcessing(item.id);
     try {
       const { error } = await supabase
         .from('generated_content')
         .update({ 
           status: 'client_approved',
           approved_at: new Date().toISOString(),
-          approved_by: client?.id  // Use UUID instead of name
+          approved_by: client?.id
         })
         .eq('id', item.id);
 
       if (error) throw error;
       
-      // Remove from current list
+      // Remove from list and update stats
       setContent(prev => prev.filter(c => c.id !== item.id));
-      
-      // Update stats
       setStats(prev => ({
         ...prev,
         pending: prev.pending - 1,
@@ -284,13 +279,27 @@ const ClientApproval: React.FC = () => {
       }));
       
       toast.success('Content approved successfully!');
+      
+      // Auto-advance to next item
+      if (selectedContentIndex < content.length - 1) {
+        const nextItem = content[selectedContentIndex + 1];
+        setSelectedContent(nextItem);
+      } else if (content.length > 1) {
+        setSelectedContent(null);
+        setSelectedContentIndex(-1);
+      } else {
+        setSelectedContent(null);
+      }
     } catch (error) {
       console.error('Error approving content:', error);
       toast.error('Failed to approve content');
+    } finally {
+      setProcessing(null);
     }
   };
 
   const handleReject = async (item: GeneratedContent) => {
+    setProcessing(item.id);
     try {
       const { error } = await supabase
         .from('generated_content')
@@ -302,7 +311,7 @@ const ClientApproval: React.FC = () => {
 
       if (error) throw error;
       
-      // Remove from current content and reload stats
+      // Remove from list and update stats
       setContent(prev => prev.filter(c => c.id !== item.id));
       setStats(prev => ({
         ...prev,
@@ -311,71 +320,72 @@ const ClientApproval: React.FC = () => {
       }));
       
       toast.success('Content rejected');
+      
+      // Auto-advance to next item
+      if (selectedContentIndex < content.length - 1) {
+        const nextItem = content[selectedContentIndex + 1];
+        setSelectedContent(nextItem);
+      } else if (content.length > 1) {
+        setSelectedContent(null);
+        setSelectedContentIndex(-1);
+      } else {
+        setSelectedContent(null);
+      }
     } catch (error) {
       console.error('Error rejecting content:', error);
       toast.error('Failed to reject content');
-    }
-  };
-
-  const confirmReject = async () => {
-    if (!rejectModal.item) return;
-    
-    try {
-      const { error } = await supabase
-        .from('generated_content')
-        .update({
-          status: 'client_rejected',
-          revision_notes: rejectModal.reason || 'Rejected by client'
-        })
-        .eq('id', rejectModal.item.id);
-
-      if (error) throw error;
-      
-      // Remove from current content and reload stats
-      setContent(prev => prev.filter(c => c.id !== rejectModal.item!.id));
-      loadStats();
-      
-      toast.success('Content rejected');
-      setRejectModal({ open: false, item: null, reason: '' });
-    } catch (error) {
-      console.error('Error rejecting content:', error);
-      toast.error('Failed to reject content');
+    } finally {
+      setProcessing(null);
     }
   };
 
   const handleEdit = (item: GeneratedContent) => {
-    setEditModal({
-      open: true,
-      item,
-      editedText: item.content_text
-    });
+    setEditingContent(item.content_text);
+    setIsEditing(true);
   };
 
   const saveEdit = async () => {
-    if (!editModal.item) return;
+    if (!selectedContent) return;
     
+    setProcessing(selectedContent.id);
     try {
       const { error } = await supabase
         .from('generated_content')
         .update({
-          content_text: editModal.editedText,
+          content_text: editingContent,
           status: 'client_edited',
           revision_notes: `Edited by ${client?.name}`
         })
-        .eq('id', editModal.item.id);
+        .eq('id', selectedContent.id);
 
       if (error) throw error;
       
-      // Remove from current content and reload stats
-      setContent(prev => prev.filter(c => c.id !== editModal.item!.id));
+      // Remove from list and update stats
+      setContent(prev => prev.filter(c => c.id !== selectedContent.id));
       loadStats();
       
       toast.success('Content edited and sent back for review');
-      setEditModal({ open: false, item: null, editedText: '' });
+      setIsEditing(false);
+      setEditingContent('');
+      
+      // Keep modal open but move to next item
+      if (selectedContentIndex < content.length - 1) {
+        const nextItem = content[selectedContentIndex + 1];
+        setSelectedContent(nextItem);
+      } else {
+        setSelectedContent(null);
+      }
     } catch (error) {
       console.error('Error editing content:', error);
       toast.error('Failed to save edits');
+    } finally {
+      setProcessing(null);
     }
+  };
+
+  const cancelEdit = () => {
+    setIsEditing(false);
+    setEditingContent('');
   };
 
   const handleClientChange = (clientId: string) => {
@@ -383,16 +393,24 @@ const ClientApproval: React.FC = () => {
     if (newClient) {
       setSelectedClientId(clientId);
       setClient(newClient);
-      setContent([]); // Clear content to reload
+      setContent([]);
     }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-gray-600" />
-          <p className="text-gray-600">Loading your portal...</p>
+          <div className="w-8 h-8 border-4 border-zinc-200 border-t-zinc-800 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-zinc-600">Loading your portal...</p>
         </div>
       </div>
     );
@@ -400,81 +418,308 @@ const ClientApproval: React.FC = () => {
 
   return (
     <>
-      <CleanClientPortal
-        client={client}
-        content={content}
-        stats={stats}
-        loading={loading}
-        isAdminMode={isAdminMode}
-        allClients={allClients}
-        selectedClientId={selectedClientId}
-        onClientChange={handleClientChange}
-        onApprove={handleApprove}
-        onReject={handleReject}
-        onEdit={handleEdit}
-        onSignOut={signOut}
-      />
+      <div className="min-h-screen bg-gradient-to-br from-zinc-50 to-white">
+        {/* Header */}
+        <header className="border-b bg-white">
+          <div className="max-w-6xl mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                <h1 className="text-xl font-semibold text-zinc-900">Content Dashboard</h1>
+                
+                {/* Admin Client Selector */}
+                {isAdminMode && allClients && allClients.length > 0 && (
+                  <div className="relative">
+                    <select
+                      value={selectedClientId || ''}
+                      onChange={(e) => handleClientChange(e.target.value)}
+                      className="appearance-none border border-zinc-200 rounded-lg px-4 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent"
+                    >
+                      <option value="">Select Client</option>
+                      {allClients.map(c => (
+                        <option key={c.id} value={c.id}>
+                          {c.name || c.company || c.email}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
+                  </div>
+                )}
+              </div>
 
-      {/* Edit Modal */}
-      <Dialog open={editModal.open} onOpenChange={(open) => !open && setEditModal({ open: false, item: null, editedText: '' })}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Content</DialogTitle>
-            <DialogDescription>
-              Make changes to the content below. Your edits will be sent back for review.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 mt-4">
-            <div>
-              <Label>Content Text</Label>
-              <Textarea
-                value={editModal.editedText}
-                onChange={(e) => setEditModal(prev => ({ ...prev, editedText: e.target.value }))}
-                className="min-h-[200px] mt-2"
-              />
-            </div>
-            <div className="flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setEditModal({ open: false, item: null, editedText: '' })}>
-                Cancel
-              </Button>
-              <Button onClick={saveEdit} className="bg-gray-900 text-white hover:bg-black">
-                Save Changes
-              </Button>
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <p className="text-sm font-medium text-zinc-900">{client?.name || client?.company || 'Client'}</p>
+                  <p className="text-xs text-zinc-500">{client?.email}</p>
+                </div>
+                
+                <button
+                  onClick={signOut}
+                  className="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-4 h-4 text-zinc-600" />
+                </button>
+              </div>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </header>
 
-      {/* Rejection Modal */}
-      <Dialog open={rejectModal.open} onOpenChange={(open) => !open && setRejectModal({ open: false, item: null, reason: '' })}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Reject Content</DialogTitle>
-            <DialogDescription>
-              Please provide a reason for rejecting this content (optional).
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 mt-4">
-            <div>
-              <Label>Rejection Reason</Label>
-              <Textarea
-                value={rejectModal.reason}
-                onChange={(e) => setRejectModal(prev => ({ ...prev, reason: e.target.value }))}
-                placeholder="Enter your feedback..."
-                className="mt-2"
-              />
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-white rounded-xl p-6 border border-zinc-100">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-zinc-500 text-sm">Pending Review</span>
+                <Clock className="w-4 h-4 text-amber-500" />
+              </div>
+              <p className="text-3xl font-bold text-zinc-900">{stats.pending}</p>
             </div>
-            <div className="flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setRejectModal({ open: false, item: null, reason: '' })}>
-                Cancel
-              </Button>
-              <Button onClick={confirmReject} className="bg-red-600 text-white hover:bg-red-700">
-                Reject Content
-              </Button>
+            
+            <div className="bg-white rounded-xl p-6 border border-zinc-100">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-zinc-500 text-sm">Approved</span>
+                <CheckCircle className="w-4 h-4 text-green-500" />
+              </div>
+              <p className="text-3xl font-bold text-zinc-900">{stats.approved}</p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 border border-zinc-100">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-zinc-500 text-sm">Rejected</span>
+                <XCircle className="w-4 h-4 text-red-500" />
+              </div>
+              <p className="text-3xl font-bold text-zinc-900">{stats.rejected}</p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 border border-zinc-100">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-zinc-500 text-sm">Total Content</span>
+                <Sparkles className="w-4 h-4 text-blue-500" />
+              </div>
+              <p className="text-3xl font-bold text-zinc-900">{stats.total}</p>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+
+          {/* Content Header */}
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-zinc-900">
+              {content.length} posts for review
+            </h2>
+          </div>
+
+          {/* Content Grid */}
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-8 h-8 border-4 border-zinc-200 border-t-zinc-800 rounded-full animate-spin" />
+            </div>
+          ) : content.length === 0 ? (
+            <div className="bg-white rounded-xl border border-zinc-100 p-12 text-center">
+              <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-zinc-900 mb-2">All caught up!</h3>
+              <p className="text-zinc-500">No content pending your review at this time.</p>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {content.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => openContentModal(item)}
+                  className="bg-white rounded-xl border border-zinc-100 p-6 hover:shadow-lg transition-all cursor-pointer group"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <span className="inline-flex items-center gap-1 text-xs text-zinc-500 mb-2">
+                        <Calendar className="w-3 h-3" />
+                        {formatDate(item.created_at)}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded-full">
+                          Pending Your Approval
+                        </span>
+                        <span className="text-xs text-zinc-500">
+                          Variant #{item.variant_number}
+                        </span>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                  
+                  <p className="text-zinc-700 mb-4 line-clamp-3">
+                    {item.content_text}
+                  </p>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-zinc-500">
+                      Click to review
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Preview Modal */}
+      {selectedContent && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          {/* Navigation Arrows */}
+          {selectedContentIndex > 0 && (
+            <button
+              onClick={goToPrevious}
+              className="absolute left-4 lg:left-12 top-1/2 -translate-y-1/2 p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-200 z-10"
+              title="Previous (←)"
+            >
+              <ChevronLeft className="w-6 h-6 text-zinc-700" />
+            </button>
+          )}
+          
+          {selectedContentIndex < content.length - 1 && (
+            <button
+              onClick={goToNext}
+              className="absolute right-4 lg:right-12 top-1/2 -translate-y-1/2 p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-200 z-10"
+              title="Next (→)"
+            >
+              <ChevronRight className="w-6 h-6 text-zinc-700" />
+            </button>
+          )}
+
+          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <h3 className="text-lg font-semibold text-zinc-900">
+                  Review Content
+                </h3>
+                <span className="px-2 py-1 bg-zinc-100 text-zinc-600 text-xs rounded-full">
+                  {selectedContentIndex + 1} of {content.length}
+                </span>
+              </div>
+              <button
+                onClick={() => setSelectedContent(null)}
+                className="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
+                title="Close (Esc)"
+              >
+                <X className="w-5 h-5 text-zinc-500" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-4">
+              {/* Metadata */}
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 text-amber-700 text-sm rounded-full">
+                  <Clock className="w-3 h-3" />
+                  Pending Review
+                </span>
+                <span className="inline-flex items-center gap-1 text-sm text-zinc-500">
+                  <Calendar className="w-3 h-3" />
+                  {formatDate(selectedContent.created_at)}
+                </span>
+                <span className="text-sm text-zinc-500">
+                  Variant #{selectedContent.variant_number}
+                </span>
+              </div>
+
+              {/* Content */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-700 mb-2">Content</label>
+                {isEditing ? (
+                  <div className="space-y-3">
+                    <textarea
+                      value={editingContent}
+                      onChange={(e) => setEditingContent(e.target.value)}
+                      className="w-full min-h-[200px] p-4 border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent resize-none"
+                      autoFocus
+                    />
+                    <div className="flex justify-end gap-3">
+                      <button
+                        onClick={cancelEdit}
+                        className="px-4 py-2 text-zinc-600 hover:text-zinc-900 transition-colors"
+                        disabled={processing === selectedContent.id}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={saveEdit}
+                        disabled={processing === selectedContent.id}
+                        className="px-4 py-2 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      >
+                        {processing === selectedContent.id ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="w-4 h-4" />
+                            Save Changes
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-zinc-50 rounded-xl">
+                    <p className="text-zinc-700 whitespace-pre-wrap">{selectedContent.content_text}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Hook */}
+              {selectedContent.hook && (
+                <div>
+                  <label className="block text-sm font-medium text-zinc-700 mb-2">Hook</label>
+                  <div className="p-4 bg-blue-50 rounded-xl">
+                    <p className="text-zinc-700">{selectedContent.hook}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Hashtags */}
+              {selectedContent.hashtags && selectedContent.hashtags.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-zinc-700 mb-2">Hashtags</label>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedContent.hashtags.map((tag, index) => (
+                      <span key={index} className="px-3 py-1 bg-zinc-100 text-zinc-600 text-sm rounded-full">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Provider Info */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-700 mb-2">Generated By</label>
+                <div className="p-4 bg-zinc-50 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-zinc-500" />
+                    <span className="text-sm text-zinc-600">
+                      {selectedContent.llm_provider} {selectedContent.llm_model && `(${selectedContent.llm_model})`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer with Action Buttons */}
+            {!isEditing && (
+              <div className="sticky bottom-0 bg-white border-t px-6 py-4">
+                <div className="flex justify-center">
+                  <ClientApprovalActionBar
+                    onApprove={() => handleApprove(selectedContent)}
+                    onDecline={() => handleReject(selectedContent)}
+                    onEdit={() => handleEdit(selectedContent)}
+                    disableAll={processing === selectedContent.id}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 };
