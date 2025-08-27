@@ -150,13 +150,9 @@ const AuthCallbackSimple: React.FC = () => {
       
       // Check if mobile device accessing via mobile path
       const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const currentPath = window.location.pathname;
       
-      if (isMobileDevice || currentPath.includes('mobile')) {
-        navigate('/client-approve');
-      } else {
-        navigate('/client-approve');
-      }
+      // Navigate to swipe interface for mobile, regular approval for desktop
+      navigate(isMobileDevice ? '/swipe' : '/client-approve');
       
     } catch (error) {
       console.error('Callback error:', error);

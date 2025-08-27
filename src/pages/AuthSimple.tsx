@@ -41,8 +41,11 @@ const AuthSimple: React.FC = () => {
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
-      // Already logged in - redirect to unified client approval page
-      window.location.href = '/client-approve';
+      // Check if mobile device
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      // Redirect to appropriate interface
+      window.location.href = isMobile ? '/swipe' : '/client-approve';
     }
   };
 
