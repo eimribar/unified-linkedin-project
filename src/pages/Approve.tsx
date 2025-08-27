@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
 import SEO from "@/components/seo/SEO";
-import { CheckCircle, XCircle, Clock, ChevronLeft, ChevronRight, Calendar, Building, Sparkles, Edit2, X, Save } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, ChevronLeft, ChevronRight, Calendar, Building, Sparkles, Edit2, X, Save, UserPlus } from 'lucide-react';
 import { generatedContentService, scheduledPostsService, type GeneratedContent } from '@/services/database.service';
 import { cn } from '@/lib/utils';
 import { ClientApprovalActionBar } from '@/components/ui/gradient-action-buttons';
@@ -10,7 +9,6 @@ import toast from 'react-hot-toast';
 const Approve = () => {
   const [content, setContent] = useState<GeneratedContent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [processing, setProcessing] = useState<string | null>(null);
   const [selectedContent, setSelectedContent] = useState<GeneratedContent | null>(null);
   const [selectedContentIndex, setSelectedContentIndex] = useState<number>(-1);
@@ -46,190 +44,6 @@ const Approve = () => {
     const index = content.findIndex(c => c.id === item.id);
     setSelectedContent(item);
     setSelectedContentIndex(index);
-  };
-
-  const loadPendingContent = async () => {
-    setLoading(true);
-    console.log('🔄 Loading admin-approved content from database...');
-    
-    try {
-      // Get ALL content that's been approved by admin (no user filter)
-      const allContent = await generatedContentService.getAllAdminApproved();
-      
-      console.log('✅ Admin-approved content fetched:', allContent);
-      console.log('📊 Number of items:', allContent.length);
-      if (allContent.length > 0) {
-        console.log('First item status:', allContent[0].status);
-        console.log('First item preview:', allContent[0].content_text?.substring(0, 100) + '...');
-      } else {
-        console.log('⚠️ No admin-approved content found!');
-        console.log('Make sure to approve some content in the Ghostwriter Portal first.');
-      }
-      
-      setContent(allContent);
-      setCurrentIndex(0);
-    } catch (error) {
-      console.error('❌ Error loading content:', error);
-      console.error('Error details:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleApprove = async (item: GeneratedContent) => {
-    setProcessing(item.id);
-    console.log('Approving item:', item.id);
-    try {
-      // Update status to client_approved
-      const success = await generatedContentService.update(item.id, {
-        status: 'client_approved',
-        approved_at: new Date().toISOString() as any,
-        approved_by: 'client'
-      });
-      
-      console.log('Update success:', success);
-      
-      if (success) {
-        // Auto-schedule for next available slot
-        const scheduledFor = new Date();
-        scheduledFor.setDate(scheduledFor.getDate() + 1);
-        scheduledFor.setHours(10, 0, 0, 0);
-        
-        console.log('Scheduling post for:', scheduledFor);
-        await scheduledPostsService.schedule(
-          item.id,
-          item.client_id || 'no-client',
-          scheduledFor,
-          'linkedin'
-        );
-        
-        // Remove approved content from view
-        setContent(prevContent => 
-          prevContent.filter(c => c.id !== item.id)
-        );
-        
-        // Auto-navigate to next content if in modal
-        if (selectedContent?.id === item.id) {
-          if (selectedContentIndex < content.length - 1) {
-            const nextContent = content[selectedContentIndex + 1];
-            if (nextContent) {
-              setSelectedContent(nextContent);
-            } else {
-              setSelectedContent(null);
-              setSelectedContentIndex(-1);
-            }
-          } else {
-            setSelectedContent(null);
-            setSelectedContentIndex(-1);
-          }
-        }
-        
-        toast.success('✅ Content approved and scheduled!', {
-          duration: 3000,
-          icon: '🚀'
-        });
-      } else {
-        toast.error('Failed to approve content');
-      }
-    } catch (error) {
-      console.error('Error approving content:', error);
-      toast.error('Error approving content');
-    } finally {
-      setProcessing(null);
-    }
-  };
-
-  const handleReject = async (item: GeneratedContent) => {
-    setProcessing(item.id);
-    
-    try {
-      const reason = prompt('Why are you declining this content? (optional)');
-      
-      const success = await generatedContentService.update(item.id, {
-        status: 'client_rejected',
-        revision_notes: reason || 'Declined by client'
-      });
-      
-      if (success) {
-        // Find the current index before filtering
-        const currentIndex = content.findIndex(c => c.id === item.id);
-        
-        // Remove the rejected content from view
-        const updatedContent = content.filter(c => c.id !== item.id);
-        setContent(updatedContent);
-        
-        // If this was the selected content in modal, navigate to next or close
-        if (selectedContent?.id === item.id) {
-          if (updatedContent.length > 0 && currentIndex < updatedContent.length) {
-            setSelectedContent(updatedContent[Math.min(currentIndex, updatedContent.length - 1)]);
-            setSelectedContentIndex(Math.min(currentIndex, updatedContent.length - 1));
-          } else if (currentIndex > 0 && updatedContent.length > 0) {
-            setSelectedContent(updatedContent[currentIndex - 1]);
-            setSelectedContentIndex(currentIndex - 1);
-          } else {
-            setSelectedContent(null);
-            setSelectedContentIndex(-1);
-          }
-        }
-        
-        toast.success('Content declined', {
-          duration: 2000,
-          icon: '❌'
-        });
-      } else {
-        toast.error('Failed to decline content');
-      }
-    } catch (error) {
-      console.error('Error declining content:', error);
-      toast.error('Error declining content');
-    } finally {
-      setProcessing(null);
-    }
-  };
-
-  const handleEdit = (item: GeneratedContent) => {
-    setSelectedContent(item);
-    setEditingContent(item.content_text);
-    setIsEditing(true);
-  };
-
-  const handleSaveEdit = async () => {
-    if (!selectedContent) return;
-    
-    setProcessing(selectedContent.id);
-    try {
-      const success = await generatedContentService.update(selectedContent.id, {
-        content_text: editingContent,
-        status: 'admin_approved', // Keep same status after edit
-        revision_notes: 'Edited by client'
-      });
-      
-      if (success) {
-        // Update the content locally without reloading
-        setContent(prevContent => 
-          prevContent.map(item => 
-            item.id === selectedContent.id 
-              ? { ...item, content_text: editingContent }
-              : item
-          )
-        );
-        
-        // Update selectedContent with the edited text
-        setSelectedContent({ ...selectedContent, content_text: editingContent });
-        
-        // Only close the edit modal, keep preview modal open
-        setIsEditing(false);
-        
-        toast.success('Content updated successfully');
-      } else {
-        toast.error('Failed to update content');
-      }
-    } catch (error) {
-      console.error('Error saving edit:', error);
-      toast.error('Error saving edit');
-    } finally {
-      setProcessing(null);
-    }
   };
 
   // Keyboard shortcuts for modal
@@ -277,10 +91,181 @@ const Approve = () => {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [selectedContent, selectedContentIndex, isEditing, content]);
 
+  const loadPendingContent = async () => {
+    setLoading(true);
+    
+    try {
+      // Get ALL content that's been approved by admin (no user filter)
+      const allContent = await generatedContentService.getAllAdminApproved();
+      setContent(allContent);
+    } catch (error) {
+      console.error('❌ Error loading content:', error);
+      toast.error('Failed to load content');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApprove = async (item: GeneratedContent) => {
+    setProcessing(item.id);
+    try {
+      // Update status to client_approved
+      const success = await generatedContentService.update(item.id, {
+        status: 'client_approved',
+        approved_at: new Date().toISOString() as any,
+        approved_by: 'client'
+      });
+      
+      if (success) {
+        // Auto-schedule for next available slot
+        const scheduledFor = new Date();
+        scheduledFor.setDate(scheduledFor.getDate() + 1);
+        scheduledFor.setHours(10, 0, 0, 0);
+        
+        await scheduledPostsService.schedule(
+          item.id,
+          item.client_id || 'no-client',
+          scheduledFor,
+          'linkedin'
+        );
+        
+        // Find the current index before filtering
+        const currentIndex = content.findIndex(c => c.id === item.id);
+        
+        // Remove approved content from view
+        const updatedContent = content.filter(c => c.id !== item.id);
+        setContent(updatedContent);
+        
+        // If this was the selected content in modal, navigate to next or close
+        if (selectedContent?.id === item.id) {
+          if (updatedContent.length > 0 && currentIndex < updatedContent.length) {
+            // Move to the item that's now at the same index (was next)
+            setSelectedContent(updatedContent[Math.min(currentIndex, updatedContent.length - 1)]);
+            setSelectedContentIndex(Math.min(currentIndex, updatedContent.length - 1));
+          } else if (currentIndex > 0 && updatedContent.length > 0) {
+            // If we were at the end, move to previous (now last)
+            setSelectedContent(updatedContent[currentIndex - 1]);
+            setSelectedContentIndex(currentIndex - 1);
+          } else {
+            // No more content, close modal
+            setSelectedContent(null);
+            setSelectedContentIndex(-1);
+          }
+        }
+        
+        toast.success('Content approved and scheduled!', {
+          duration: 2000,
+          icon: '✅'
+        });
+      } else {
+        toast.error('Failed to approve content');
+      }
+    } catch (error) {
+      console.error('Error approving content:', error);
+      toast.error('Error approving content');
+    } finally {
+      setProcessing(null);
+    }
+  };
+
+  const handleReject = async (item: GeneratedContent) => {
+    setProcessing(item.id);
+    
+    try {
+      const reason = prompt('Why are you declining this content? (optional)');
+      
+      const success = await generatedContentService.update(item.id, {
+        status: 'client_rejected',
+        revision_notes: reason || 'Declined by client'
+      });
+      
+      if (success) {
+        // Find the current index before filtering
+        const currentIndex = content.findIndex(c => c.id === item.id);
+        
+        // Remove rejected content from view
+        const updatedContent = content.filter(c => c.id !== item.id);
+        setContent(updatedContent);
+        
+        // If this was the selected content in modal, navigate to next or close
+        if (selectedContent?.id === item.id) {
+          if (updatedContent.length > 0 && currentIndex < updatedContent.length) {
+            setSelectedContent(updatedContent[Math.min(currentIndex, updatedContent.length - 1)]);
+            setSelectedContentIndex(Math.min(currentIndex, updatedContent.length - 1));
+          } else if (currentIndex > 0 && updatedContent.length > 0) {
+            setSelectedContent(updatedContent[currentIndex - 1]);
+            setSelectedContentIndex(currentIndex - 1);
+          } else {
+            setSelectedContent(null);
+            setSelectedContentIndex(-1);
+          }
+        }
+        
+        toast.success('Content declined', {
+          duration: 2000,
+          icon: '❌'
+        });
+      } else {
+        toast.error('Failed to reject content');
+      }
+    } catch (error) {
+      console.error('Error rejecting content:', error);
+      toast.error('Error rejecting content');
+    } finally {
+      setProcessing(null);
+    }
+  };
+
+  const handleEdit = (item: GeneratedContent) => {
+    setSelectedContent(item);
+    setEditingContent(item.content_text);
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!selectedContent) return;
+    
+    setProcessing(selectedContent.id);
+    try {
+      const success = await generatedContentService.update(selectedContent.id, {
+        content_text: editingContent,
+        revision_notes: 'Edited by client'
+      });
+      
+      if (success) {
+        // Update the content locally
+        setContent(prevContent => 
+          prevContent.map(item => 
+            item.id === selectedContent.id 
+              ? { ...item, content_text: editingContent }
+              : item
+          )
+        );
+        
+        // Update selectedContent with the edited text
+        setSelectedContent({ ...selectedContent, content_text: editingContent });
+        
+        // Only close the edit modal, keep preview modal open
+        setIsEditing(false);
+        
+        toast.success('Content updated successfully');
+      } else {
+        toast.error('Failed to update content');
+      }
+    } catch (error) {
+      console.error('Error saving edit:', error);
+      toast.error('Error saving edit');
+    } finally {
+      setProcessing(null);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'admin_approved':
         return <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">Pending Your Approval</span>;
+      case 'draft':
+        return <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">Draft</span>;
       default:
         return null;
     }
@@ -307,7 +292,7 @@ const Approve = () => {
       </div>
 
       {/* Stats */}
-      <div className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="mb-6 grid grid-cols-3 gap-4">
         <div className="bg-white rounded-lg border border-zinc-200 p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -354,56 +339,49 @@ const Approve = () => {
           {content.map((item) => (
             <div
               key={item.id}
-              className="bg-white rounded-xl border border-zinc-200 p-4 sm:p-6 hover:shadow-xl hover:border-zinc-300 transition-all duration-200 transform hover:-translate-y-1"
+              className="bg-white rounded-xl border border-zinc-200 p-6 hover:shadow-xl hover:border-zinc-300 transition-all duration-200 transform hover:-translate-y-1"
             >
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
                     {getStatusBadge(item.status)}
-                    <span className="text-xs sm:text-sm text-zinc-500">
+                    <span className="text-sm text-zinc-500">
                       Variant {item.variant_number} • 
                       {new Date(item.created_at).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
-                {/* Gradient Action Buttons - Responsive */}
-                <div className="flex justify-center sm:justify-end">
-                  <ClientApprovalActionBar
-                    onApprove={() => handleApprove(item)}
-                    onDecline={() => handleReject(item)}
-                    onEdit={() => handleEdit(item)}
-                    disableAll={processing === item.id}
-                  />
-                </div>
+                {/* Gradient Action Buttons */}
+                <ClientApprovalActionBar
+                  onApprove={() => handleApprove(item)}
+                  onDecline={() => handleReject(item)}
+                  onEdit={() => handleEdit(item)}
+                  disableAll={processing === item.id}
+                />
               </div>
 
-              {/* Content Preview - Mobile Optimized */}
+              {/* Content Preview */}
               <div className="prose prose-zinc max-w-none">
-                <p className="text-sm text-zinc-700 leading-relaxed line-clamp-3 sm:line-clamp-4">
+                <p className="text-sm text-zinc-700 leading-relaxed line-clamp-4">
                   {item.content_text}
                 </p>
               </div>
 
-              {/* Hashtags - Mobile Friendly */}
+              {/* Hashtags */}
               {item.hashtags && item.hashtags.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {item.hashtags.slice(0, 3).map((tag: string, i: number) => (
+                  {item.hashtags.map((tag: string, i: number) => (
                     <span key={i} className="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded">
                       #{tag}
                     </span>
                   ))}
-                  {item.hashtags.length > 3 && (
-                    <span className="text-xs px-2 py-1 bg-zinc-100 text-zinc-500 rounded">
-                      +{item.hashtags.length - 3} more
-                    </span>
-                  )}
                 </div>
               )}
 
-              {/* Expand Button - Mobile Centered */}
+              {/* Expand Button */}
               <button
                 onClick={() => openContentModal(item)}
-                className="mt-4 text-sm text-zinc-600 hover:text-zinc-900 flex items-center gap-1 w-full sm:w-auto justify-center sm:justify-start"
+                className="mt-4 text-sm text-zinc-600 hover:text-zinc-900 flex items-center gap-1"
               >
                 View full content
                 <ChevronRight className="w-4 h-4" />
@@ -413,17 +391,17 @@ const Approve = () => {
         </div>
       )}
 
-      {/* Edit Modal - Mobile Optimized */}
+      {/* Edit Modal */}
       {isEditing && selectedContent && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
-          <div className="bg-white rounded-xl max-w-3xl w-full max-h-[95vh] sm:max-h-[85vh] overflow-auto p-4 sm:p-6 animate-fadeIn">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl max-w-3xl w-full max-h-[80vh] overflow-auto p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg sm:text-xl font-semibold">Edit Content</h3>
+              <h3 className="text-xl font-semibold">Edit Content</h3>
               <button
                 onClick={() => {
                   setIsEditing(false);
                 }}
-                className="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-zinc-100 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -432,24 +410,22 @@ const Approve = () => {
             <textarea
               value={editingContent}
               onChange={(e) => setEditingContent(e.target.value)}
-              className="w-full h-48 sm:h-64 md:h-96 p-3 sm:p-4 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900 text-sm resize-none"
-              placeholder="Edit your content here..."
-              autoFocus
+              className="w-full h-96 p-4 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900"
             />
             
-            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 mt-4">
+            <div className="flex justify-end gap-2 mt-4">
               <button
                 onClick={() => {
                   setIsEditing(false);
                 }}
-                className="px-4 py-2 border border-zinc-200 rounded-lg hover:bg-zinc-50 text-sm transition-colors w-full sm:w-auto"
+                className="px-4 py-2 border border-zinc-200 rounded-lg hover:bg-zinc-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEdit}
                 disabled={processing === selectedContent.id}
-                className="px-4 py-2 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 disabled:opacity-50 flex items-center justify-center gap-2 text-sm transition-colors w-full sm:w-auto"
+                className="px-4 py-2 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 disabled:opacity-50 flex items-center gap-2"
               >
                 <Save className="w-4 h-4" />
                 Save Changes
@@ -461,38 +437,36 @@ const Approve = () => {
 
       {/* Enhanced Full Content Modal with Actions and Navigation */}
       {selectedContent && !isEditing && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] flex flex-col shadow-2xl relative transition-all duration-300 ease-out animate-fadeIn">
-            {/* Navigation Arrows - Desktop Only */}
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl relative transition-all duration-300 ease-out">
+            {/* Navigation Arrows */}
             {selectedContentIndex > 0 && (
               <button
                 onClick={goToPrevious}
-                className="absolute left-2 sm:left-[-60px] top-1/2 -translate-y-1/2 p-2 sm:p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-200 z-10 hidden lg:block"
+                className="absolute left-[-60px] top-1/2 -translate-y-1/2 p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-200 z-10 hidden lg:block"
                 title="Previous (←)"
               >
-                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-700" />
+                <ChevronLeft className="w-6 h-6 text-zinc-700" />
               </button>
             )}
             {selectedContentIndex < content.length - 1 && (
               <button
                 onClick={goToNext}
-                className="absolute right-2 sm:right-[-60px] top-1/2 -translate-y-1/2 p-2 sm:p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-200 z-10 hidden lg:block"
+                className="absolute right-[-60px] top-1/2 -translate-y-1/2 p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-200 z-10 hidden lg:block"
                 title="Next (→)"
               >
-                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-700" />
+                <ChevronRight className="w-6 h-6 text-zinc-700" />
               </button>
             )}
             
-            {/* Header - Mobile Optimized */}
-            <div className="flex items-start sm:items-center justify-between p-4 sm:p-6 border-b border-zinc-200">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <h3 className="text-lg sm:text-xl font-semibold">Content Review</h3>
-                <div className="flex items-center gap-2 sm:gap-4">
-                  <span className="text-xs sm:text-sm text-zinc-500 font-medium">
-                    {selectedContentIndex + 1} of {content.length}
-                  </span>
-                  {getStatusBadge(selectedContent.status)}
-                </div>
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-zinc-200">
+              <div className="flex items-center gap-4">
+                <h3 className="text-xl font-semibold">Content Review</h3>
+                <span className="text-sm text-zinc-500 font-medium">
+                  {selectedContentIndex + 1} of {content.length}
+                </span>
+                {getStatusBadge(selectedContent.status)}
               </div>
               <button
                 onClick={() => {
@@ -505,23 +479,23 @@ const Approve = () => {
               </button>
             </div>
             
-            {/* Content Area - Scrollable with Mobile Touch */}
-            <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6">
+            {/* Content Area - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-6">
               <div 
                 key={selectedContent.id} 
                 className="prose prose-zinc max-w-none animate-fadeIn"
               >
-                <div className="whitespace-pre-wrap text-sm sm:text-base text-zinc-700 leading-relaxed">
+                <div className="whitespace-pre-wrap text-base text-zinc-700 leading-relaxed">
                   {selectedContent.content_text}
                 </div>
               </div>
               
               {selectedContent.hashtags && selectedContent.hashtags.length > 0 && (
                 <div className="mt-6 pt-4 border-t border-zinc-200">
-                  <p className="text-xs sm:text-sm font-medium text-zinc-600 mb-3">Hashtags</p>
-                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                  <p className="text-sm font-medium text-zinc-600 mb-3">Hashtags</p>
+                  <div className="flex flex-wrap gap-2">
                     {selectedContent.hashtags.map((tag: string, i: number) => (
-                      <span key={i} className="text-xs sm:text-sm px-2 sm:px-3 py-1 bg-blue-50 text-blue-600 rounded-full">
+                      <span key={i} className="text-sm px-3 py-1 bg-blue-50 text-blue-600 rounded-full">
                         #{tag}
                       </span>
                     ))}
@@ -530,8 +504,8 @@ const Approve = () => {
               )}
             </div>
             
-            {/* Action Bar - Fixed at Bottom, Mobile Optimized */}
-            <div className="border-t border-zinc-200 p-4 sm:p-6 bg-zinc-50">
+            {/* Action Bar - Fixed at Bottom */}
+            <div className="border-t border-zinc-200 p-6 bg-zinc-50">
               <div className="flex items-center justify-center">
                 <ClientApprovalActionBar
                   onApprove={() => handleApprove(selectedContent)}
@@ -541,47 +515,10 @@ const Approve = () => {
                 />
               </div>
               
-              {/* Mobile navigation buttons */}
-              <div className="flex justify-between mt-4 lg:hidden">
-                <button
-                  onClick={goToPrevious}
-                  disabled={selectedContentIndex === 0}
-                  className={cn(
-                    "flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg transition-colors text-xs sm:text-sm",
-                    selectedContentIndex === 0
-                      ? "bg-zinc-100 text-zinc-400 cursor-not-allowed"
-                      : "bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-50"
-                  )}
-                >
-                  <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Previous</span>
-                  <span className="sm:hidden">Prev</span>
-                </button>
-
-                <span className="text-xs text-zinc-500 flex items-center">
-                  {selectedContentIndex + 1}/{content.length}
-                </span>
-
-                <button
-                  onClick={goToNext}
-                  disabled={selectedContentIndex === content.length - 1}
-                  className={cn(
-                    "flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg transition-colors text-xs sm:text-sm",
-                    selectedContentIndex === content.length - 1
-                      ? "bg-zinc-100 text-zinc-400 cursor-not-allowed"
-                      : "bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-50"
-                  )}
-                >
-                  Next
-                  <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
-                </button>
-              </div>
-              
-              {/* Schedule info - Mobile Friendly */}
-              <div className="text-center mt-3 sm:mt-4 p-2 bg-green-50 rounded-lg">
-                <p className="text-xs sm:text-sm text-green-600">
-                  <span className="hidden sm:inline">✅ Approved content will be automatically scheduled for posting</span>
-                  <span className="sm:hidden">✅ Auto-scheduled when approved</span>
+              {/* Schedule info */}
+              <div className="text-center mt-4 p-2 bg-green-50 rounded-lg">
+                <p className="text-sm text-green-600">
+                  ✅ Approved content will be automatically scheduled for posting
                 </p>
               </div>
             </div>
