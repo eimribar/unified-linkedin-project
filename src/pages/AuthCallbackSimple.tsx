@@ -153,7 +153,7 @@ const AuthCallbackSimple: React.FC = () => {
       const currentPath = window.location.pathname;
       
       if (isMobileDevice || currentPath.includes('mobile')) {
-        navigate('/mobile-review');
+        navigate('/client-approve');
       } else {
         navigate('/client-approve');
       }

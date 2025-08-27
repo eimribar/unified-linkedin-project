@@ -421,10 +421,10 @@ const ClientApproval = () => {
       <div className="min-h-screen bg-gradient-to-br from-zinc-50 to-white">
         {/* Header */}
         <header className="border-b bg-white">
-          <div className="max-w-6xl mx-auto px-6 py-4">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-6">
-                <h1 className="text-xl font-semibold text-zinc-900">Content Dashboard</h1>
+              <div className="flex items-center gap-3 sm:gap-6">
+                <h1 className="text-lg sm:text-xl font-semibold text-zinc-900">Content Dashboard</h1>
                 
                 {/* Admin Client Selector */}
                 {isAdminMode && allClients && allClients.length > 0 && (
@@ -446,8 +446,8 @@ const ClientApproval = () => {
                 )}
               </div>
 
-              <div className="flex items-center gap-4">
-                <div className="text-right">
+              <div className="flex items-center gap-2 sm:gap-4">
+                <div className="text-right hidden sm:block">
                   <p className="text-sm font-medium text-zinc-900">{client?.name || client?.company || 'Client'}</p>
                   <p className="text-xs text-zinc-500">{client?.email}</p>
                 </div>
@@ -464,39 +464,39 @@ const ClientApproval = () => {
           </div>
         </header>
 
-        <div className="max-w-6xl mx-auto px-6 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white rounded-xl p-6 border border-zinc-100">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+            <div className="bg-white rounded-xl p-4 sm:p-6 border border-zinc-100">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-zinc-500 text-sm">Pending Review</span>
                 <Clock className="w-4 h-4 text-amber-500" />
               </div>
-              <p className="text-3xl font-bold text-zinc-900">{stats.pending}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-zinc-900">{stats.pending}</p>
             </div>
             
-            <div className="bg-white rounded-xl p-6 border border-zinc-100">
+            <div className="bg-white rounded-xl p-4 sm:p-6 border border-zinc-100">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-zinc-500 text-sm">Approved</span>
                 <CheckCircle className="w-4 h-4 text-green-500" />
               </div>
-              <p className="text-3xl font-bold text-zinc-900">{stats.approved}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-zinc-900">{stats.approved}</p>
             </div>
             
-            <div className="bg-white rounded-xl p-6 border border-zinc-100">
+            <div className="bg-white rounded-xl p-4 sm:p-6 border border-zinc-100">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-zinc-500 text-sm">Rejected</span>
                 <XCircle className="w-4 h-4 text-red-500" />
               </div>
-              <p className="text-3xl font-bold text-zinc-900">{stats.rejected}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-zinc-900">{stats.rejected}</p>
             </div>
             
-            <div className="bg-white rounded-xl p-6 border border-zinc-100">
+            <div className="bg-white rounded-xl p-4 sm:p-6 border border-zinc-100">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-zinc-500 text-sm">Total Content</span>
                 <Sparkles className="w-4 h-4 text-blue-500" />
               </div>
-              <p className="text-3xl font-bold text-zinc-900">{stats.total}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-zinc-900">{stats.total}</p>
             </div>
           </div>
 
@@ -524,7 +524,7 @@ const ClientApproval = () => {
                 <div
                   key={item.id}
                   onClick={() => openContentModal(item)}
-                  className="bg-white rounded-xl border border-zinc-100 p-6 hover:shadow-lg transition-all cursor-pointer group"
+                  className="bg-white rounded-xl border border-zinc-100 p-4 sm:p-6 hover:shadow-lg transition-all cursor-pointer group"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div>
@@ -562,12 +562,12 @@ const ClientApproval = () => {
 
       {/* Preview Modal */}
       {selectedContent && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          {/* Navigation Arrows */}
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50">
+          {/* Navigation Arrows - Hidden on mobile */}
           {selectedContentIndex > 0 && (
             <button
               onClick={goToPrevious}
-              className="absolute left-4 lg:left-12 top-1/2 -translate-y-1/2 p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-200 z-10"
+              className="absolute left-4 lg:left-12 top-1/2 -translate-y-1/2 p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-200 z-10 hidden sm:block"
               title="Previous (←)"
             >
               <ChevronLeft className="w-6 h-6 text-zinc-700" />
@@ -577,16 +577,16 @@ const ClientApproval = () => {
           {selectedContentIndex < content.length - 1 && (
             <button
               onClick={goToNext}
-              className="absolute right-4 lg:right-12 top-1/2 -translate-y-1/2 p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-200 z-10"
+              className="absolute right-4 lg:right-12 top-1/2 -translate-y-1/2 p-3 bg-white rounded-full shadow-lg hover:scale-110 transition-all duration-200 z-10 hidden sm:block"
               title="Next (→)"
             >
               <ChevronRight className="w-6 h-6 text-zinc-700" />
             </button>
           )}
 
-          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-xl sm:rounded-2xl max-w-3xl w-full max-h-[85vh] sm:max-h-[90vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+            <div className="sticky top-0 bg-white border-b px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-10">
               <div className="flex items-center gap-3">
                 <h3 className="text-lg font-semibold text-zinc-900">
                   Review Content
@@ -605,7 +605,7 @@ const ClientApproval = () => {
             </div>
 
             {/* Modal Content */}
-            <div className="p-6 space-y-4">
+            <div className="p-4 sm:p-6 space-y-4">
               {/* Metadata */}
               <div className="flex flex-wrap items-center gap-3">
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 text-amber-700 text-sm rounded-full">
@@ -683,7 +683,7 @@ const ClientApproval = () => {
 
             {/* Modal Footer with Action Buttons */}
             {!isEditing && (
-              <div className="sticky bottom-0 bg-white border-t px-6 py-4">
+              <div className="sticky bottom-0 bg-white border-t px-4 sm:px-6 py-3 sm:py-4 z-10">
                 <div className="flex justify-center">
                   <ClientApprovalActionBar
                     onApprove={() => handleApprove(selectedContent)}

@@ -41,15 +41,8 @@ const AuthSimple: React.FC = () => {
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
-      // Already logged in - check if mobile and redirect appropriately
-      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const currentPath = window.location.pathname;
-      
-      if (isMobileDevice || currentPath.includes('mobile') || window.location.search.includes('mobile')) {
-        window.location.href = '/mobile-review';
-      } else {
-        window.location.href = '/client-approve';
-      }
+      // Already logged in - redirect to unified client approval page
+      window.location.href = '/client-approve';
     }
   };
 
