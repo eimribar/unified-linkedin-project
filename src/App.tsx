@@ -19,7 +19,6 @@ const ContentIdeas = lazy(() => import("./pages/ContentIdeas"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Import = lazy(() => import("./pages/Import"));
 const ClientApproval = lazy(() => import("./pages/ClientApproval"));
-const SwipeApproval = lazy(() => import("./pages/SwipeApproval"));
 
 const queryClient = new QueryClient();
 
@@ -44,15 +43,10 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               
-              {/* Protected Client Portal Routes */}
+              {/* Protected Client Portal Route */}
               <Route path="/client-approve" element={
                 <SimpleProtectedRoute>
                   <ClientApproval />
-                </SimpleProtectedRoute>
-              } />
-              <Route path="/swipe" element={
-                <SimpleProtectedRoute>
-                  <SwipeApproval />
                 </SimpleProtectedRoute>
               } />
               

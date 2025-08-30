@@ -1,7 +1,7 @@
 {
-  "name": "AgentSS Swipe Review",
+  "name": "AgentSS Content Review",
   "short_name": "AgentSS",
-  "description": "Swipe to review LinkedIn content - Tinder-style approval experience",
+  "description": "Review and approve your LinkedIn content with a premium experience",
   "start_url": "/auth",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -33,10 +33,10 @@
   ],
   "shortcuts": [
     {
-      "name": "Swipe Review",
-      "short_name": "Swipe",
-      "description": "Swipe through pending content",
-      "url": "/swipe",
+      "name": "Review Content",
+      "short_name": "Review",
+      "description": "Review pending content",
+      "url": "/client-approve",
       "icons": [
         {
           "src": "/favicon.svg",
