@@ -19,6 +19,7 @@ const ContentIdeas = lazy(() => import("./pages/ContentIdeas"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Import = lazy(() => import("./pages/Import"));
 const ClientApproval = lazy(() => import("./pages/ClientApproval"));
+const ContentGeneration = lazy(() => import("./pages/ContentGeneration"));
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,11 @@ const App = () => (
               <Route path="/import" element={
                 <SimpleProtectedRoute>
                   <UserLayout><Import /></UserLayout>
+                </SimpleProtectedRoute>
+              } />
+              <Route path="/content-generation" element={
+                <SimpleProtectedRoute>
+                  <UserLayout><ContentGeneration /></UserLayout>
                 </SimpleProtectedRoute>
               } />
               <Route path="/profile" element={

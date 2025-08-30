@@ -84,6 +84,35 @@ export const generatedContentService = {
     }
     console.log('Update successful:', data);
     return true;
+  },
+
+  async createManualContent(clientId: string, contentText: string, userId: string) {
+    console.log('Creating manual content for client:', clientId);
+    const { data, error } = await supabase
+      .from('generated_content')
+      .insert([{
+        client_id: clientId,
+        user_id: userId,
+        variant_number: 1,
+        content_text: contentText,
+        hook: '',
+        hashtags: [],
+        llm_provider: 'manual',
+        llm_model: 'human',
+        status: 'admin_approved',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }])
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error creating manual content:', error);
+      console.error('Error details:', error.message, error.details);
+      return null;
+    }
+    console.log('Manual content created successfully:', data);
+    return data;
   }
 };
 
@@ -107,6 +136,24 @@ export const scheduledPostsService = {
       return null;
     }
     return data;
+  }
+};
+
+// Clients Service
+export const clientsService = {
+  async getAll() {
+    console.log('🔍 Fetching all clients from database...');
+    const { data, error } = await supabase
+      .from('clients')
+      .select('*')
+      .order('name', { ascending: true });
+    
+    if (error) {
+      console.error('❌ Error fetching clients:', error);
+      return [];
+    }
+    console.log('✅ Found', data?.length || 0, 'clients');
+    return data || [];
   }
 };
 

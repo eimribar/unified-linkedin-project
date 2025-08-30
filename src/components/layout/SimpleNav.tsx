@@ -20,6 +20,9 @@ const SimpleNav = () => {
           <NavLink to="/approve" className={navClass}>
             Approvals
           </NavLink>
+          <NavLink to="/content-generation" className={navClass}>
+            Generate
+          </NavLink>
           <NavLink to="/ideas" className={navClass}>
             Ideas
           </NavLink>
