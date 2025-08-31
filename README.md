@@ -1,74 +1,130 @@
-# Welcome to your Lovable project
+# AgentSS Client Portal
 
-## Project info
+LinkedIn Content Management Client Portal - where clients review and approve their AI-generated LinkedIn content.
 
-**URL**: https://lovable.dev/projects/621aa25b-1b27-466b-86a4-9694fab66c04
+## 🚀 Production URLs
+- **Client Portal**: https://www.agentss.app
+- **Admin Portal**: https://admin.agentss.app
 
-## How can I edit this code?
+## 📋 Project Overview
 
-There are several ways of editing your application.
+This is the client-facing portal of the AgentSS LinkedIn content management system. Clients log in here to:
+- Review AI-generated LinkedIn content
+- Approve/reject/edit content before publication  
+- View content analytics and performance
+- Manage their content preferences
 
-**Use Lovable**
+## 🏗️ Architecture
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/621aa25b-1b27-466b-86a4-9694fab66c04) and start prompting.
+### Two-Portal System:
+1. **This Repository (Client Portal)**: Where clients review content
+2. **Admin Portal**: Where admins/ghostwriters create and manage content
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Content Flow:
+```
+Admin creates content → Admin approves → Client reviews → Client approves → Auto-published
 ```
 
-**Edit a file directly in GitHub**
+## 🔧 Technologies
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- **Frontend**: React 18 + TypeScript
+- **Build Tool**: Vite 
+- **Styling**: Tailwind CSS + shadcn/ui
+- **Backend**: Supabase (PostgreSQL + Auth)
+- **Deployment**: Vercel
+- **Animations**: Framer Motion
 
-**Use GitHub Codespaces**
+## 🎯 Key Features
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### ✅ Recently Implemented
+- **Admin Impersonation**: Admins can view any client's portal for testing/support
+- **Manual Content Creation**: Admins can create custom content alongside AI generation
+- **Unified UI/UX**: Consistent design language across both portals
+- **Mobile Responsive**: Optimized for all device sizes
+- **Real-time Updates**: Live content status updates
 
-## What technologies are used for this project?
+### 🔑 Core Features
+- **Content Approval Workflow**: Review, approve, reject, or request edits
+- **Authentication**: Simple email/password + Google OAuth
+- **Content Analytics**: Track performance metrics
+- **Profile Management**: Client onboarding and preferences
+- **Content Ideas**: Clients can submit ideas for content
 
-This project is built with:
+## 🔐 Admin Impersonation System
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Admins can securely view any client's portal:
 
-## How can I deploy this project?
+1. **From Admin Portal**: Click "View Portal" on any client
+2. **Secure Tokens**: Time-limited impersonation sessions (4-hour expiry)
+3. **Visual Indicators**: Purple banner shows "Admin Mode" when impersonating
+4. **Easy Exit**: One-click return to admin portal
 
-Simply open [Lovable](https://lovable.dev/projects/621aa25b-1b27-466b-86a4-9694fab66c04) and click on Share -> Publish.
+### Database Tables:
+- `admin_impersonation_sessions` - Tracks active admin sessions
+- RPC Functions: `create_impersonation_token`, `validate_impersonation_token`
 
-## Can I connect a custom domain to my Lovable project?
+## 🚀 Development Setup
 
-Yes, you can!
+```bash
+# Clone repository
+git clone https://github.com/eimribar/unified-linkedin-project.git
+cd unified-linkedin-project
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+# Install dependencies  
+npm install
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+## 📁 Project Structure
+
+```
+src/
+├── components/           # Reusable UI components
+│   ├── ui/              # shadcn/ui components
+│   ├── layout/          # Layout components
+│   └── auth/            # Authentication components
+├── pages/               # Route components
+│   ├── ClientApproval.tsx   # Main content approval page
+│   ├── UserAnalytics.tsx    # Analytics dashboard
+│   └── AuthSimple.tsx       # Authentication page
+├── contexts/            # React contexts
+│   └── SimpleAuthContext.tsx # Authentication state
+├── services/            # API and business logic
+└── lib/                 # Utilities and configuration
+```
+
+## 🔄 Recent Major Updates
+
+### August 2025 - Impersonation Feature
+- Implemented secure admin impersonation system
+- Added visual indicators for admin mode
+- Consolidated client auth management
+- Fixed mobile responsiveness issues
+
+### Key Commits:
+- `dc39b9b7`: Fixed impersonation to bypass auth page
+- `b07a7847`: Added impersonation detection and banner
+- `561e81e9`: Restored manual content creation (reverted to stable state)
+
+## 🐛 Troubleshooting
+
+### Common Issues:
+1. **Auth Issues**: Check Supabase connection and RLS policies
+2. **Impersonation Failures**: Ensure RPC functions exist in database
+3. **Build Failures**: Check TypeScript errors and dependencies
+
+### Environment Variables:
+Required in production:
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY` 
+- OAuth provider keys for Google authentication
+
+## 📞 Support
+
+For development questions or admin access issues, check the admin portal or contact the development team.
 <!-- Trigger Vercel deployment -->
