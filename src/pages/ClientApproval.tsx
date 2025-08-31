@@ -6,6 +6,7 @@ import { isAdmin } from '@/utils/authHelpers';
 import { CheckCircle, XCircle, Clock, ChevronLeft, ChevronRight, Calendar, Building, Sparkles, Edit2, X, Save, ChevronDown, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ClientApprovalActionBar } from '@/components/ui/gradient-action-buttons';
+import ImpersonationBanner from '@/components/ImpersonationBanner';
 import toast from 'react-hot-toast';
 
 interface GeneratedContent {
@@ -30,6 +31,10 @@ const ClientApproval = () => {
   const [allClients, setAllClients] = useState<any[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   
+  // Impersonation state
+  const [impersonationData, setImpersonationData] = useState<any>(null);
+  const [isImpersonating, setIsImpersonating] = useState(false);
+  
   const [content, setContent] = useState<GeneratedContent[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<string | null>(null);
@@ -45,15 +50,20 @@ const ClientApproval = () => {
     pending: 0
   });
 
-  // Load client data when user is authenticated
+  // Check for impersonation on mount
   useEffect(() => {
-    if (user) {
-      if (isAdmin(user.email)) {
+    checkImpersonation();
+  }, []);
+
+  // Load client data when user is authenticated or impersonating
+  useEffect(() => {
+    if (user || isImpersonating) {
+      if (user && isAdmin(user.email)) {
         setIsAdminMode(true);
       }
       loadClientData();
     }
-  }, [user]);
+  }, [user, isImpersonating]);
 
   // Load content when client is loaded
   useEffect(() => {
@@ -405,6 +415,61 @@ const ClientApproval = () => {
     });
   };
 
+  // Check if admin is impersonating
+  const checkImpersonation = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('impersonation') || localStorage.getItem('admin_impersonation_token');
+    
+    if (!token) return;
+    
+    try {
+      const { data, error } = await supabase
+        .rpc('validate_impersonation_token', { p_token: token });
+      
+      if (!error && data && data.length > 0) {
+        localStorage.setItem('admin_impersonation_token', token);
+        setImpersonationData({
+          token,
+          client_id: data[0].client_id,
+          client_email: data[0].client_email,
+          client_name: data[0].client_name,
+          admin_email: data[0].admin_email
+        });
+        setIsImpersonating(true);
+        
+        // Load the impersonated client data
+        const { data: clientData } = await supabase
+          .from('clients')
+          .select('*')
+          .eq('id', data[0].client_id)
+          .single();
+          
+        if (clientData) {
+          setClient(clientData);
+        }
+      } else {
+        localStorage.removeItem('admin_impersonation_token');
+      }
+    } catch (err) {
+      console.error('Error checking impersonation:', err);
+      localStorage.removeItem('admin_impersonation_token');
+    }
+  };
+
+  // Exit impersonation and return to admin portal
+  const exitImpersonation = async () => {
+    const token = localStorage.getItem('admin_impersonation_token');
+    if (token) {
+      try {
+        await supabase.rpc('end_impersonation_session', { p_token: token });
+      } catch (err) {
+        console.error('Error ending impersonation:', err);
+      }
+      localStorage.removeItem('admin_impersonation_token');
+    }
+    window.location.href = 'https://admin.agentss.app';
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -418,7 +483,37 @@ const ClientApproval = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-zinc-50 to-white">
+      {/* Impersonation Banner */}
+      {isImpersonating && impersonationData && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Admin Mode</span>
+                </div>
+                <div className="w-px h-5 bg-white/30" />
+                <span className="text-sm">
+                  Viewing as: <strong>{impersonationData.client_name}</strong>
+                  <span className="text-white/70 ml-2">({impersonationData.client_email})</span>
+                </span>
+              </div>
+              <button
+                onClick={exitImpersonation}
+                className="flex items-center gap-2 px-4 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4" />
+                <span className="text-sm font-medium">Exit Impersonation</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <div className={cn(
+        "min-h-screen bg-gradient-to-br from-zinc-50 to-white",
+        isImpersonating && "pt-14"
+      )}>
         {/* Header */}
         <header className="border-b bg-white">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
