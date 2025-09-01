@@ -78,55 +78,155 @@ const AuthCallbackSimple: React.FC = () => {
       let isRegisteredClient = false;
       let clientData = null;
       
-      // First check if they exist in clients table
-      const { data: existingClient, error: checkError } = await supabase
-        .from('clients')
-        .select('*')
-        .eq('email', session.user.email)
-        .single();
+      console.log('🔍 Looking for client with email:', session.user.email);
       
-      if (existingClient) {
-        isRegisteredClient = true;
-        clientData = existingClient;
+      // First try case-insensitive email lookup using our database function
+      const { data: clientSearchResult, error: searchError } = await supabase
+        .rpc('find_client_by_email', { p_email: session.user.email });
+      
+      if (searchError) {
+        console.error('❌ Error searching for client:', searchError);
         
-        // Update auth_user_id if not set
-        if (!existingClient.auth_user_id) {
-          await supabase
-            .from('clients')
-            .update({
-              auth_user_id: session.user.id,
-              last_login_at: new Date().toISOString()
-            })
-            .eq('id', existingClient.id);
+        // Fallback to direct table query (case-insensitive)
+        const { data: existingClient, error: checkError } = await supabase
+          .from('clients')
+          .select('*')
+          .ilike('email', session.user.email)
+          .single();
+          
+        if (existingClient) {
+          isRegisteredClient = true;
+          clientData = existingClient;
+          console.log('✅ Found client via fallback query:', clientData.name);
+        } else if (checkError && checkError.code !== 'PGRST116') {
+          console.error('❌ Database error during client lookup:', checkError);
+        }
+      } else if (clientSearchResult && clientSearchResult.length > 0) {
+        const clientInfo = clientSearchResult[0];
+        
+        // Get full client data
+        const { data: existingClient, error: checkError } = await supabase
+          .from('clients')
+          .select('*')
+          .eq('id', clientInfo.client_id)
+          .single();
+          
+        if (existingClient) {
+          isRegisteredClient = true;
+          clientData = existingClient;
+          console.log('✅ Found client via RPC function:', clientData.name);
+        }
+      }
+      
+      // Update auth_user_id if client found and not set
+      if (clientData && !clientData.auth_user_id) {
+        console.log('🔗 Linking client to auth user:', session.user.id);
+        
+        const { error: linkError } = await supabase
+          .from('clients')
+          .update({
+            auth_user_id: session.user.id,
+            auth_status: 'active',
+            last_login_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', clientData.id);
+          
+        if (linkError) {
+          console.error('❌ Failed to link client to auth user:', linkError);
+        } else {
+          console.log('✅ Client linked to auth user successfully');
         }
       }
       
       // If we have an invitation token, try to link the account
       if (invitationToken && !isRegisteredClient) {
-        setMessage('Linking your account...');
+        setMessage('Linking your account with invitation...');
         
         try {
-          const { data: inviteClient, error: updateError } = await supabase
-            .from('clients')
-            .update({
-              auth_user_id: session.user.id,
-              invitation_status: 'accepted',
-              last_login_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            })
-            .eq('invitation_token', invitationToken)
-            .eq('email', session.user.email)
-            .select()
-            .single();
+          console.log('🎫 Processing invitation token:', invitationToken);
+          
+          // First validate the invitation token using our database function
+          const { data: tokenValidation, error: validateError } = await supabase
+            .rpc('validate_invitation_token', { p_token: invitationToken });
+            
+          if (validateError) {
+            console.error('❌ Error validating invitation token:', validateError);
+          } else if (tokenValidation && tokenValidation.length > 0) {
+            const validation = tokenValidation[0];
+            console.log('🔍 Invitation validation result:', validation);
+            
+            if (validation.is_valid) {
+              // Check if email matches (case-insensitive)
+              if (validation.client_email.toLowerCase() === session.user.email.toLowerCase()) {
+                // Accept the invitation and link the account
+                const { data: acceptResult, error: acceptError } = await supabase
+                  .rpc('accept_invitation', {
+                    p_token: invitationToken,
+                    p_auth_user_id: session.user.id
+                  });
+                  
+                if (acceptError) {
+                  console.error('❌ Error accepting invitation:', acceptError);
+                  toast.error('Failed to accept invitation');
+                } else if (acceptResult && acceptResult.length > 0 && acceptResult[0].success) {
+                  console.log('✅ Invitation accepted successfully');
+                  
+                  // Get the updated client data
+                  const { data: linkedClient, error: clientError } = await supabase
+                    .from('clients')
+                    .select('*')
+                    .eq('id', validation.client_id)
+                    .single();
+                    
+                  if (linkedClient) {
+                    isRegisteredClient = true;
+                    clientData = linkedClient;
+                    toast.success(`Welcome, ${linkedClient.name || session.user.email}!`);
+                    console.log('✅ Account linked via invitation:', linkedClient.name);
+                  }
+                } else {
+                  console.error('❌ Failed to accept invitation');
+                  toast.error('Failed to accept invitation');
+                }
+              } else {
+                console.error('❌ Email mismatch - Token:', validation.client_email, 'User:', session.user.email);
+                toast.error('This invitation was sent to a different email address');
+              }
+            } else {
+              console.log('❌ Invitation token is invalid or expired');
+              toast.error('Invitation token is invalid or expired');
+            }
+          } else {
+            // Fallback to legacy invitation token method
+            console.log('🔄 Trying legacy invitation token method...');
+            
+            const { data: inviteClient, error: updateError } = await supabase
+              .from('clients')
+              .update({
+                auth_user_id: session.user.id,
+                invitation_status: 'accepted',
+                auth_status: 'active',
+                last_login_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              })
+              .eq('invitation_token', invitationToken)
+              .ilike('email', session.user.email) // Use case-insensitive matching
+              .select()
+              .single();
 
-          if (!updateError && inviteClient) {
-            console.log('✅ Account linked successfully:', inviteClient);
-            toast.success(`Welcome, ${inviteClient.name || session.user.email}!`);
-            isRegisteredClient = true;
-            clientData = inviteClient;
+            if (!updateError && inviteClient) {
+              console.log('✅ Account linked via legacy token:', inviteClient);
+              toast.success(`Welcome, ${inviteClient.name || session.user.email}!`);
+              isRegisteredClient = true;
+              clientData = inviteClient;
+            } else if (updateError) {
+              console.error('❌ Legacy token linking failed:', updateError);
+            }
           }
         } catch (err) {
-          console.error('Error linking account:', err);
+          console.error('❌ Error processing invitation:', err);
+          toast.error('Failed to process invitation');
         }
       }
       
