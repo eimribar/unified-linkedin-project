@@ -1,7 +1,7 @@
 {
-  "name": "AgentSS Content Review",
+  "name": "AgentSS App",
   "short_name": "AgentSS",
-  "description": "Review and approve your LinkedIn content with a premium experience",
+  "description": "Review and approve your LinkedIn content",
   "start_url": "/auth",
   "display": "standalone",
   "background_color": "#ffffff",
